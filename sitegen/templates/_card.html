@@ -21,7 +21,7 @@
 
 {% macro viewnav(active, date, latest) %}
 <nav class="viewnav">
-  <a href="{{ 'index.html' if date == latest else date ~ '.html' }}"
+  <a href="{{ './' if date == latest else date ~ '.html' }}"
      class="{{ 'on' if active == 'kategori' }}">Kategoriye göre</a>
   <a href="{{ date }}-kaynak.html" class="{{ 'on' if active == 'kaynak' }}">Kaynağa göre</a>
 </nav>

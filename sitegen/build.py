@@ -22,6 +22,10 @@ from pipeline.summarize import (MIN_SIGNAL_FOR_ALERT, OPPORTUNITY_LABEL,
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
+# Kanonik kök. /index.html ile / tarayıcıda AYRI önbellek kaydıdır; biri
+# eskiyken diğeri güncel görünebiliyor. İç bağlantılar "./" kullanır ve
+# her sayfa kanonik adresini bildirir.
+SITE_ROOT = "https://kierkegaard-source.github.io/gundem/"
 TEMPLATES = Path(__file__).resolve().parent / "templates"
 STATIC = Path(__file__).resolve().parent / "static"
 
@@ -302,6 +306,7 @@ def main() -> int:
         next_day = all_days[idx - 1] if idx > 0 else None
         common = dict(
             css=css, generated_at=generated, latest=latest,
+            canonical=SITE_ROOT if day == latest else f"{SITE_ROOT}{day}.html",
             prev_date=prev_day, prev_label=tr_short(prev_day) if prev_day else None,
             next_date=next_day, next_label=tr_short(next_day) if next_day else None)
         html = day_tpl.render(**common, **ctx)
@@ -322,6 +327,7 @@ def main() -> int:
     counts = {d: len(digest_items(conn, d)) for d in all_days}
     archive = env.get_template("archive.html").render(
         css=css, generated_at=generated, latest=latest,
+        canonical=f"{SITE_ROOT}arsiv.html",
         days=[{"date": d, "label": tr_date(d), "count": counts[d]} for d in all_days])
     (DOCS / "arsiv.html").write_text(archive, encoding="utf-8")
     (DOCS / ".nojekyll").write_text("")     # GitHub Pages Jekyll'i atlasın

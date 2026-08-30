@@ -6,6 +6,7 @@
 <title>{% block title %}Gündem{% endblock %}</title>
 <meta name="description" content="Her sabah developer tools, indie oyun, yeni uygulama ve tasarım dünyasından yeni çıkanlar — Türkçe özetlerle.">
 <meta name="color-scheme" content="light dark">
+<link rel="canonical" href="{{ canonical }}">
 <style>{{ css|safe }}</style>
 </head>
 <body>
@@ -13,7 +14,7 @@
 
 <header class="masthead">
   <div class="brand">
-    <h1><a href="index.html">Gündem</a></h1>
+    <h1><a href="./">Gündem</a></h1>
     <span class="tagline">Ürün &amp; Girişim Gazetesi</span>
   </div>
   {% block stats %}{% endblock %}
@@ -22,7 +23,7 @@
 {% block content %}{% endblock %}
 
 <footer>
-  <a href="index.html">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
+  <a href="./">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
   {{ generated_at }} · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
 </footer>
 

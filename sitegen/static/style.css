@@ -136,6 +136,12 @@ body {
 }
 .stats .day { font-weight: 650; color: var(--ink); }
 .stats .sep { color: var(--rule); }
+.stats .stamp {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  cursor: help;
+}
 
 /* ================= görünüm seçici ================= */
 
