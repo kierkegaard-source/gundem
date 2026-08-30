@@ -2,5 +2,8 @@
 # üretiliyor. Yerelde de üretilirse ikili/HTML çakışması çıkar. Bu dosyaların
 # sahibi Actions'tır — yerelde çalışırken commit'lemeden önce:
 #   git checkout origin/main -- docs data
+# Yeni üretilen ve yerelde HENÜZ İZLENMEYEN sayfalar (ör. yeni bir görünüm
+# eklendiğinde) rebase'i "could not detach HEAD" ile kilitler. O durumda:
+#   git clean -f docs/
 data/digest.db binary
 docs/*.html -diff linguist-generated
