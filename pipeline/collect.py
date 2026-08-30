@@ -23,6 +23,7 @@ from pipeline.db import (connect, mark_digest, published_hashes, record_run,
 from pipeline.dedupe import Cluster, dedupe
 from pipeline.score import filter_clusters, score_clusters
 from pipeline.summarize import alerts, drop_low_signal, summarize
+from pipeline.translate import needs_title_translation, strip_prefix, translate_many
 from sources.base import Item, Source
 from sources.bluesky import Bluesky
 from sources.github_trending import GithubTrending
@@ -141,6 +142,7 @@ def main() -> int:
     ap.add_argument("--only", help="sadece bu kaynaklar (virgülle)")
     ap.add_argument("--skip", help="bu kaynakları atla (virgülle) — ör. maliyetli twitter")
     ap.add_argument("--no-llm", action="store_true", help="özetlemeyi atla (maliyetsiz test)")
+    ap.add_argument("--no-translate", action="store_true", help="makine çevirisini atla")
     args = ap.parse_args()
 
     cfg = load_config()
@@ -193,6 +195,28 @@ def main() -> int:
             print("UYARI: sayı eksik özetle üretildi — sayfaya uyarı bandı konacak")
         print(f"sayıya giren: {len(kept)} madde")
 
+    # ---- makine çevirisi yedeği ----
+    # LLM özeti/başlığı olmayan maddeler İngilizce kalmasın. Editoryal özetin
+    # yerine geçmez, yalnızca çeviridir; ücretsiz ve anahtarsız.
+    if not args.no_translate:
+        pending_t = [c for c in kept
+                     if not c.title_tr and needs_title_translation(c.lead.title)]
+        pending_b = [c for c in kept if not c.summary_tr and c.raw_text
+                     and c.raw_text.strip().lower() != c.lead.title.strip().lower()]
+        if pending_t or pending_b:
+            texts = ([strip_prefix(c.lead.title) for c in pending_t]
+                     + [c.raw_text[:400] for c in pending_b])
+            out = asyncio.run(translate_many(texts))
+            n = len(pending_t)
+            for c, tr in zip(pending_t, out[:n]):
+                c.title_mt = tr
+            for c, tr in zip(pending_b, out[n:]):
+                c.body_mt = tr
+            done_t = sum(1 for c in pending_t if c.title_mt)
+            done_b = sum(1 for c in pending_b if c.body_mt)
+            print(f"makine çevirisi: {done_t}/{len(pending_t)} başlık, "
+                  f"{done_b}/{len(pending_b)} açıklama")
+
     print_digest(kept, args.limit)
 
     by_source = Counter(i.source for i in items)
@@ -206,12 +230,13 @@ def main() -> int:
         new, updated = upsert_clusters(conn, clusters)
         # Özetler yalnızca sayıya giren maddeler için üretildi; onları ayrıca yaz.
         for c in kept:
-            if c.summary_tr or c.title_tr:
+            if c.summary_tr or c.title_tr or c.title_mt or c.body_mt:
                 conn.execute(
-                    "UPDATE items SET title_tr = ?, summary_tr = ?, why_tr = ?, "
-                    "category = ?, potential = ?, potential_note = ? WHERE url_hash = ?",
-                    (c.title_tr, c.summary_tr, c.why_tr, c.category,
-                     c.potential, c.potential_note, c.lead.url_hash))
+                    "UPDATE items SET title_tr = ?, title_mt = ?, body_mt = ?, "
+                    "summary_tr = ?, why_tr = ?, category = ?, potential = ?, "
+                    "potential_note = ? WHERE url_hash = ?",
+                    (c.title_tr, c.title_mt, c.body_mt, c.summary_tr, c.why_tr,
+                     c.category, c.potential, c.potential_note, c.lead.url_hash))
         conn.commit()
         today = datetime.now(timezone.utc).date().isoformat()
         mark_digest(conn, kept, today)

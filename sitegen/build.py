@@ -138,16 +138,15 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     for r in rows:
         srcs = json.loads(r["sources"])
         sources_seen.update(srcs)
+        # Gövde metni sırası: editoryal özet (LLM) → makine çevirisi.
+        # Çeviri de yoksa gövde BOŞ bırakılır; sayfaya İngilizce metin sızmasın
+        # diye ham `raw_text` doğrudan gösterilmiyor.
         raw = None
-        if not r["summary_tr"]:
-            # Özet üretilemediyse (bütçe tavanı / API hatası) kaynağın kendi
-            # açıklaması gösterilir — İngilizce ama boş karttan iyi.
-            candidate = (r["raw_text"] or "").strip()
-            # Başlığın kendisini tekrar etmenin anlamı yok.
-            if candidate and candidate.lower() != (r["title"] or "").strip().lower():
-                raw = _trim(_strip_title(candidate, r["title"]))
+        if not r["summary_tr"] and r["body_mt"]:
+            raw = _trim(_strip_title(" ".join(r["body_mt"].split()), r["title"]))
         entry = {
-            "title": r["title"],
+            "title": r["title_tr"] or r["title_mt"] or r["title"],
+            "mt": bool(not r["summary_tr"] and r["body_mt"]),
             "url": r["url"],
             "why": r["why_tr"],
             "summary": r["summary_tr"],
@@ -184,7 +183,14 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
 
     notices = build_notices(run)
     if rows and not any(r["summary_tr"] for r in rows):
-        notices.append("Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.")
+        mt = sum(1 for r in rows if r["title_mt"] or r["body_mt"])
+        if mt:
+            notices.append(
+                "Editoryal özet üretilemedi (LLM bütçesi tükendi). Başlıklar ve "
+                "açıklamalar makine çevirisiyle verildi; iki cümlelik Türkçe özet, "
+                "\u201cneden okumalı\u201d satırı ve Radar puanları eksik.")
+        else:
+            notices.append("Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.")
 
     hot.sort(key=lambda e: -e["potential"])
     return {

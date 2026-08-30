@@ -2,25 +2,25 @@
    Harici istek yok (font, ikon, script). Tek dosya, sayfaya gömülü. */
 
 :root {
-  --bg:        #faf8f4;
+  --bg:        #f4f5f3;
   --surface:   #ffffff;
-  --surface-2: #f3efe7;
-  --ink:       #17140f;
-  --ink-soft:  #4d4740;
-  --ink-faint: #8b8479;
-  --rule:      #ddd6c8;
-  --rule-soft: #ebe5d9;
-  --accent:    #9a2f16;
-  --accent-2:  #2f5d50;
-  --shadow:    0 1px 2px rgba(23,20,15,.05), 0 6px 16px -10px rgba(23,20,15,.18);
-  --radar-bg:   #fff7ed;
-  --radar-rule: #f0cfa8;
-  --radar-ink:  #a8480c;
-  --radar-soft: #7c5636;
+  --surface-2: #eceeeb;
+  --ink:       #0f1417;
+  --ink-soft:  #414b52;
+  --ink-faint: #79858d;
+  --rule:      #cfd5d6;
+  --rule-soft: #e3e7e6;
+  --accent:    #0a6b5c;
+  --accent-2:  #a8420f;
+  --shadow:    0 1px 2px rgba(15,20,23,.05), 0 8px 20px -12px rgba(15,20,23,.22);
+  --radar-bg:   #eef7f4;
+  --radar-rule: #b9d9d1;
+  --radar-ink:  #0a6b5c;
+  --radar-soft: #48645e;
 
-  --warn-bg:   #fdf4e3;
-  --warn-ink:  #7d4c12;
-  --warn-rule: #e3c790;
+  --warn-bg:   #fdf5e6;
+  --warn-ink:  #7a4c14;
+  --warn-rule: #e0c795;
 
   /* Kaynak renkleri — marka logosu değil, marka rengiyle monogram rozet.
      Logoları kopyalamak yerine bu tercih edildi: harici istek yok, ticari
@@ -34,30 +34,34 @@
   --s-twitter:    #2b2b2b;
   --s-rss:        #c9761b;
 
-  --display: "Iowan Old Style", "Charter", "Bitstream Charter", "Sitka Text",
-             Cambria, "Palatino Linotype", Palatino, Georgia, serif;
-  --ui: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI",
-        Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Rol değişimi: başlıklar sıkı puntolu sans (modern editoryal),
+     okunan gövde metni serif. Öncekinin tersi — daha keskin bir kontrast. */
+  --display: system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI",
+             "Helvetica Neue", Inter, Roboto, Arial, sans-serif;
+  --read: "Iowan Old Style", Charter, "Bitstream Charter", "Sitka Text",
+          Cambria, "Palatino Linotype", Palatino, Georgia, serif;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:        #121110;
-    --surface:   #1a1917;
-    --surface-2: #221f1c;
-    --ink:       #eeeae2;
-    --ink-soft:  #b5aea3;
-    --ink-faint: #837c71;
-    --rule:      #322e28;
-    --rule-soft: #262320;
-    --accent:    #e58a68;
-    --accent-2:  #79b8a4;
-    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.7);
-    --radar-bg:   #241a12;
-    --radar-rule: #4d3620;
-    --radar-ink:  #f0913f;
-    --radar-soft: #bfa387;
+    --bg:        #0d1114;
+    --surface:   #141a1e;
+    --surface-2: #1b2328;
+    --ink:       #e8edef;
+    --ink-soft:  #a7b3ba;
+    --ink-faint: #71808a;
+    --rule:      #26313a;
+    --rule-soft: #1d262c;
+    --accent:    #3fbfa8;
+    --accent-2:  #e08a55;
+    --shadow:    0 1px 2px rgba(0,0,0,.5), 0 10px 24px -14px rgba(0,0,0,.85);
+    --radar-bg:   #10231f;
+    --radar-rule: #235047;
+    --radar-ink:  #48d3b8;
+    --radar-soft: #94b3ac;
 
     --warn-bg:   #2b2114;
     --warn-ink:  #e3ba7d;
@@ -107,9 +111,9 @@ body {
 
 .brand h1 {
   font-family: var(--display);
-  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.85rem, 5.5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
   margin: 0;
   line-height: 1;
 }
@@ -200,7 +204,7 @@ body {
 
 .radar-head h2 {
   font-family: var(--display);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -233,14 +237,16 @@ body {
 .radar-body { min-width: 0; }
 .radar-body a {
   font-family: var(--display);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.97rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
   line-height: 1.28;
   color: var(--ink);
   text-decoration: none;
 }
 .radar-body a:hover { color: var(--radar-ink); text-decoration: underline; }
-.radar-body p { margin: 0.15rem 0 0.3rem; font-size: 0.83rem; color: var(--radar-soft); }
+.radar-body p { margin: 0.15rem 0 0.3rem; font-family: var(--read);
+  font-size: 0.87rem; line-height: 1.45; color: var(--radar-soft); }
 .radar-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
 /* ================= uyarı ================= */
@@ -268,16 +274,17 @@ body {
   justify-content: space-between;
   gap: 1rem;
   margin: 0 0 1.1rem;
-  padding-bottom: 0.45rem;
-  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--accent);
 }
 
 .section-head h2 {
   font-family: var(--display);
-  font-size: 1.15rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--accent);
   margin: 0;
 }
 
@@ -315,9 +322,10 @@ body {
 
 .card h3 {
   font-family: var(--display);
-  font-size: 1.1rem;
-  line-height: 1.28;
-  font-weight: 600;
+  font-size: 1.06rem;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.017em;
   margin: 0;
 }
 .card h3 a { color: var(--ink); text-decoration: none; }
@@ -328,11 +336,11 @@ body {
   border-color: var(--rule);
   padding: 1.15rem 1.25rem 1.05rem;
 }
-.card.lead h3 { font-size: 1.45rem; line-height: 1.22; }
+.card.lead h3 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.028em; }
 .card.lead .body { font-size: 1rem; }
 
 .why {
-  font-family: var(--display);
+  font-family: var(--read);
   font-style: italic;
   font-size: 0.95rem;
   line-height: 1.4;
@@ -341,8 +349,9 @@ body {
 }
 
 .body {
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-family: var(--read);
+  font-size: 0.94rem;
+  line-height: 1.55;
   color: var(--ink-soft);
   margin: 0;
 }
@@ -350,11 +359,12 @@ body {
    gösterilir. Ayrı bir etiket konmuyor — sayfa üstündeki uyarı bandı zaten
    söylüyor; kart başına tekrarlamak gürültü yapıyordu. Ayrım tipografik:
    daha soluk ve italik. */
+/* Makine çevirisi ya da kaynağın kendi açıklaması — editoryal özet değil.
+   Ayrım tipografik: soluk renk ve sol çizgi. */
 .body.raw {
-  color: var(--ink-faint);
-  font-style: italic;
-  border-left: 2px solid var(--rule-soft);
-  padding-left: 0.6rem;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule);
+  padding-left: 0.65rem;
 }
 
 .card-meta {
@@ -445,7 +455,9 @@ body {
   color: var(--ink);
   text-decoration: none;
   font-family: var(--display);
-  font-size: 1.05rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 .archive-list a:hover { color: var(--accent); }
 .archive-list .count {
@@ -469,7 +481,7 @@ footer a { color: var(--ink-faint); }
   text-align: center;
   padding: 3rem 1rem;
   color: var(--ink-faint);
-  font-family: var(--display);
+  font-family: var(--read);
   font-size: 1.1rem;
 }
 

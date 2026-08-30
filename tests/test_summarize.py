@@ -132,3 +132,31 @@ def test_dusuk_sinyal_eleniyor_ozetlenmemis_kaliyor(fake):
     kept, dropped = drop_low_signal(cs, CFG)
     assert [c.title for c in dropped] == ["Gürültü"]
     assert [c.title for c in kept] == ["Ozetlenmemis"]   # signal=None elenmez
+
+
+# ---------- makine çevirisi yedeği ----------
+
+def test_urun_adlari_cevrilmiyor_cumleler_ceviriliyor():
+    from pipeline.translate import needs_title_translation as n
+    assert not n("Olostep")                       # tek kelime ürün adı
+    assert not n("Hyperfocus")
+    assert not n("tt-a1i/archify")                # GitHub slug
+    assert not n("Kuantum yarışına kısa bir bakış")  # zaten Türkçe
+    assert n("A look at the race to build quantum computers")
+    assert n("Show HN: Bolnee-Chat Self Hosted Chatbot Integration")
+
+
+def test_platform_oneki_ayikaniyor():
+    from pipeline.translate import strip_prefix
+    assert strip_prefix("Show HN: Bir şey") == "Bir şey"
+    assert strip_prefix("Launch HN: Başka şey") == "Başka şey"
+    assert strip_prefix("Normal başlık") == "Normal başlık"
+
+
+def test_cluster_baslik_onceligi():
+    c = cluster("Original Title")
+    assert c.title == "Original Title"
+    c.title_mt = "Makine Çevirisi"
+    assert c.title == "Makine Çevirisi"
+    c.title_tr = "LLM Çevirisi"
+    assert c.title == "LLM Çevirisi"          # LLM makine çevirisini ezer
