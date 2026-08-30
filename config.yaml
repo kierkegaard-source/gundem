@@ -1,0 +1,202 @@
+# Daily Launch — Faz 0 ölçümleriyle doğrulanmış yapılandırma (2026-08-30)
+# Ölçüm detayları: FAZ0-RAPOR.md
+
+budget:
+  daily_llm_usd: 0.20
+  daily_twitter_reads: 600   # 28 hesap × 20 tweet (sayfa boyutu sabit) = 560/gun
+
+filters:
+  max_per_category: 15
+  max_total: 60
+  min_signal: 2
+  lookback_hours: 26          # cron kaymalarına tolerans
+
+scoring:
+  multi_source_bonus: 1.4
+  recency:
+    "0-6": 1.0
+    "6-12": 0.9
+    "12-24": 0.8
+    "24+": 0.5
+
+sources:
+  hackernews:
+    enabled: true
+    weight: 0.9
+    # ÖLÇÜM: "Show HN" min 10 puanla son 24s → 6 kayıt.
+    # "Launch HN" aynı eşikle 0 kayıt (7 günde 18 var ama puanları düşük).
+    # Bu yüzden sorgu başına ayrı eşik.
+    queries:
+      - { q: "Show HN",   min_points: 10 }
+      - { q: "Launch HN", min_points: 0 }
+
+  github_trending:
+    enabled: true
+    weight: 0.7
+    min_stars_today: 50       # ÖLÇÜM: 19 repodan 17'si geçiyor
+    since: daily
+
+  producthunt:
+    enabled: true             # PRODUCTHUNT_TOKEN bekleniyor, henüz doğrulanmadı
+    weight: 1.0
+
+  itchio:
+    enabled: true
+    weight: 0.7
+    # ÖLÇÜM: PROJECT.md'de feed URL'i belirsizdi; çalışan bu.
+    feed: "https://itch.io/games/newest.xml"
+
+  steam:
+    enabled: true
+    weight: 0.6
+    # ÖLÇÜM: hem arama JSON'u hem RSS çalışıyor. RSS daha stabil, o birincil.
+    feed: "https://store.steampowered.com/feeds/newreleases.xml"
+
+  reddit:
+    # KAPALI — Responsible Builder Policy (2026-06 güncellemesi) Reddit verisinin
+    # yazılı onay olmadan PAYLAŞILMASINI yasaklıyor; bu proje çıktıyı public bir
+    # GitHub Pages sayfasında yayınlıyor ve digest.db'yi public repoya commit ediyor.
+    # Ayrıca app oluşturma "explicit approval" gerektiriyor, süreç tıkalı.
+    # Kaybı düşük: r/SideProject ≈ Show HN + Product Hunt,
+    # r/gamedev + r/IndieDev ≈ 5 Bluesky gamedev feed'i.
+    # sources/reddit.py yine yazılacak; onay alınırsa enabled: true yeter.
+    enabled: false
+    weight: 0.6
+    subreddits: [gamedev, IndieDev, SideProject, webdev]
+    min_upvotes: 25
+
+  bluesky:
+    enabled: true
+    weight: 0.8
+    # ÖLÇÜM: searchPosts artık 403 (anahtarsız kapalı).
+    # Çözüm: feed generator URI + getFeed — anahtarsız, test edildi.
+    feeds:
+      - { name: "Bluesky GameDev",    cat: gamedev, uri: "at://did:plc:3z7fz2uzhy5vt627pasakzxh/app.bsky.feed.generator/aaaojmdjtuco4" }
+      - { name: "Gamedev: New",       cat: gamedev, uri: "at://did:plc:brwvwcp2x6oj3gq7odlfq5qf/app.bsky.feed.generator/aaaji3ow5z6gs" }
+      - { name: "Screenshot Saturday",cat: gamedev, uri: "at://did:plc:4jrld6fwpnwqehtce56qshzv/app.bsky.feed.generator/screenshot-sat" }
+      - { name: "Bluesky IndieDev",   cat: gamedev, uri: "at://did:plc:3z7fz2uzhy5vt627pasakzxh/app.bsky.feed.generator/aaaojh6h73gwq" }
+      - { name: "Graphic Design",     cat: design,  uri: "at://did:plc:fyal4ypom4hpb35m5wrtkg5l/app.bsky.feed.generator/aaacramas6xd4" }
+    # ÖLÇÜM: 28 aday tarandı, sadece bunlar son 30 günde aktif.
+    # Terk edilmişler (levelsio 638g, IndieHackers 623g, arvidkahl 305g, swyx 166g,
+    # supabase 143g, rauchg 132g, shadcn/anthropic hiç post yok) alınmadı.
+    handles:
+      - { handle: godotengine.org,   weight: 0.9, cat: gamedev }   # 30g/10 post, medyan ♥249
+      - { handle: itch.io,           weight: 0.9, cat: gamedev }   # 30g/25 post, medyan ♥96
+      - { handle: ramiismail.com,    weight: 0.7, cat: gamedev }   # 30g/38 post, medyan ♥154
+      - { handle: unity.com,         weight: 0.6, cat: gamedev }   # 30g/21 post
+      - { handle: simonwillison.net, weight: 0.9, cat: dev }       # 30g/25 post, medyan ♥81
+      - { handle: github.com,        weight: 0.7, cat: dev }       # 30g/16 post
+      - { handle: vercel.com,        weight: 0.8, cat: dev }       # 30g/6 post
+      - { handle: figma.com,         weight: 0.8, cat: design }    # 30g/1 post — sınırda
+      - { handle: chrismessina.me,   weight: 0.7, cat: apps }      # 30g/10 post
+      - { handle: webrazzi.com,      weight: 1.0, cat: tr }        # 30g/40 post
+
+  rss:
+    enabled: true
+    # ÖLÇÜM: 31 aday denendi, 23'ü canlı. Ölüler (Anthropic, a16z, Figma, Tailwind,
+    # rauchg, TIGSource 403, IndieHackers boş) çıkarıldı — içerikleri HN/Techmeme'e düşüyor.
+    feeds:
+      # dev
+      - { url: "https://vercel.com/atom",                     weight: 0.8, cat: dev }
+      - { url: "https://supabase.com/rss.xml",                weight: 0.8, cat: dev }
+      - { url: "https://github.blog/feed/",                   weight: 0.7, cat: dev }
+      - { url: "https://huggingface.co/blog/feed.xml",        weight: 0.8, cat: dev }
+      - { url: "https://openai.com/news/rss.xml",             weight: 0.9, cat: dev }
+      - { url: "https://deepmind.google/blog/rss.xml",        weight: 0.8, cat: dev }
+      - { url: "https://blog.replit.com/feed.xml",            weight: 0.7, cat: dev }
+      - { url: "https://simonwillison.net/atom/everything/",  weight: 0.9, cat: dev }
+      - { url: "https://www.latent.space/feed",               weight: 0.8, cat: dev }
+      - { url: "https://stackoverflow.blog/feed/",            weight: 0.6, cat: dev }
+      # startup
+      - { url: "https://techcrunch.com/feed/",                weight: 0.8, cat: startup }
+      - { url: "https://www.techmeme.com/feed.xml",           weight: 0.9, cat: startup }
+      - { url: "https://www.ycombinator.com/blog/rss",        weight: 1.0, cat: startup }
+      - { url: "http://www.aaronsw.com/2002/feeds/pgessays.rss", weight: 0.7, cat: startup }
+      # gamedev
+      - { url: "https://godotengine.org/rss.xml",             weight: 0.9, cat: gamedev }
+      - { url: "https://www.gamedeveloper.com/rss.xml",       weight: 0.7, cat: gamedev }
+      - { url: "https://blog.unity.com/feed",                 weight: 0.6, cat: gamedev }
+      - { url: "https://www.unrealengine.com/en-US/rss",      weight: 0.7, cat: gamedev }
+      - { url: "https://www.rockpapershotgun.com/feed",       weight: 0.6, cat: gamedev }
+      # design
+      - { url: "https://sidebar.io/feed.xml",                 weight: 0.8, cat: design }
+      - { url: "https://www.smashingmagazine.com/feed/",      weight: 0.7, cat: design }
+      - { url: "https://www.awwwards.com/blog/feed/",         weight: 0.7, cat: design }
+      - { url: "https://uxdesign.cc/feed",                    weight: 0.6, cat: design }
+      # tr
+      - { url: "https://webrazzi.com/feed",                   weight: 1.0, cat: tr }
+      - { url: "https://fintechtime.com/feed/",               weight: 0.5, cat: tr }
+
+  twitter:
+    enabled: true             # TWITTERAPI_KEY bekleniyor
+    provider: twitterapi.io
+    # DOĞRULANDI 2026-08-30 (validate_accounts.py, 53 handle, handle başına 1 istek):
+    #   45 OK / 8 SESSİZ / 0 ÖLÜ. 3'ünün handle'ı değişmişti, düzeltildi.
+    #   5'i yorum satırına alındı — ikisinin içeriği Bluesky'dan zaten geliyor.
+    #   Kalan aktif hesap: 48.
+    # BUTCE KARARI 2026-08-30: last_tweets sayfa boyutu 20'de SABIT
+    #   (count/limit/pageSize parametreleri yok sayiliyor) → 48 hesap = 960 okuma/gun
+    #   = ~$4.32/ay, PROJECT.md'nin ~$0.90 tahmininin 4.8 kati.
+    #   Cozum: RSS'ten zaten gelen 20 hesap yorum satirina alindi.
+    #   Kalan 28 hesap = 560 okuma/gun ≈ $2.52/ay.
+    # ARAMA YAPILMAYACAK — sadece timeline. Arama binlerce alakasız tweet faturalar.
+    accounts:
+      # ── Indie hacker / build in public ──
+      - { handle: levelsio,        weight: 1.0, cat: apps }
+      - { handle: marclou,     weight: 0.9, cat: apps }   # handle degismis (marc_louvion olu) — 378K takipci, bugun aktif
+      - { handle: tdinh_me,        weight: 0.9, cat: apps }
+      - { handle: dannypostma, weight: 0.8, cat: apps }   # handle degismis (dannypostmaa olu) — 181K takipci, dun aktif
+      - { handle: yongfook,        weight: 0.8, cat: apps }
+      - { handle: arvidkahl,       weight: 0.9, cat: apps }
+      - { handle: tibo_maker,      weight: 0.8, cat: apps }
+      - { handle: dagorenouf,      weight: 0.7, cat: apps }
+      - { handle: thisiskp_,       weight: 0.7, cat: apps }
+      - { handle: agazdecki,       weight: 0.7, cat: apps }
+      # - { handle: csallen,         weight: 0.8, cat: apps }   # DOGRULANDI SESSIZ — son tweet 132 gun once
+      # - { handle: IndieHackers,    weight: 0.8, cat: apps }   # DOGRULANDI SESSIZ — son tweet 66 gun once
+      # ── Launch platformları ──
+      - { handle: ProductHunt,     weight: 1.0, cat: apps }
+      - { handle: rrhoover,        weight: 0.8, cat: apps }
+      # - { handle: chrismessina,    weight: 0.7, cat: apps }   # DOGRULANDI SESSIZ (tweet yok) — Bluesky @chrismessina.me aktif, oradan geliyor
+      # - { handle: ycombinator,     weight: 1.0, cat: startup }   # RSS KOPYASI — RSS: ycombinator.com/blog/rss
+      # - { handle: TechCrunch,      weight: 0.8, cat: startup }   # RSS KOPYASI — RSS: techcrunch.com/feed
+      # - { handle: Techmeme,        weight: 0.9, cat: startup }   # RSS KOPYASI — RSS: techmeme.com/feed.xml
+      - { handle: garrytan,        weight: 0.8, cat: startup }
+      # - { handle: paulg,           weight: 0.7, cat: startup }   # RSS KOPYASI — RSS: pgessays.rss
+      - { handle: a16z,            weight: 0.7, cat: startup }
+      - { handle: sama,            weight: 0.7, cat: startup }
+      # ── Dev tools / AI ──
+      # - { handle: vercel,          weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: vercel.com/atom + Bluesky @vercel.com
+      # - { handle: supabase,        weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: supabase.com/rss.xml
+      # - { handle: github,        weight: 0.7, cat: dev }   # RSS KOPYASI — github.blog/feed + Bluesky @github.com
+      # - { handle: huggingface,     weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: huggingface.co/blog/feed.xml
+      - { handle: AnthropicAI,     weight: 0.9, cat: dev }
+      # - { handle: OpenAI,          weight: 0.9, cat: dev }   # RSS KOPYASI — RSS: openai.com/news/rss.xml
+      # - { handle: GoogleDeepMind,  weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: deepmind.google/blog/rss.xml
+      - { handle: cursor_ai,       weight: 0.8, cat: dev }
+      # - { handle: replit,          weight: 0.7, cat: dev }   # RSS KOPYASI — RSS: blog.replit.com/feed.xml
+      - { handle: railway,         weight: 0.6, cat: dev }
+      - { handle: rauchg,          weight: 0.8, cat: dev }
+      - { handle: shadcn,          weight: 0.8, cat: dev }
+      # - { handle: simonw,          weight: 0.9, cat: dev }   # RSS KOPYASI — RSS: simonwillison.net/atom + Bluesky
+      # - { handle: swyx,            weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: latent.space/feed
+      - { handle: theo,        weight: 0.7, cat: dev }   # handle degismis (t3dotgg 2017'den beri sessiz) — 379K takipci, bugun aktif
+      - { handle: nutlope,         weight: 0.7, cat: dev }
+      # ── Oyun ──
+      # - { handle: godotengine,     weight: 0.9, cat: gamedev }   # RSS KOPYASI — RSS: godotengine.org/rss.xml + Bluesky
+      # - { handle: UnrealEngine,    weight: 0.7, cat: gamedev }   # RSS KOPYASI — RSS: unrealengine.com/en-US/rss
+      # - { handle: unity,           weight: 0.6, cat: gamedev }   # RSS KOPYASI — RSS: blog.unity.com/feed + Bluesky @unity.com
+      # - { handle: itchio,          weight: 0.9, cat: gamedev }   # RSS KOPYASI — itch.io kaynagi + Bluesky @itch.io
+      # - { handle: tigsource,     weight: 0.7, cat: gamedev }   # DOGRULANDI SESSIZ — son tweet 2015, TIGSource fiilen kapali
+      # - { handle: tha_rami,        weight: 0.7, cat: gamedev }   # DOGRULANDI SESSIZ (tweet yok) — Bluesky @ramiismail.com aktif, oradan geliyor
+      # ── Tasarım ──
+      - { handle: figma,           weight: 0.8, cat: design }
+      # - { handle: sidebario,       weight: 0.9, cat: design }   # RSS KOPYASI — RSS: sidebar.io/feed.xml
+      # - { handle: awwwards,      weight: 0.7, cat: design }   # RSS KOPYASI — awwwards.com/blog/feed
+      - { handle: steveschoger,    weight: 0.7, cat: design }
+      - { handle: adamwathan,      weight: 0.7, cat: design }
+      # ── Türkiye ──
+      # - { handle: webrazzi,        weight: 1.0, cat: tr }   # RSS KOPYASI — RSS: webrazzi.com/feed + Bluesky @webrazzi.com
+      - { handle: tansuyegen,      weight: 0.6, cat: tr }
+      - { handle: alphanmanas,     weight: 0.6, cat: tr }
+      - { handle: sinaafra,        weight: 0.5, cat: tr }
