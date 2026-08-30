@@ -145,13 +145,41 @@ body {
 .stats .day { font-weight: 650; color: var(--ink); }
 .stats .sep { color: var(--rule); }
 
+/* ================= görünüm seçici ================= */
+
+.viewnav {
+  display: inline-flex;
+  gap: 1px;
+  margin: 0.95rem 0 0;
+  padding: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.viewnav a {
+  padding: 0.28rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.79rem;
+  font-weight: 550;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.viewnav a:hover { color: var(--accent); }
+.viewnav a.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+
 /* ================= kategori gezinme ================= */
 
 .catnav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  padding: 0.9rem 0 0;
+  padding: 0.75rem 0 0;
   margin-bottom: 1.6rem;
 }
 
@@ -257,6 +285,39 @@ body {
   font-size: 0.87rem; line-height: 1.45; color: var(--radar-soft); }
 .radar-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
+.opp {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  border-radius: 2px;
+  padding: 0.05rem 0.3rem;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+
+.radar-foot {
+  margin: 0.8rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--radar-rule);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--radar-soft);
+}
+
+.radar-empty {
+  margin: 0 0 1.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed var(--rule);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
 /* ================= uyarı ================= */
 
 .notice {
@@ -285,6 +346,11 @@ body {
   padding-bottom: 0.4rem;
   border-bottom: 1.5px solid var(--accent);
 }
+
+.section-head h2 .src { vertical-align: -0.15em; margin-right: 0.15rem; }
+.section-head h2 .mark { width: 1.15rem; height: 1.15rem; font-size: 0.6rem; }
+.catnav .src { margin-right: -0.1rem; }
+.catnav .mark { width: 0.95rem; height: 0.95rem; font-size: 0.52rem; }
 
 .section-head h2 {
   font-family: var(--display);
@@ -423,6 +489,18 @@ body {
 .src-twitter     { --c: var(--s-twitter); }
 .src-rss         { --c: var(--s-rss); }
 
+.opp-mini {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.04em;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  background: var(--radar-bg);
+  border-radius: 2px;
+  padding: 0 0.28rem;
+  white-space: nowrap;
+}
+
 .multi-flag {
   font-family: var(--mono);
   font-size: 0.64rem;
@@ -518,6 +596,13 @@ footer a { color: var(--ink-faint); }
   <span>8 kaynak</span>
 </div>
 </header>
+
+
+<nav class="viewnav">
+  <a href="index.html"
+     class="on">Kategoriye göre</a>
+  <a href="2026-08-30-kaynak.html" class="">Kaynağa göre</a>
+</nav>
 
 
 <nav class="catnav">
@@ -827,7 +912,7 @@ footer a { color: var(--ink-faint); }
   <div class="card-meta">
     <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-29T20:13:41.767000+00:00">19 saat önce</time>
+    <time datetime="2026-08-29T20:13:41.767000+00:00">20 saat önce</time>
   </div>
 </article>
 
@@ -872,82 +957,82 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://prince2005kumar.itch.io/descendant-of-hanuman" rel="noopener">Descendant of Hanuman</a></h3>
-  <p class="body raw">(Ücretsiz, Aksiyon, Windows) — Vadideki tüm düşmanları yenmek amacıyla Hanuman&#39;ın soyundan biri olarak oynadığınız bir dövüş oyunu</p>
+  <h3><a href="https://noo4y.itch.io/smackweb" rel="noopener">Smack</a></h3>
+  <p class="body raw">Şaplak (Ücretsiz)</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:45:33+00:00">az önce</time>
+    <time datetime="2026-08-30T15:56:11+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://python-maniac.itch.io/jumperos" rel="noopener">JumperOS</a></h3>
-  <p class="body raw">(Ücretsiz, Bulmaca, Windows) — Oldukça havalı bir bulmaca platform oyunu.</p>
+  <h3><a href="https://pant67.itch.io/pantejakt-multiplayersingle" rel="noopener">pantejakt multiplayer+single</a></h3>
+  <p class="body raw">pantejakt çok oyunculu+tek (Ücretsiz)</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:43:52+00:00">az önce</time>
+    <time datetime="2026-08-30T16:08:27+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://tobinekodou.itch.io/bounce-intelligence-micro-demo" rel="noopener">Bounce Intelligence: Mikro Demo</a></h3>
-  <p class="body raw">(Ücretsiz) — Bir arena, beş sonsuz tehdit ve sıçrama. Yürümek için tıklayın, koşmak için basılı tutun, CATO&#39;dan Mega Bounce&#39;a sürükleyin.</p>
+  <h3><a href="https://woben.itch.io/ythe" rel="noopener">Ythe</a></h3>
+  <p class="body raw">(Ücretsiz, Macera, Windows, Linux) — Hoş anılardan oluşan kısa bir atmosferik mikro antoloji.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:27:22+00:00">az önce</time>
+    <time datetime="2026-08-30T10:26:53+00:00">5 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://noidcorp.itch.io/maskd" rel="noopener">Mask&#39;d</a></h3>
-  <p class="body raw">(Ücretsiz, Bulmaca) — BİRÇOK EŞYA KIRIK!</p>
+  <h3><a href="https://willrobeson.itch.io/dog-sokoban" rel="noopener">dog sokoban</a></h3>
+  <p class="body raw">köpek sokoban (Ücretsiz, Bulmaca) — tek bir bulmaca</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:15:18+00:00">az önce</time>
+    <time datetime="2026-08-30T15:45:02+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://easy-games-1.itch.io/neon-rhythm" rel="noopener">Neon Rhythm</a></h3>
-  <p class="body raw">(Ücretsiz, Ritim, Android) — Telefonlar için gündelik oyun</p>
+  <h3><a href="https://wujo-dev.itch.io/beast-of-5" rel="noopener">Beast of 5</a></h3>
+  <p class="body raw">5&#39;li Canavar (Ücretsiz, Windows)</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:20:19+00:00">az önce</time>
+    <time datetime="2026-08-30T15:59:14+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://the-chancellor.itch.io/night-tech" rel="noopener">Night Tech</a></h3>
-  <p class="body raw">(Ücretsiz) — Bir gece geç saatlerde bazı jeneratörleri tamir etmeye geliyorsunuz.</p>
+  <h3><a href="https://phillystudios.itch.io/she-doesnt-live-here" rel="noopener">O Burada Oturmuyor</a></h3>
+  <p class="body raw">She Doesn&#39;t Live Here (Ücretsiz, Macera) — Hava karardıktan sonra eve bir kız gelir ve size onu içeri almamanız söylenmiştir.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T13:41:12+00:00">2 saat önce</time>
+    <time datetime="2026-08-30T15:11:16+00:00">1 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://thechainsawboy.itch.io/dungen-monsters" rel="noopener">Dungen Monsters</a></h3>
-  <p class="body raw">(Ücretsiz, Kart Oyunu, Windows) — Kart ve masa oyununun karışımı</p>
+  <h3><a href="https://meehaww.itch.io/the-journey-for-the-quest-of-the-seedbearers-place" rel="noopener">Tohum Taşıyıcının Yeri Arayışına Yolculuk</a></h3>
+  <p class="body raw">Tohum Taşıyıcının Yeri Görevine Yolculuk (Ücretsiz, Rol Yapma, Windows, macOS) — Tohumunuzu yaymak için destansı bir maceraya atılın.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:43:29+00:00">az önce</time>
+    <time datetime="2026-08-30T15:26:19+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://anirnir.itch.io/ukai" rel="noopener">Ukai</a></h3>
-  <p class="body raw">Ukai (Ücretsiz, Windows)</p>
+  <h3><a href="https://kudoshi.itch.io/jalan-bapak-myvi" rel="noopener">Jalan Bapak Myvi</a></h3>
+  <p class="body raw">(Ücretsiz, Windows) — Ya yolların kralı olun, ya da hiçbirinin kralı olmayın</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:47:57+00:00">az önce</time>
+    <time datetime="2026-08-30T15:55:38+00:00">az önce</time>
   </div>
 </article>
 
@@ -1072,7 +1157,7 @@ footer a { color: var(--ink-faint); }
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T05:15:02+00:00">10 saat önce</time>
+    <time datetime="2026-08-30T05:15:02+00:00">11 saat önce</time>
   </div>
 </article>
 
@@ -1176,7 +1261,7 @@ footer a { color: var(--ink-faint); }
 
 <footer>
   <a href="index.html">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
-  30.08.2026 16:05 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
+  30.08.2026 16:17 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
 </footer>
 
 </div>
