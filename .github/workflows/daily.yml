@@ -22,6 +22,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Eşzamanlı bir koşu bu arada commit atmış olabilir. Çalışma ağacı
+      # temizken çekmek çakışmasız; üretimden SONRA çekmek docs/ üzerinde
+      # çakışıyordu ve push döngüsü kilitleniyordu.
+      - name: Son hâli al
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+
       - name: uv kur
         uses: astral-sh/setup-uv@v5
         with:
@@ -52,8 +61,6 @@ jobs:
 
       - name: Commit ve push
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/ data/digest.db
           if git diff --staged --quiet; then
             echo "Değişiklik yok, commit atlanıyor."
@@ -65,11 +72,20 @@ jobs:
           print(len(digest_items(c, d[0])) if d else 0)
           " 2>/dev/null || echo "?")
           git commit -m "Sayı: $(date -u +%Y-%m-%d) — ${COUNT} madde"
-          # Eşzamanlı bir push olursa yeniden dene
+          # Eşzamanlı bir push olursa yeniden dene. docs/ ve data/digest.db
+          # her koşuda sıfırdan üretiliyor, dolayısıyla çakışmada DAİMA bu
+          # koşunun ürettiği sürüm doğrudur: -X theirs (rebase'de "replay
+          # edilen commit", yani bizimki). Takılı kalan rebase temizlenir.
           for i in 1 2 3; do
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push && exit 0
-            echo "push denemesi $i başarısız, tekrar deneniyor"
-            sleep 5
+            git push && exit 0
+            echo "push denemesi $i başarısız, yeniden tabanlanıyor"
+            git rebase --abort 2>/dev/null || true
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase -X theirs "origin/${GITHUB_REF_NAME}" || {
+              git rebase --abort 2>/dev/null || true
+              sleep 5
+              continue
+            }
           done
           exit 1
 
