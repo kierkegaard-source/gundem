@@ -8,6 +8,10 @@ budget:
 filters:
   max_per_category: 15
   max_total: 60
+  # Kaynak başına tavan. Sıra yüzdeliği normalizasyonu kaynak içinde adil
+  # sıralama verir ama hacmi ödüllendirir; tavan olmadan 197 maddelik Bluesky
+  # ile 141 maddelik Twitter sayıyı ele geçirip Steam/itch.io'yu siliyordu.
+  max_per_source: 10
   min_signal: 2
   lookback_hours: 26          # cron kaymalarına tolerans
   # FAZ 4: filtreleme özetlemeden önce çalıştığı için kategori kotasını düşük

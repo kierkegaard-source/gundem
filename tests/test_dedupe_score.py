@@ -1,6 +1,8 @@
 """Faz 3 testleri: tekilleştirme, skorlama, filtreleme."""
 from datetime import datetime, timedelta, timezone
 
+import pytest
+
 from pipeline.dedupe import Cluster, dedupe, normalize_title
 from pipeline.score import (NEUTRAL_NORM, filter_clusters, recency_factor,
                             score_clusters)
@@ -151,3 +153,62 @@ def test_daha_once_yayinlanan_madde_tekrar_girmiyor():
     score_clusters([c], CFG)
     assert filter_clusters([c], CFG) == [c]
     assert filter_clusters([c], CFG, exclude_hashes={c.lead.url_hash}) == []
+
+
+# ---------- sıra yüzdeliği normalizasyonu ve kaynak tavanı ----------
+
+def test_uzun_kuyruklu_kaynak_ezilmiyor():
+    """Maksimuma bölmek uzun kuyruklu kaynakları eziyordu: Twitter'da ortanca
+    tweet 82 beğeni alırken tepe 8965; ortanca madde 0.006 skor alıp Product
+    Hunt'ın 0.328'lik ortancasına kaybediyordu. Sıra yüzdeliği bunu düzeltir —
+    her kaynağın ortanca maddesi ortanca yüzdelik alır."""
+    from pipeline.score import percentile_norm
+    twitter = sorted([5, 20, 50, 82, 200, 900, 8965])
+    hunt = sorted([40, 60, 86, 120, 197])
+    assert percentile_norm(82, twitter) == pytest.approx(0.5, abs=0.01)
+    assert percentile_norm(86, hunt) == pytest.approx(0.5, abs=0.01)
+
+
+def test_esit_degerler_ayni_yuzdeligi_aliyor():
+    from pipeline.score import percentile_norm
+    vals = sorted([1, 1, 1, 5, 5, 9])
+    assert percentile_norm(1, vals) == percentile_norm(1, vals)
+    assert percentile_norm(1, vals) < percentile_norm(5, vals) < percentile_norm(9, vals)
+
+
+def test_tek_deger_tasiyan_kaynak_notr():
+    from pipeline.score import NEUTRAL_NORM, percentile_norm
+    assert percentile_norm(1.0, [1.0, 1.0, 1.0]) == NEUTRAL_NORM
+    assert percentile_norm(1.0, [1.0]) == NEUTRAL_NORM
+    assert percentile_norm(1.0, []) == NEUTRAL_NORM
+
+
+def test_kaynak_basina_tavan_hacimli_kaynagi_sinirliyor():
+    """Yüksek hacimli bir kaynak sayıyı ele geçirmemeli."""
+    cfg = dict(CFG, filters={"max_per_category": 50, "max_total": 20,
+                             "max_per_source": 3})
+    cs = ([Cluster(members=[item(f"Hacimli madde {i}", f"https://a.dev/{i}",
+                                 "twitter", 1000 - i)]) for i in range(15)]
+          + [Cluster(members=[item(f"Az madde {i}", f"https://b.dev/{i}",
+                                   "producthunt", 500 - i)]) for i in range(5)])
+    score_clusters(cs, cfg)
+    kept = filter_clusters(cs, cfg)
+    from collections import Counter
+    counts = Counter(c.lead.source for c in kept)
+    assert counts["twitter"] <= 3
+    assert counts["producthunt"] <= 3
+
+
+def test_coklu_kaynakli_madde_tavana_takilmiyor():
+    """Bir kaynağın kotası dolsa bile, madde başka bir kaynaktan da geliyorsa
+    girer — birden fazla kaynakta çıkmak en güçlü sinyal."""
+    cfg = dict(CFG, filters={"max_per_category": 50, "max_total": 20,
+                             "max_per_source": 1})
+    tek = [Cluster(members=[item(f"Tek kaynak {i}", f"https://a.dev/{i}",
+                                 "twitter", 900 - i)]) for i in range(3)]
+    cift = Cluster(members=[item("Çoklu kaynak", "https://c.dev", "twitter", 10),
+                            item("Çoklu kaynak", "https://c.dev", "producthunt", 10)])
+    cs = tek + [cift]
+    score_clusters(cs, cfg)
+    kept = filter_clusters(cs, cfg)
+    assert cift in kept

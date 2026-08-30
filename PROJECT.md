@@ -202,13 +202,25 @@ score = source_weight × log1p(raw_score_normalized) × recency_factor
 ```
 
 - `source_weight`: config.yaml'dan (hesap/kaynak bazlı, 0.3–1.0)
-- `raw_score_normalized`: kaynak içinde 0–1'e normalize (HN puanı ile Twitter
-  beğenisi doğrudan kıyaslanamaz)
+- `raw_score_normalized`: kaynak içinde 0–1'e normalize — **sıra yüzdeliğiyle**,
+  maksimuma bölerek DEĞİL. `[Faz 6 düzeltmesi]` Maksimuma bölmek uzun kuyruklu
+  kaynakları eziyordu; ölçülen medyan/maks oranları: twitter 0.009, bluesky 0.033,
+  github 0.053, hackernews 0.387, producthunt 0.439. Twitter'ın ortanca tweet'i
+  0.006 skor alırken Product Hunt'ın ortancası 0.328 alıyordu; 60 slotun 19'unu
+  Product Hunt, 5'ini 143 ham maddesi olan Twitter alıyordu ve hesap eklemek
+  bunu değiştirmiyordu.
 - `recency_factor`: 0–6 saat → 1.0, 6–12 → 0.9, 12–24 → 0.8, 24s+ → 0.5
 - Birden fazla kaynakta çıkan madde `× 1.4` bonus alır — bu en güçlü sinyal
 
-**Filtre:** kategori başına en yüksek skorlu N madde (config'de `max_per_category`,
-varsayılan 15), toplam tavan 60.
+**Filtre:** kategori başına en yüksek skorlu N madde (`max_per_category`, 15),
+kaynak başına N madde (`max_per_source`, 10), toplam tavan 60.
+
+`[Faz 6]` Kaynak tavanı sıra yüzdeliğiyle birlikte gerekli: yüzdelik kaynak
+İÇİNDE adil sıralama verir ama HACMİ ödüllendirir — 199 maddelik Bluesky'ın
+~20'si %90 üstü yüzdelikteyken 20 maddelik Product Hunt'ın 2'si öyledir.
+Tavansız hâlde Twitter 22, Bluesky 18 madde alıp Steam ve itch.io'yu tamamen
+siliyordu. Çoklu kaynaktan gelen madde, kaynaklarından birinin kotası açıksa
+geçer — birden fazla kaynakta çıkmak zaten en güçlü sinyaldir.
 
 ### 7.2 Özetleme
 
