@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS items (
   raw_text    TEXT,           -- kaynağın kendi açıklaması; özet yoksa yedek metin
   title_mt    TEXT,           -- makine çevirisi başlık (LLM yoksa yedek)
   body_mt     TEXT,           -- makine çevirisi açıklama (LLM yoksa yedek)
-  potential   INTEGER,        -- kısa vadeli potansiyel 1-5
+  potential   INTEGER,        -- ticari fırsat puanı 1-5
+  opportunity TEXT,           -- fırsat türü: ekosistem | bosluk | talep | kanal
   potential_note TEXT,        -- potential >= 4 ise tek cümlelik gerekçe
   published_at TEXT NOT NULL,
   first_seen  TEXT NOT NULL,
@@ -61,7 +62,8 @@ def connect(path: Path | str = DB_PATH) -> sqlite3.Connection:
     cols = {r[1] for r in conn.execute("PRAGMA table_info(items)")}
     for name, decl in (("raw_text", "TEXT"), ("title_tr", "TEXT"),
                        ("title_mt", "TEXT"), ("body_mt", "TEXT"),
-                       ("potential", "INTEGER"), ("potential_note", "TEXT")):
+                       ("potential", "INTEGER"), ("opportunity", "TEXT"),
+                       ("potential_note", "TEXT")):
         if name not in cols:
             conn.execute(f"ALTER TABLE items ADD COLUMN {name} {decl}")
     conn.commit()

@@ -1,0 +1,28 @@
+{% macro card(it, lead=False) %}
+<article class="card{% if lead %} lead{% endif %}">
+  <h3><a href="{{ it.url }}" rel="noopener">{{ it.title }}</a></h3>
+  {% if it.why %}<p class="why">{{ it.why }}</p>{% endif %}
+  {% if it.summary %}
+  <p class="body">{{ it.summary }}</p>
+  {% elif it.raw %}
+  <p class="body raw">{{ it.raw }}</p>
+  {% endif %}
+  <div class="card-meta">
+    {% for s in it.sources %}
+    <span class="src src-{{ s.key }}"><span class="mark">{{ s.mark }}</span>{{ s.label }}</span>
+    {% endfor %}
+    {% if it.sources|length > 1 %}<span class="multi-flag">{{ it.sources|length }} kaynak</span>{% endif %}
+    {% if it.potential and it.potential >= 4 %}<span class="opp-mini">★ fırsat</span>{% endif %}
+    <span class="dot">·</span>
+    <time datetime="{{ it.published_iso }}">{{ it.published_human }}</time>
+  </div>
+</article>
+{% endmacro %}
+
+{% macro viewnav(active, date, latest) %}
+<nav class="viewnav">
+  <a href="{{ 'index.html' if date == latest else date ~ '.html' }}"
+     class="{{ 'on' if active == 'kategori' }}">Kategoriye göre</a>
+  <a href="{{ date }}-kaynak.html" class="{{ 'on' if active == 'kaynak' }}">Kaynağa göre</a>
+</nav>
+{% endmacro %}

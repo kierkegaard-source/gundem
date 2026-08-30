@@ -233,12 +233,22 @@ Tek istekte batch halinde gönder, item başına ayrı çağrı YAPMA.
 > - `title_tr`: başlığın Türkçesi. Ürün/şirket/oyun adları ÇEVRİLMEZ.
 > - `category`: dev | gamedev | apps | design | startup
 > - `signal`: 1–5 arası. Ünlülüğü değil, gerçekten yeni bir şey olup olmadığını ölçer.
-> - `potential`: 1–5 arası KISA VADELİ POTANSİYEL. "İyi ürün mü" değil,
->   "önümüzdeki haftalarda hızla yaygınlaşma ya da fırsat yaratma ihtimali var mı".
-> - `potential_note`: potential ≥ 4 ise tek cümlelik gerekçe.
+> - `potential`: 1–5 arası TİCARİ FIRSAT PUANI. "İyi ürün mü" ya da "popüler
+>   olur mu" değil: **okuyucunun üzerine iş kurup gelir elde edebileceği somut
+>   bir fırsat var mı**. Fırsat sayılanlar: yeni açılan platform/ekosistem,
+>   ödeme yapan talebin kanıtlandığı durumlar, popüler bir üründeki belirgin
+>   boşluk, yeni dağıtım kanalı. Fırsat sayılmayanlar: genel haber, fon turu,
+>   şirket duyurusu, kişisel görüş.
+> - `opportunity`: fırsat türü — ekosistem | bosluk | talep | kanal | yok
+> - `potential_note`: potential ≥ 4 ise SOMUT tek cümle: ne yapılabileceğini
+>   söyler, maddeyi tekrar etmez.
 
-`potential ≥ 4` olan maddeler sayfanın en üstünde **Radar** bandında ikaz olarak
-listelenir ve terminal çıktısında da gösterilir.
+**Fırsat Radarı:** `potential ≥ 4` **ve** `signal ≥ 3` olan maddeler sayfanın
+en üstünde listelenir (puan, fırsat türü rozeti, tek cümlelik gerekçe, link) ve
+terminal çıktısında da basılır. `signal ≥ 3` koşulu radarı yalnızca **gerçek
+çıkışlara** açar — yorum ve haber maddeleri yüksek fırsat puanı alsa bile
+girmez. Prompt katı: bazı günler hiç madde çıkmaz, o zaman sayfada "bugün
+eşiği geçen madde çıkmadı" satırı görünür.
 >
 > Girdi İngilizceyse özet yine Türkçe olacak. Teknik terimleri zorlama çevirme
 > (framework, endpoint, shader gibi kelimeler olduğu gibi kalsın).
@@ -258,9 +268,16 @@ listelenir ve terminal çıktısında da gösterilir.
 
 ## 8. Site çıktısı
 
-- `docs/index.html` → en son sayı
+- `docs/index.html` → en son sayı (kategoriye göre)
+- `docs/kaynaklar.html` → en son sayı (kaynağa göre) `[Faz 5 revizyonu]`
 - `docs/YYYY-MM-DD.html` → o günün arşiv kopyası
+- `docs/YYYY-MM-DD-kaynak.html` → o günün kaynağa göre görünümü
 - `docs/arsiv.html` → tarih listesi
+
+**İki görünüm:** Aynı sayı hem kategoriye hem kaynağa göre gruplanmış olarak
+üretiliyor; üstteki seçiciyle geçiş yapılıyor. JS yok, iki ayrı statik sayfa.
+Çoklu kaynaktan gelen madde kaynak görünümünde her kaynağın altında görünür —
+"Twitter'da bugün ne çıktı" sorusunun cevabı eksik kalmasın diye.
 
 **Tasarım yönü:** Gazete hissi. Okunabilirlik ve **hızlı tarama** her şeyin önünde.
 

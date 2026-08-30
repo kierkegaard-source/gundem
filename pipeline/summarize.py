@@ -61,25 +61,46 @@ Yeni yayınlanmış bir oyun, uygulama, kütüphane ya da araç ASLA 1 değildir
 bilgi azsa 2, açıklaması varsa 3 veya üstü. 1'i yalnızca ortada bir çıkış \
 yoksa kullan.
 
-- potential: 1-5 arası KISA VADELİ POTANSİYEL.
+- potential: 1-5 arası TİCARİ FIRSAT PUANI.
 
-Bu, "iyi bir ürün mü" sorusu DEĞİL. Soru şu: önümüzdeki haftalarda hızla \
-yaygınlaşma, konuşulma ya da bir fırsat yaratma ihtimali var mı?
+Okuyucu, kendi ürününü kurup para kazanmak isteyen bir geliştirici/girişimci. \
+Soru "bu iyi bir ürün mü" DEĞİL. Soru şu: bu maddede, okuyucunun ÜZERİNE İŞ \
+KURABİLECEĞİ ya da GELİR ELDE EDEBİLECEĞİ somut bir fırsat var mı?
 
-5 = güçlü sinyal: yeni bir kategori açıyor, hızlı benimsenme işareti taşıyor, \
-büyük bir oyuncunun yön değiştirdiğini gösteriyor ya da erken davranana \
-somut avantaj sağlıyor
-4 = dikkat çekici: belirgin bir boşluğu dolduruyor ya da yükselen bir eğilimin \
-erken örneği
-3 = ilginç ama etkisi sınırlı kalacak gibi
-2 = niş, dar bir kitleye hitap ediyor
-1 = kısa vadede bir etkisi olmayacak
+Fırsat sayılan şeyler:
+- Yeni bir platform, API ya da ekosistem açılıyor; üzerine ürün kurulabilir
+- İnsanların para ödediği kanıtlanmış bir talep görünüyor (gelir, kullanıcı \
+  sayısı, satış rakamı paylaşılmış)
+- Popüler bir üründe belirgin bir eksik var; daha iyisi ya da niş versiyonu \
+  yapılabilir
+- Yeni bir dağıtım kanalı ya da mağaza açılmış; erken girene avantaj
+- Bir alanda talep hızla büyüyor ama arz yetersiz
 
-Katı ol. Her gün 4-5 alan madde sayısı bir elin parmaklarını geçmemeli. \
-Sıradan bir ürün çıkışı 2-3'tür.
+Fırsat SAYILMAYAN şeyler: genel haberler, büyük şirket duyuruları, fon \
+turları, kişisel görüşler, "ilginç ama ne yapacağım belli değil" olanlar.
 
-- potential_note: potential 4 veya 5 ise, TEK CÜMLE, en fazla 15 kelime: \
-neden şimdi dikkat etmeli? potential 3 veya altıysa boş string ver.
+5 = net ve uygulanabilir fırsat; bir hafta içinde bir şey inşa etmeye \
+başlanabilir
+4 = gerçek fırsat ama biraz araştırma ya da hazırlık gerekiyor
+3 = fırsat olabilir, henüz erken ya da rekabet belirsiz
+2 = zayıf; ilgi çekici ama gelir yolu görünmüyor
+1 = ticari fırsat yok
+
+ÇOK KATI OL. 60 maddelik bir listede 4-5 alan madde sayısı genelde 0 ile 3 \
+arasındadır. Bazı günler HİÇ ÇIKMAZ ve bu normaldir — zorlamak yerine 3 ver. \
+Sıradan bir ürün çıkışı 2'dir.
+
+- opportunity: fırsatın türü. potential 4 veya 5 ise şunlardan biri: \
+"ekosistem" (üzerine ürün kurulabilir), "bosluk" (eksik/daha iyisi yapılabilir), \
+"talep" (ödeme yapan talep kanıtlanmış), "kanal" (yeni dağıtım kanalı). \
+potential 3 veya altıysa "yok" ver.
+
+- potential_note: potential 4 veya 5 ise, TEK CÜMLE, en fazla 18 kelime. \
+SOMUT OL: ne yapılabileceğini söyle, maddeyi tekrar etme. \
+Kötü örnek: "Bu araç çok popüler olabilir." \
+İyi örnek: "Ajan altyapısı kuranlar için scraping katmanı; ince bir sarmalayıcı \
+SaaS olarak satılabilir." \
+potential 3 veya altıysa boş string ver.
 
 Girdi İngilizceyse özet yine Türkçe olacak. Teknik terimleri zorlama çevirme — \
 framework, endpoint, shader, repo, commit gibi kelimeler olduğu gibi kalsın."""
@@ -100,10 +121,12 @@ SCHEMA = {
                     # NOT: JSON şemasında minimum/maximum desteklenmiyor, enum kullanılıyor.
                     "signal": {"type": "integer", "enum": [1, 2, 3, 4, 5]},
                     "potential": {"type": "integer", "enum": [1, 2, 3, 4, 5]},
+                    "opportunity": {"type": "string",
+                                    "enum": ["ekosistem", "bosluk", "talep", "kanal", "yok"]},
                     "potential_note": {"type": "string"},
                 },
                 "required": ["id", "title_tr", "summary", "why", "category",
-                             "signal", "potential", "potential_note"],
+                             "signal", "potential", "opportunity", "potential_note"],
                 "additionalProperties": False,
             },
         }
@@ -201,6 +224,8 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
         c.potential = int(row.get("potential") or 0)
         note = (row.get("potential_note") or "").strip()
         c.potential_note = note if (note and c.potential >= 4) else None
+        opp = (row.get("opportunity") or "").strip()
+        c.opportunity = opp if (opp and opp != "yok" and c.potential >= 4) else None
         if row.get("category") in CATEGORIES:
             c.llm_category = row["category"]
         report["summarized"] += 1
@@ -217,12 +242,25 @@ def drop_low_signal(clusters: list[Cluster], cfg: dict) -> tuple[list[Cluster], 
     return kept, dropped
 
 
-# Radar eşiği: bunun üstündeki maddeler sayfanın en üstünde ikaz olarak çıkar.
+# Fırsat radarı eşiği.
 POTENTIAL_ALERT = 4
+# Radar yalnızca GERÇEK ÇIKIŞLARA açıktır. Yorum, tartışma ve haber maddeleri
+# yüksek fırsat puanı alsa bile radara girmez — kullanıcının isteği
+# "yeni çıkmış bir uygulama veya yayın olsun".
+MIN_SIGNAL_FOR_ALERT = 3
+
+OPPORTUNITY_LABEL = {
+    "ekosistem": "Ekosistem",       # üzerine ürün kurulabilir
+    "bosluk": "Boşluk",             # eksik var, daha iyisi yapılabilir
+    "talep": "Kanıtlı talep",       # ödeme yapan talep görünüyor
+    "kanal": "Dağıtım kanalı",      # erken girene avantaj
+}
 
 
 def alerts(clusters: list[Cluster], limit: int = 6) -> list[Cluster]:
-    """Kısa vadede potansiyeli yüksek maddeler — en üstte ikaz bandına girer."""
-    hot = [c for c in clusters if (c.potential or 0) >= POTENTIAL_ALERT]
+    """Ticari fırsat taşıyan yeni çıkışlar — sayfanın en üstünde listelenir."""
+    hot = [c for c in clusters
+           if (c.potential or 0) >= POTENTIAL_ALERT
+           and (c.signal or 0) >= MIN_SIGNAL_FOR_ALERT]
     hot.sort(key=lambda c: (-(c.potential or 0), -c.score))
     return hot[:limit]

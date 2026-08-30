@@ -22,7 +22,8 @@ from pipeline.db import (connect, mark_digest, published_hashes, record_run,
                          upsert_clusters)
 from pipeline.dedupe import Cluster, dedupe
 from pipeline.score import filter_clusters, score_clusters
-from pipeline.summarize import alerts, drop_low_signal, summarize
+from pipeline.summarize import (OPPORTUNITY_LABEL, alerts, drop_low_signal,
+                                summarize)
 from pipeline.translate import needs_title_translation, strip_prefix, translate_many
 from sources.base import Item, Source
 from sources.bluesky import Bluesky
@@ -186,11 +187,15 @@ def main() -> int:
             print(f"düşük sinyal ({cfg['filters'].get('min_signal', 2)} altı) elenen: {len(dropped)} madde")
         hot = alerts(kept)
         if hot:
-            print(f"\n⚠ RADAR — kısa vadede potansiyelli {len(hot)} madde:")
+            print(f"\n★ FIRSAT RADARI — {len(hot)} madde:")
             for c in hot:
-                print(f"   [{c.potential}/5] {c.title[:52]}")
+                tur = OPPORTUNITY_LABEL.get(c.opportunity or "", "")
+                print(f"   [{c.potential}/5] {tur:<14} {c.title[:48]}")
                 if c.potential_note:
-                    print(f"          {c.potential_note}")
+                    print(f"             → {c.potential_note}")
+                print(f"             {c.url}")
+        elif any(c.signal for c in kept):
+            print("\n★ FIRSAT RADARI — bugün eşiği geçen madde yok.")
         if rep["degraded"]:
             print("UYARI: sayı eksik özetle üretildi — sayfaya uyarı bandı konacak")
         print(f"sayıya giren: {len(kept)} madde")
@@ -234,9 +239,10 @@ def main() -> int:
                 conn.execute(
                     "UPDATE items SET title_tr = ?, title_mt = ?, body_mt = ?, "
                     "summary_tr = ?, why_tr = ?, category = ?, potential = ?, "
-                    "potential_note = ? WHERE url_hash = ?",
+                    "opportunity = ?, potential_note = ? WHERE url_hash = ?",
                     (c.title_tr, c.title_mt, c.body_mt, c.summary_tr, c.why_tr,
-                     c.category, c.potential, c.potential_note, c.lead.url_hash))
+                     c.category, c.potential, c.opportunity, c.potential_note,
+                     c.lead.url_hash))
         conn.commit()
         today = datetime.now(timezone.utc).date().isoformat()
         mark_digest(conn, kept, today)

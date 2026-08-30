@@ -17,7 +17,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from pipeline.db import connect, digest_dates, digest_items, last_run
-from pipeline.summarize import POTENTIAL_ALERT
+from pipeline.summarize import (MIN_SIGNAL_FOR_ALERT, OPPORTUNITY_LABEL,
+                                POTENTIAL_ALERT)
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
@@ -157,8 +158,10 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
             "published_human": _hours_ago(r["published_at"], ref),
             "potential": r["potential"] or 0,
             "potential_note": r["potential_note"],
+            "opportunity": OPPORTUNITY_LABEL.get(r["opportunity"] or ""),
         }
         by_cat.setdefault(r["category"], []).append(entry)
+        # Radar yalnızca gerçek çıkışlara açık — yorum/haber maddeleri girmez.
         if (r["potential"] or 0) >= POTENTIAL_ALERT:
             hot.append(entry)
 
@@ -193,8 +196,12 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
             notices.append("Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.")
 
     hot.sort(key=lambda e: -e["potential"])
+    # Değerlendirme yapıldı ama fırsat çıkmadıysa bunu sayfada söyle — sessizlik
+    # "sistem bozuk mu" sorusunu doğuruyor.
+    evaluated = any(r["potential"] for r in rows)
     return {
         "alerts": hot[:6],
+        "radar_evaluated": evaluated,
         "date": day,
         "date_long": tr_date(day),
         "total": len(rows),
@@ -202,6 +209,36 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
         "sections": sections,
         "notices": notices,
     }
+
+
+# Kaynak görünümünde bölüm sırası: en çok madde veren üstte değil, sabit bir
+# sıra — gün gün yer değiştirmesi tarama alışkanlığını bozuyor.
+SOURCE_ORDER = ["producthunt", "hackernews", "github_trending", "twitter",
+                "bluesky", "steam", "itchio", "rss", "reddit"]
+
+
+def group_by_source(ctx: dict) -> list[dict]:
+    """Aynı günün maddelerini kategori yerine kaynağa göre toplar.
+
+    Bir madde birden fazla kaynaktan geldiyse HER kaynağın altında görünür —
+    "Twitter'da bugün ne çıktı" sorusunun cevabı eksik kalmasın diye.
+    """
+    buckets: dict[str, list[dict]] = {}
+    marks: dict[str, tuple[str, str]] = {}
+    for sec in ctx["sections"]:
+        for it in sec["entries"]:
+            for src in it["sources"]:
+                buckets.setdefault(src["key"], []).append(it)
+                marks[src["key"]] = (src["label"], src["mark"])
+
+    out = []
+    for key in SOURCE_ORDER + sorted(set(buckets) - set(SOURCE_ORDER)):
+        if key not in buckets:
+            continue
+        label, mark = marks[key]
+        out.append({"key": key, "label": label, "mark": mark,
+                    "entries": buckets[key]})
+    return out
 
 
 def main() -> int:
@@ -228,6 +265,7 @@ def main() -> int:
     latest = all_days[0]
     targets = all_days if args.rebuild_all else [args.date or latest]
     day_tpl = env.get_template("day.html")
+    src_tpl = env.get_template("source.html")
     written = []
 
     for day in targets:
@@ -239,19 +277,28 @@ def main() -> int:
         # all_days azalan sıralı: sonraki eleman daha ESKİ gün.
         prev_day = all_days[idx + 1] if idx + 1 < len(all_days) else None
         next_day = all_days[idx - 1] if idx > 0 else None
-        html = day_tpl.render(
-            css=css, generated_at=generated,
+        common = dict(
+            css=css, generated_at=generated, latest=latest,
             prev_date=prev_day, prev_label=tr_short(prev_day) if prev_day else None,
-            next_date=next_day, next_label=tr_short(next_day) if next_day else None,
-            **ctx)
+            next_date=next_day, next_label=tr_short(next_day) if next_day else None)
+        html = day_tpl.render(**common, **ctx)
         (DOCS / f"{day}.html").write_text(html, encoding="utf-8")
         written.append(f"{day}.html ({len(html) // 1024} KB, {ctx['total']} madde)")
+
+        # Aynı sayının kaynağa göre gruplanmış görünümü
+        src_ctx = dict(ctx, sections=group_by_source(ctx))
+        src_html = src_tpl.render(**common, **src_ctx)
+        (DOCS / f"{day}-kaynak.html").write_text(src_html, encoding="utf-8")
+        written.append(f"{day}-kaynak.html ({len(src_html) // 1024} KB, "
+                       f"{len(src_ctx['sections'])} kaynak)")
+
         if day == latest:
             (DOCS / "index.html").write_text(html, encoding="utf-8")
+            (DOCS / "kaynaklar.html").write_text(src_html, encoding="utf-8")
 
     counts = {d: len(digest_items(conn, d)) for d in all_days}
     archive = env.get_template("archive.html").render(
-        css=css, generated_at=generated,
+        css=css, generated_at=generated, latest=latest,
         days=[{"date": d, "label": tr_date(d), "count": counts[d]} for d in all_days])
     (DOCS / "arsiv.html").write_text(archive, encoding="utf-8")
     (DOCS / ".nojekyll").write_text("")     # GitHub Pages Jekyll'i atlasın

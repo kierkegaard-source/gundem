@@ -1,25 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Gündem — {{ date_long }}{% endblock %}
 
-{% macro card(it, lead=False) %}
-<article class="card{% if lead %} lead{% endif %}">
-  <h3><a href="{{ it.url }}" rel="noopener">{{ it.title }}</a></h3>
-  {% if it.why %}<p class="why">{{ it.why }}</p>{% endif %}
-  {% if it.summary %}
-  <p class="body">{{ it.summary }}</p>
-  {% elif it.raw %}
-  <p class="body raw">{{ it.raw }}</p>
-  {% endif %}
-  <div class="card-meta">
-    {% for s in it.sources %}
-    <span class="src src-{{ s.key }}"><span class="mark">{{ s.mark }}</span>{{ s.label }}</span>
-    {% endfor %}
-    {% if it.sources|length > 1 %}<span class="multi-flag">{{ it.sources|length }} kaynak</span>{% endif %}
-    <span class="dot">·</span>
-    <time datetime="{{ it.published_iso }}">{{ it.published_human }}</time>
-  </div>
-</article>
-{% endmacro %}
+{% import "_card.html" as ui %}
 
 {% block stats %}
 <div class="stats">
@@ -33,6 +15,8 @@
 
 {% block content %}
 
+{{ ui.viewnav('kategori', date, latest) }}
+
 {% if sections %}
 <nav class="catnav">
   {% for sec in sections %}
@@ -45,8 +29,8 @@
 <section class="radar" id="radar">
   <div class="radar-head">
     <span class="radar-icon" aria-hidden="true">!</span>
-    <h2>Radar</h2>
-    <span class="radar-sub">kısa vadede potansiyelli {{ alerts|length }} madde</span>
+    <h2>Fırsat Radarı</h2>
+    <span class="radar-sub">üzerine iş kurulabilecek {{ alerts|length }} madde</span>
   </div>
   <ol class="radar-list">
     {% for it in alerts %}
@@ -54,6 +38,7 @@
       <span class="radar-score" title="kısa vadeli potansiyel">{{ it.potential }}<i>/5</i></span>
       <div class="radar-body">
         <a href="{{ it.url }}" rel="noopener">{{ it.title }}</a>
+        {% if it.opportunity %}<span class="opp">{{ it.opportunity }}</span>{% endif %}
         {% if it.potential_note %}<p>{{ it.potential_note }}</p>{% endif %}
         <div class="radar-meta">
           {% for s in it.sources %}<span class="src src-{{ s.key }}"><span class="mark">{{ s.mark }}</span>{{ s.label }}</span>{% endfor %}
@@ -62,7 +47,11 @@
     </li>
     {% endfor %}
   </ol>
+  <p class="radar-foot">Fırsat değerlendirmesi otomatiktir ve sınırlı bilgiye
+  dayanır — bir başlangıç noktasıdır, yatırım tavsiyesi değildir.</p>
 </section>
+{% elif radar_evaluated %}
+<p class="radar-empty">★ Fırsat radarı: bugün eşiği geçen madde çıkmadı.</p>
 {% endif %}
 
 {% if notices %}
@@ -84,7 +73,7 @@
   </div>
   <div class="grid">
     {% for it in sec.entries %}
-    {{ card(it, lead=(loop.first and it.can_lead and sec.entries|length > 2)) }}
+    {{ ui.card(it, lead=(loop.first and it.can_lead and sec.entries|length > 2)) }}
     {% endfor %}
   </div>
 </section>

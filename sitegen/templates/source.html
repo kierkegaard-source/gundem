@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "_card.html" as ui %}
+{% block title %}Gündem — {{ date_long }} · kaynağa göre{% endblock %}
+
+{% block stats %}
+<div class="stats">
+  <span class="day">{{ date_long }}</span>
+  <span class="sep">|</span>
+  <span>{{ total }} madde</span>
+  <span class="sep">|</span>
+  <span>{{ sections|length }} kaynak</span>
+</div>
+{% endblock %}
+
+{% block content %}
+{{ ui.viewnav('kaynak', date, latest) }}
+
+{% if sections %}
+<nav class="catnav">
+  {% for sec in sections %}
+  <a href="#{{ sec.key }}">
+    <span class="src src-{{ sec.key }}"><span class="mark">{{ sec.mark }}</span></span>
+    <b>{{ sec.label }}</b> <i>{{ sec.entries|length }}</i>
+  </a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+{% if not sections %}<p class="empty">Bugün için madde yok.</p>{% endif %}
+
+{% for sec in sections %}
+<section class="section" id="{{ sec.key }}">
+  <div class="section-head">
+    <h2><span class="src src-{{ sec.key }}"><span class="mark">{{ sec.mark }}</span></span> {{ sec.label }}</h2>
+    <span class="count">{{ sec.entries|length }} madde</span>
+  </div>
+  <div class="grid">
+    {% for it in sec.entries %}
+    {{ ui.card(it, lead=(loop.first and it.can_lead and sec.entries|length > 2)) }}
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+
+<nav class="pager">
+  {% if prev_date %}<a href="{{ prev_date }}-kaynak.html">← {{ prev_label }}</a>{% else %}<span>← önceki sayı yok</span>{% endif %}
+  <a href="arsiv.html">Arşiv</a>
+  {% if next_date %}<a href="{{ next_date }}-kaynak.html">{{ next_label }} →</a>{% else %}<span>sonraki sayı yok →</span>{% endif %}
+</nav>
+{% endblock %}

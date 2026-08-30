@@ -76,6 +76,7 @@ class Cluster:
     signal: int | None = None
     # Kısa vadeli potansiyel (1-5). 4+ olanlar sayfada ikaz bandına çıkar.
     potential: int | None = None
+    opportunity: str | None = None       # ekosistem | bosluk | talep | kanal
     potential_note: str | None = None
     llm_category: str | None = None
 

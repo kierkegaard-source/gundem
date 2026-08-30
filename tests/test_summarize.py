@@ -11,7 +11,8 @@ import pytest
 
 from pipeline.budget import Budget
 from pipeline.dedupe import Cluster
-from pipeline.summarize import (POTENTIAL_ALERT, alerts, drop_low_signal,
+from pipeline.summarize import (MIN_SIGNAL_FOR_ALERT, OPPORTUNITY_LABEL,
+                                POTENTIAL_ALERT, alerts, drop_low_signal,
                                 summarize)
 from sources.base import Item
 
@@ -64,7 +65,7 @@ def fake(monkeypatch):
 def test_turkce_baslik_uygulaniyor_urun_adi_korunuyor(fake):
     fake([{"id": 0, "title_tr": "Olostep", "summary": "İki cümlelik özet. Devamı.",
            "why": "Veri hazırlığını hızlandırıyor", "category": "dev",
-           "signal": 4, "potential": 3, "potential_note": ""}])
+           "signal": 4, "potential": 3, "opportunity": "yok", "potential_note": ""}])
     cs = [cluster("Olostep")]
     summarize(cs, CFG, Budget.from_config(CFG))
     assert cs[0].title_tr == "Olostep"
@@ -75,7 +76,7 @@ def test_turkce_baslik_uygulaniyor_urun_adi_korunuyor(fake):
 def test_haber_basligi_turkceye_ceviriliyor(fake):
     fake([{"id": 0, "title_tr": "Kuantum bilgisayar yarışına bakış",
            "summary": "Özet. İkinci cümle.", "why": "Sektör yönü değişiyor",
-           "category": "startup", "signal": 3, "potential": 3, "potential_note": ""}])
+           "category": "startup", "signal": 3, "potential": 3, "opportunity": "yok", "potential_note": ""}])
     cs = [cluster("A look at the race to build quantum computers")]
     summarize(cs, CFG, Budget.from_config(CFG))
     assert cs[0].title == "Kuantum bilgisayar yarışına bakış"
@@ -84,9 +85,9 @@ def test_haber_basligi_turkceye_ceviriliyor(fake):
 def test_potansiyel_notu_yalnizca_esigin_ustunde_tutuluyor(fake):
     fake([
         {"id": 0, "title_tr": "Yüksek", "summary": "a. b.", "why": "c",
-         "category": "dev", "signal": 4, "potential": 5, "potential_note": "Kategori açıyor"},
+         "category": "dev", "signal": 4, "potential": 5, "opportunity": "ekosistem", "potential_note": "Kategori açıyor"},
         {"id": 1, "title_tr": "Düşük", "summary": "a. b.", "why": "c",
-         "category": "dev", "signal": 3, "potential": 2, "potential_note": "olmamalı"},
+         "category": "dev", "signal": 3, "potential": 2, "opportunity": "yok", "potential_note": "olmamalı"},
     ])
     cs = [cluster("Yuksek", 0), cluster("Dusuk", 1)]
     summarize(cs, CFG, Budget.from_config(CFG))
@@ -99,6 +100,7 @@ def test_radar_esigi_ve_siralamasi(fake):
     for i, pot in enumerate([2, 5, 4, 3, 4]):
         rows.append({"id": i, "title_tr": f"Madde {i}", "summary": "a. b.", "why": "c",
                      "category": "dev", "signal": 3, "potential": pot,
+                     "opportunity": "bosluk" if pot >= 4 else "yok",
                      "potential_note": "not" if pot >= 4 else ""})
         cs.append(cluster(f"Madde {i}", i))
     fake(rows)
@@ -126,7 +128,7 @@ def test_bozuk_yanit_pipeline_i_durdurmuyor(fake, monkeypatch):
 
 def test_dusuk_sinyal_eleniyor_ozetlenmemis_kaliyor(fake):
     fake([{"id": 0, "title_tr": "Gürültü", "summary": "a. b.", "why": "c",
-           "category": "dev", "signal": 1, "potential": 1, "potential_note": ""}])
+           "category": "dev", "signal": 1, "potential": 1, "opportunity": "yok", "potential_note": ""}])
     cs = [cluster("Gurultu", 0), cluster("Ozetlenmemis", 1)]
     summarize(cs[:1], CFG, Budget.from_config(CFG))
     kept, dropped = drop_low_signal(cs, CFG)
@@ -160,3 +162,48 @@ def test_cluster_baslik_onceligi():
     assert c.title == "Makine Çevirisi"
     c.title_tr = "LLM Çevirisi"
     assert c.title == "LLM Çevirisi"          # LLM makine çevirisini ezer
+
+
+# ---------- ticari fırsat radarı ----------
+
+def test_firsat_turu_esik_altinda_tutulmuyor(fake):
+    fake([
+        {"id": 0, "title_tr": "Fırsatlı", "summary": "a. b.", "why": "c", "category": "dev",
+         "signal": 4, "potential": 5, "opportunity": "talep",
+         "potential_note": "İnce bir sarmalayıcı SaaS olarak satılabilir"},
+        {"id": 1, "title_tr": "Fırsatsız", "summary": "a. b.", "why": "c", "category": "dev",
+         "signal": 4, "potential": 2, "opportunity": "bosluk", "potential_note": "olmamalı"},
+    ])
+    cs = [cluster("Firsatli", 0), cluster("Firsatsiz", 1)]
+    summarize(cs, CFG, Budget.from_config(CFG))
+    assert cs[0].opportunity == "talep"
+    assert OPPORTUNITY_LABEL[cs[0].opportunity] == "Kanıtlı talep"
+    assert cs[1].opportunity is None          # potential < 4 → tür tutulmaz
+    assert cs[1].potential_note is None
+
+
+def test_yorum_maddesi_yuksek_firsat_alsa_da_radara_girmiyor(fake):
+    """Kullanıcı isteği: radar YENİ ÇIKIŞLAR için. Bir yorum ya da haber
+    maddesi yüksek fırsat puanı alsa bile listeye girmemeli."""
+    fake([
+        {"id": 0, "title_tr": "Gerçek çıkış", "summary": "a. b.", "why": "c",
+         "category": "dev", "signal": 4, "potential": 5, "opportunity": "ekosistem",
+         "potential_note": "Üzerine ürün kurulabilir"},
+        {"id": 1, "title_tr": "Sadece yorum", "summary": "a. b.", "why": "c",
+         "category": "dev", "signal": 2, "potential": 5, "opportunity": "talep",
+         "potential_note": "girmemeli"},
+    ])
+    cs = [cluster("Gercek cikis", 0), cluster("Sadece yorum", 1)]
+    summarize(cs, CFG, Budget.from_config(CFG))
+    hot = alerts(cs)
+    assert [c.title for c in hot] == ["Gerçek çıkış"]
+    assert all((c.signal or 0) >= MIN_SIGNAL_FOR_ALERT for c in hot)
+
+
+def test_firsat_yoksa_radar_bos_doner(fake):
+    fake([{"id": i, "title_tr": f"Madde {i}", "summary": "a. b.", "why": "c",
+           "category": "dev", "signal": 4, "potential": 3, "opportunity": "yok",
+           "potential_note": ""} for i in range(3)])
+    cs = [cluster(f"Madde {i}", i) for i in range(3)]
+    summarize(cs, CFG, Budget.from_config(CFG))
+    assert alerts(cs) == []          # zorlama yok: fırsat yoksa liste boş
