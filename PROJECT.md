@@ -3,7 +3,8 @@
 Bu dosya projenin tek kaynak referansıdır. Claude Code bu dosyayı okuyup adım adım
 uygulayacak. Yeni bir oturuma başlarken önce bu dosyayı oku.
 
-> **Durum (2026-08-30):** Faz 0 ve Faz 1 tamamlandı. Bu dosya o fazların ölçüm
+> **Durum (2026-08-30):** Beş fazın tamamı bitti; sistem canlı —
+> https://kierkegaard-source.github.io/gundem/ · Faz 0-5 tamamlandı. Bu dosya o fazların ölçüm
 > sonuçlarına göre güncellendi — değişen her yer `[Faz 0]` / `[Faz 1]` etiketiyle
 > işaretli. Ayrıntılı ölçümler: `FAZ0-RAPOR.md`, `FAZ1-RAPOR.md`.
 
@@ -457,22 +458,22 @@ Sırayla ilerle. Her fazın sonunda dur ve sonucu göster.
 - `collect.py` çalışsın, veritabanına yazsın, terminale tablo bassın
 - LLM yok, site yok — sadece veri akışı doğru mu?
 
-### Faz 2 — Kalan kaynaklar
+### Faz 2 — Kalan kaynaklar ✅ TAMAMLANDI (2026-08-30)
 - Product Hunt, Bluesky, itch.io, Steam, RSS, Twitter (Reddit kapalı `[Faz 0]`)
 - Hepsi paralel (asyncio), her biri kendi try/except'inde
 - `failed_sources` listesi doğru dolsun
 
-### Faz 3 — Dedupe + skorlama
+### Faz 3 — Dedupe + skorlama ✅ TAMAMLANDI (2026-08-30)
 - URL kanonikleştirme, hash dedupe, fuzzy başlık dedupe
 - Skorlama ve filtreleme
 - Kontrol: aynı ürünün 3 kaynaktan gelen kaydı tek satır mı oldu?
 
-### Faz 4 — Özetleme
+### Faz 4 — Özetleme ✅ TAMAMLANDI (2026-08-30)
 - Batch halinde Claude API, prompt caching açık
 - JSON parse + hata toleransı (bozuk JSON gelirse o batch'i atla, ham başlık kullan)
 - Bütçe tavanı test et: tavanı $0.001'e çekip gerçekten durduğunu doğrula
 
-### Faz 5 — Site + otomasyon
+### Faz 5 — Site + otomasyon ✅ TAMAMLANDI (2026-08-30)
 - Jinja2 şablonlar, CSS, `build.py`
 - GitHub Actions workflow
 - Elle bir kez tetikle, Pages'te sayfayı gör
