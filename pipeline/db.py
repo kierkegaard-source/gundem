@@ -120,7 +120,13 @@ def published_hashes(conn: sqlite3.Connection, before: str | None = None) -> set
 
 
 def mark_digest(conn: sqlite3.Connection, clusters: list[Cluster], digest_date: str) -> None:
-    """Sayıya giren maddeleri tarihle işaretler. site/build.py bunları okur."""
+    """Sayıya giren maddeleri tarihle işaretler. sitegen/build.py bunları okur.
+
+    İDEMPOTENT: aynı gün ikinci kez çalıştırıldığında o günün işaretleri önce
+    temizlenir. Yoksa maddeler birikiyor — elle tetiklenen ikinci koşudan sonra
+    sayfada 60 yerine 72 madde çıkmıştı.
+    """
+    conn.execute("UPDATE items SET digest_date = NULL WHERE digest_date = ?", (digest_date,))
     for c in clusters:
         conn.execute("UPDATE items SET digest_date = ? WHERE url_hash = ?",
                      (digest_date, c.lead.url_hash))

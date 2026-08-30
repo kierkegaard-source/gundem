@@ -1,0 +1,6 @@
+# data/digest.db ve docs/*.html her gün GitHub Actions tarafından yeniden
+# üretiliyor. Yerelde de üretilirse ikili/HTML çakışması çıkar. Bu dosyaların
+# sahibi Actions'tır — yerelde çalışırken commit'lemeden önce:
+#   git checkout origin/main -- docs data
+data/digest.db binary
+docs/*.html -diff linguist-generated
