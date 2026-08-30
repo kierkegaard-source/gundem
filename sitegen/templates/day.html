@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Gündem — {{ date_long }}{% endblock %}
+
+{% block dateline %}
+<div class="dateline">
+  <span><strong>{{ date_long }}</strong></span>
+  <span>{{ total }} madde</span>
+  <span>{{ source_count }} kaynak</span>
+</div>
+{% endblock %}
+
+{% block content %}
+
+{% if notices %}
+<div class="notice">
+  <b>Bu sayı eksik üretildi</b>
+  <ul>
+    {% for n in notices %}<li>{{ n }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if not sections %}
+<p class="empty">Bugün için madde yok.</p>
+{% endif %}
+
+{% for sec in sections %}
+<section class="section">
+  <h2>{{ sec.label }} <span class="count">{{ sec.entries|length }} madde</span></h2>
+  {% for it in sec.entries %}
+  <article class="item">
+    <h3><a href="{{ it.url }}" rel="noopener">{{ it.title }}</a></h3>
+    {% if it.why %}<p class="why">{{ it.why }}</p>{% endif %}
+    {% if it.summary %}<p class="summary">{{ it.summary }}</p>{% endif %}
+    <div class="meta">
+      {% for b in it.badges %}<span class="badge{% if it.badges|length > 1 %} multi{% endif %}">{{ b }}</span>{% endfor %}
+      <time datetime="{{ it.published_iso }}">{{ it.published_human }}</time>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endfor %}
+
+<nav class="pager">
+  {% if prev_date %}<a href="{{ prev_date }}.html">← {{ prev_label }}</a>{% else %}<span>← önceki sayı yok</span>{% endif %}
+  <a href="arsiv.html">Arşiv</a>
+  {% if next_date %}<a href="{{ next_date }}.html">{{ next_label }} →</a>{% else %}<span>sonraki sayı yok →</span>{% endif %}
+</nav>
+
+{% endblock %}

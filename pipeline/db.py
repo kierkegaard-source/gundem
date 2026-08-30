@@ -28,6 +28,12 @@ CREATE TABLE IF NOT EXISTS items (
 );
 CREATE INDEX IF NOT EXISTS idx_digest_date ON items(digest_date);
 
+CREATE TABLE IF NOT EXISTS item_aliases (
+  alias_hash TEXT PRIMARY KEY,
+  url_hash   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_alias_url ON item_aliases(url_hash);
+
 CREATE TABLE IF NOT EXISTS runs (
   run_at        TEXT PRIMARY KEY,
   items_raw     INTEGER,
@@ -93,13 +99,47 @@ def record_run(conn: sqlite3.Connection, *, items_raw: int, items_kept: int,
     conn.commit()
 
 
-def published_hashes(conn: sqlite3.Connection) -> set[str]:
-    """Daha önce bir sayıda yayınlanmış maddelerin hash'leri.
+def published_hashes(conn: sqlite3.Connection, before: str | None = None) -> set[str]:
+    """ÖNCEKİ sayılarda yayınlanmış maddelerin hash'leri.
 
-    Günlük gazete aynı maddeyi iki kez basmamalı; filtreleme bunları dışlar.
+    Günlük gazete aynı maddeyi iki kez basmamalı. Bugünün tarihi hariç tutulur —
+    yoksa collect.py aynı gün ikinci kez çalıştığında sayı boş çıkar.
+    Kümedeki tüm üye hash'leri de dahil edilir (item_aliases).
     """
-    return {r[0] for r in conn.execute(
-        "SELECT url_hash FROM items WHERE digest_date IS NOT NULL")}
+    before = before or datetime.now(timezone.utc).date().isoformat()
+    rows = conn.execute(
+        "SELECT i.url_hash, a.alias_hash FROM items i "
+        "LEFT JOIN item_aliases a ON a.url_hash = i.url_hash "
+        "WHERE i.digest_date IS NOT NULL AND i.digest_date < ?", (before,)).fetchall()
+    out: set[str] = set()
+    for r in rows:
+        out.add(r[0])
+        if r[1]:
+            out.add(r[1])
+    return out
+
+
+def mark_digest(conn: sqlite3.Connection, clusters: list[Cluster], digest_date: str) -> None:
+    """Sayıya giren maddeleri tarihle işaretler. site/build.py bunları okur."""
+    for c in clusters:
+        conn.execute("UPDATE items SET digest_date = ? WHERE url_hash = ?",
+                     (digest_date, c.lead.url_hash))
+    conn.commit()
+
+
+def digest_items(conn: sqlite3.Connection, digest_date: str) -> list[sqlite3.Row]:
+    return conn.execute(
+        "SELECT * FROM items WHERE digest_date = ? ORDER BY score DESC", (digest_date,)).fetchall()
+
+
+def digest_dates(conn: sqlite3.Connection) -> list[str]:
+    return [r[0] for r in conn.execute(
+        "SELECT DISTINCT digest_date FROM items WHERE digest_date IS NOT NULL "
+        "ORDER BY digest_date DESC")]
+
+
+def last_run(conn: sqlite3.Connection) -> sqlite3.Row | None:
+    return conn.execute("SELECT * FROM runs ORDER BY run_at DESC LIMIT 1").fetchone()
 
 
 def upsert_clusters(conn: sqlite3.Connection, clusters: list[Cluster]) -> tuple[int, int]:

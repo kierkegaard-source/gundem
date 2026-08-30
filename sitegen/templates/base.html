@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Gündem{% endblock %}</title>
+<meta name="description" content="Her sabah developer tools, indie oyun, yeni uygulama ve tasarım dünyasından yeni çıkanlar — Türkçe özetlerle.">
+<meta name="color-scheme" content="light dark">
+<style>{{ css|safe }}</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <h1><a href="index.html">Gündem</a></h1>
+  <div class="tagline">Günlük Ürün &amp; Girişim Gazetesi</div>
+  {% block dateline %}{% endblock %}
+</header>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <a href="index.html">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
+  {{ generated_at }} tarihinde otomatik üretildi.<br>
+  Kaynaklar: Hacker News, GitHub Trending, Product Hunt, itch.io, Steam, Bluesky, X, RSS.
+</footer>
+
+</div>
+</body>
+</html>

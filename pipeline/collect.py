@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+from datetime import datetime, timezone
 import sys
 import time
 from collections import Counter
@@ -17,7 +18,8 @@ import httpx
 
 from pipeline.budget import Budget
 from pipeline.config import enabled_sources, load_config
-from pipeline.db import connect, published_hashes, record_run, upsert_clusters
+from pipeline.db import (connect, mark_digest, published_hashes, record_run,
+                         upsert_clusters)
 from pipeline.dedupe import Cluster, dedupe
 from pipeline.score import filter_clusters, score_clusters
 from pipeline.summarize import drop_low_signal, summarize
@@ -202,6 +204,8 @@ def main() -> int:
                              "WHERE url_hash = ?",
                              (c.summary_tr, c.why_tr, c.category, c.lead.url_hash))
         conn.commit()
+        today = datetime.now(timezone.utc).date().isoformat()
+        mark_digest(conn, kept, today)
         record_run(conn, items_raw=len(items), items_kept=len(kept),
                    failed_sources=failed, llm_cost_usd=budget.llm_usd,
                    api_cost_usd=budget.twitter_usd)

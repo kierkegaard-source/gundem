@@ -1,0 +1,82 @@
+name: Günlük sayı
+
+on:
+  schedule:
+    # 05:00 UTC = 08:00 TR. GitHub cron'u yoğunlukta 5-20 dk gecikebilir;
+    # config'deki lookback_hours: 26 bu kaymayı tolere ediyor.
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: uv kur
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Bağımlılıklar
+        run: uv sync --frozen
+
+      - name: Testler
+        run: uv run pytest -q
+
+      # PROJECT.md §9: "Hata olursa iş başarısız olsun ama kısmi sonuç varsa
+      # yine de commit et." Bu yüzden toplama adımı hatayı yutar, sonucu
+      # kaydeder; iş en sonda başarısız edilir.
+      - name: Kaynakları topla
+        id: collect
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
+          TWITTERAPI_KEY: ${{ secrets.TWITTERAPI_KEY }}
+        run: uv run python -m pipeline.collect
+
+      - name: Sayfaları üret
+        id: build
+        continue-on-error: true
+        run: uv run python -m sitegen.build
+
+      - name: Commit ve push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ data/digest.db
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok, commit atlanıyor."
+            exit 0
+          fi
+          COUNT=$(uv run python -c "
+          from pipeline.db import connect, digest_dates, digest_items
+          c = connect(); d = digest_dates(c)
+          print(len(digest_items(c, d[0])) if d else 0)
+          " 2>/dev/null || echo "?")
+          git commit -m "Sayı: $(date -u +%Y-%m-%d) — ${COUNT} madde"
+          # Eşzamanlı bir push olursa yeniden dene
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push && exit 0
+            echo "push denemesi $i başarısız, tekrar deneniyor"
+            sleep 5
+          done
+          exit 1
+
+      - name: Adım sonuçlarını doğrula
+        if: steps.collect.outcome == 'failure' || steps.build.outcome == 'failure'
+        run: |
+          echo "toplama: ${{ steps.collect.outcome }}"
+          echo "üretim : ${{ steps.build.outcome }}"
+          echo "Kısmi sonuç commit'lendi ama bir adım başarısız oldu."
+          exit 1
