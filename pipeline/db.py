@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pipeline.dedupe import Cluster
 from sources.base import Item
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -90,3 +91,56 @@ def record_run(conn: sqlite3.Connection, *, items_raw: int, items_kept: int,
          json.dumps(failed_sources), llm_cost_usd, api_cost_usd),
     )
     conn.commit()
+
+
+def published_hashes(conn: sqlite3.Connection) -> set[str]:
+    """Daha önce bir sayıda yayınlanmış maddelerin hash'leri.
+
+    Günlük gazete aynı maddeyi iki kez basmamalı; filtreleme bunları dışlar.
+    """
+    return {r[0] for r in conn.execute(
+        "SELECT url_hash FROM items WHERE digest_date IS NOT NULL")}
+
+
+def upsert_clusters(conn: sqlite3.Connection, clusters: list[Cluster]) -> tuple[int, int]:
+    """Tekilleştirilmiş ve skorlanmış kümeleri yazar.
+
+    Bir küme birden fazla üye taşır (aynı ürün, farklı kaynaklar). Temsilcinin
+    url_hash'i birincil anahtar olur; kümedeki TÜM üyelerin hash'leri de aynı
+    satıra işaret etsin diye `item_aliases` tablosuna yazılır — böylece yarın
+    aynı ürün başka bir kaynaktan gelirse tekrar basılmaz.
+    """
+    conn.executescript("""
+      CREATE TABLE IF NOT EXISTS item_aliases (
+        alias_hash TEXT PRIMARY KEY,
+        url_hash   TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_alias_url ON item_aliases(url_hash);
+    """)
+    now = datetime.now(timezone.utc).isoformat()
+    new = updated = 0
+    for c in clusters:
+        lead = c.lead
+        row = conn.execute("SELECT sources FROM items WHERE url_hash = ?",
+                           (lead.url_hash,)).fetchone()
+        srcs = json.dumps(c.sources)
+        if row is None:
+            conn.execute(
+                "INSERT INTO items (url_hash, title, url, category, sources, score,"
+                " published_at, first_seen, digest_date) VALUES (?,?,?,?,?,?,?,?,NULL)",
+                (lead.url_hash, c.title, c.url, c.category, srcs, c.score,
+                 c.published_at.isoformat(), now))
+            new += 1
+        else:
+            merged = json.loads(row["sources"])
+            for s_ in c.sources:
+                if s_ not in merged:
+                    merged.append(s_)
+            conn.execute("UPDATE items SET sources = ?, score = ?, title = ? WHERE url_hash = ?",
+                         (json.dumps(merged), c.score, c.title, lead.url_hash))
+            updated += 1
+        for m in c.members:
+            conn.execute("INSERT OR REPLACE INTO item_aliases (alias_hash, url_hash) VALUES (?,?)",
+                         (m.url_hash, lead.url_hash))
+    conn.commit()
+    return new, updated

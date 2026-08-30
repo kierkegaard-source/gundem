@@ -17,7 +17,9 @@ import httpx
 
 from pipeline.budget import Budget
 from pipeline.config import enabled_sources, load_config
-from pipeline.db import connect, record_run, upsert_items
+from pipeline.db import connect, published_hashes, record_run, upsert_clusters
+from pipeline.dedupe import Cluster, dedupe
+from pipeline.score import filter_clusters, score_clusters
 from sources.base import Item, Source
 from sources.bluesky import Bluesky
 from sources.github_trending import GithubTrending
@@ -108,24 +110,28 @@ async def collect(cfg: dict, budget=None, only: set[str] | None = None,
     return items, failed, pending
 
 
-def print_table(items: list[Item], limit: int = 25) -> None:
-    if not items:
+def print_digest(clusters: list[Cluster], limit: int = 30) -> None:
+    if not clusters:
         print("\n(hiç kayıt yok)")
         return
-    print(f"\n{'kaynak':<16} {'kat':<8} {'ham':>7} {'yaş':>6}  başlık")
-    print("-" * 96)
-    for it in sorted(items, key=lambda i: (-i.raw_score))[:limit]:
-        title = it.title if len(it.title) <= 54 else it.title[:51] + "…"
-        print(f"{it.source:<16} {it.category:<8} {it.raw_score:>7.0f} "
-              f"{it.age_hours:>5.0f}s  {title}")
-    if len(items) > limit:
-        print(f"… ve {len(items) - limit} kayıt daha")
+    print(f"\n{'skor':>6}  {'kat':<8} {'yaş':>5}  {'kaynaklar':<26} başlık")
+    print("-" * 108)
+    for c in clusters[:limit]:
+        age = (c.published_at and c.lead.age_hours) or 0
+        badge = "+".join(c.sources)
+        if len(badge) > 25:
+            badge = badge[:24] + "…"
+        star = " ★" if c.multi_source else "  "
+        title = c.title if len(c.title) <= 46 else c.title[:43] + "…"
+        print(f"{c.score:>6.3f}{star}{c.category:<8} {age:>4.0f}s  {badge:<26} {title}")
+    if len(clusters) > limit:
+        print(f"… ve {len(clusters) - limit} madde daha")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Kaynakları topla ve veritabanına yaz")
     ap.add_argument("--dry-run", action="store_true", help="veritabanına yazma")
-    ap.add_argument("--limit", type=int, default=25, help="tabloda gösterilecek satır")
+    ap.add_argument("--limit", type=int, default=30, help="tabloda gösterilecek satır")
     ap.add_argument("--only", help="sadece bu kaynaklar (virgülle)")
     ap.add_argument("--skip", help="bu kaynakları atla (virgülle) — ör. maliyetli twitter")
     args = ap.parse_args()
@@ -139,19 +145,31 @@ def main() -> int:
     items, failed, pending = asyncio.run(collect(cfg, budget, only, skip))
     elapsed = time.perf_counter() - t0
 
-    print_table(items, args.limit)
+    # ---- dedupe -> score -> filter ----
+    clusters = dedupe(items)
+    clusters = score_clusters(clusters, cfg)
+
+    conn = None if args.dry_run else connect()
+    already = published_hashes(conn) if conn else set()
+    kept = filter_clusters(clusters, cfg, already)
+
+    multi = sum(1 for c in clusters if c.multi_source)
+    print(f"\ntoplanan {len(items)} kayıt → {len(clusters)} tekil madde "
+          f"({len(items) - len(clusters)} mükerrer birleşti, {multi}'i çoklu kaynak) "
+          f"→ {len(kept)} madde sayıya girdi")
+
+    print_digest(kept, args.limit)
 
     by_source = Counter(i.source for i in items)
-    by_cat = Counter(i.category for i in items)
-    print(f"\nkaynak dağılımı  : {dict(by_source)}")
-    print(f"kategori dağılımı: {dict(by_cat)}")
+    by_cat = Counter(c.category for c in kept)
+    print(f"\nkaynak dağılımı (ham): {dict(by_source)}")
+    print(f"sayıdaki kategoriler : {dict(by_cat)}")
 
     if args.dry_run:
         print("\n[dry-run] veritabanına yazılmadı")
     else:
-        conn = connect()
-        new, updated = upsert_items(conn, items)
-        record_run(conn, items_raw=len(items), items_kept=len(items),
+        new, updated = upsert_clusters(conn, clusters)
+        record_run(conn, items_raw=len(items), items_kept=len(kept),
                    failed_sources=failed, llm_cost_usd=budget.llm_usd,
                    api_cost_usd=budget.twitter_usd)
         total = conn.execute("SELECT COUNT(*) FROM items").fetchone()[0]
