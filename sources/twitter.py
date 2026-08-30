@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 import httpx
 
 from pipeline.config import secret
+from sources._social import has_url, looks_like_launch
 from sources.base import Item, Source, SourceError
 
 BASE = "https://api.twitterapi.io"
@@ -60,6 +61,10 @@ class Twitter(Source):
             text = html.unescape(t.get("text") or "").strip()
             if not text or t.get("isReply") or text.startswith("RT @"):
                 continue                       # yanıt ve retweet gürültüdür
+            # Lansman ön filtresi — bkz. sources/_social.py'deki ölçüm.
+            if self.cfg.get("require_launch_signal", True) \
+                    and not looks_like_launch(text, has_url(text)):
+                continue
             pub = _parse_dt(t.get("createdAt", ""))
             if pub is None or not self.in_window(pub):
                 continue

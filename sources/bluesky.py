@@ -13,6 +13,7 @@ from urllib.parse import quote
 
 import httpx
 
+from sources._social import looks_like_launch
 from sources.base import Item, Source, SourceError
 
 PUB = "https://public.api.bsky.app/xrpc"
@@ -47,13 +48,19 @@ class Bluesky(Source):
         if not self.in_window(pub):
             return None
 
+        link = _first_link(post)
+        # Lansman ön filtresi — bkz. sources/_social.py'deki ölçüm.
+        if self.cfg.get("require_launch_signal", True) \
+                and not looks_like_launch(text, bool(link)):
+            return None
+
         handle = (post.get("author") or {}).get("handle", "")
         rkey = post["uri"].rsplit("/", 1)[-1]
         permalink = f"https://bsky.app/profile/{handle}/post/{rkey}"
         return Item(
             title=text.split("\n")[0][:200] or text[:200],
             # Dış bağlantı varsa dedupe onun üzerinden yürüsün; yoksa gönderinin kendisi.
-            url=_first_link(post) or permalink,
+            url=link or permalink,
             source=self.name,
             category=category,
             raw_score=float(post.get("likeCount") or 0) + 2 * float(post.get("repostCount") or 0),

@@ -82,6 +82,10 @@ sources:
     # Feed generator'lar çok gürültülü (medyan ♥1-6). "Sinyal > hacim" ilkesi
     # gereği beğeni eşiği. Küratörlü hesap timeline'larına uygulanmaz.
     min_likes_feed: 5
+    # Dış bağlantısı ya da duyuru dili olmayan gönderiler atlanır.
+    # Ölçüm: 15 Bluesky adayının 15'i LLM tarafından "çıkış değil" diye
+    # eleniyordu; filtre sonrası tepeye gerçek oyun duyuruları geliyor.
+    require_launch_signal: true
     # ÖLÇÜM: searchPosts artık 403 (anahtarsız kapalı).
     # Çözüm: feed generator URI + getFeed — anahtarsız, test edildi.
     feeds:
@@ -144,6 +148,9 @@ sources:
   twitter:
     enabled: true             # TWITTERAPI_KEY bekleniyor
     provider: twitterapi.io
+    # Dış bağlantısı ya da duyuru dili olmayan tweet'ler atlanır.
+    # Ölçüm: 15 adayın 14'ü "signal=1, çıkış değil" ile eleniyordu.
+    require_launch_signal: true
     # DOĞRULANDI 2026-08-30 (validate_accounts.py, 53 handle, handle başına 1 istek):
     #   45 OK / 8 SESSİZ / 0 ÖLÜ. 3'ünün handle'ı değişmişti, düzeltildi.
     #   5'i yorum satırına alındı — ikisinin içeriği Bluesky'dan zaten geliyor.
