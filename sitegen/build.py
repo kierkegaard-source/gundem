@@ -33,11 +33,48 @@ SECTIONS = [
     ("tr", "Türkiye"),
 ]
 
+# Kaynak rozeti: (görünen ad, monogram). Marka logolarını kopyalamak yerine
+# marka renginde monogram kullanılıyor — harici istek yok, ticari marka sorunu
+# yok, koyu/açık temada okunuyor, sayfaya ~0 bayt ekliyor. Renkler style.css'te.
 SOURCE_LABEL = {
-    "hackernews": "HN", "github_trending": "GitHub", "producthunt": "Product Hunt",
+    "hackernews": "Hacker News", "github_trending": "GitHub", "producthunt": "Product Hunt",
     "itchio": "itch.io", "steam": "Steam", "bluesky": "Bluesky",
     "twitter": "X", "rss": "RSS", "reddit": "Reddit",
 }
+
+SOURCE_MARK = {
+    "hackernews": "Y", "github_trending": "GH", "producthunt": "P",
+    "itchio": "it", "steam": "S", "bluesky": "bs", "twitter": "X",
+    "rss": "R", "reddit": "r/",
+}
+
+MAX_RAW = 190          # özet yoksa gösterilen ham açıklamanın üst sınırı
+
+
+def _strip_title(text: str, title: str) -> str:
+    """Ham açıklama çoğu kaynakta 'Başlık — açıklama' biçiminde geliyor.
+    Başlık kartta zaten var; tekrar etmesin."""
+    t = (title or "").strip()
+    if not t:
+        return text
+    low, tl = text.lower(), t.lower()
+    if low.startswith(tl):
+        rest = text[len(t):].lstrip()
+        rest = rest.lstrip("—–-:·|").lstrip()
+        if len(rest) >= 20:
+            return rest
+    return text
+
+
+def _trim(text: str | None, limit: int = MAX_RAW) -> str | None:
+    """Ham açıklamayı kart boyutuna sığdırır, kelime ortasından kesmez."""
+    if not text:
+        return None
+    text = " ".join(text.split())
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0]
+    return cut.rstrip(" ,;:–—-") + "…"
 
 AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
          "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
@@ -99,18 +136,38 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     for r in rows:
         srcs = json.loads(r["sources"])
         sources_seen.update(srcs)
+        raw = None
+        if not r["summary_tr"]:
+            # Özet üretilemediyse (bütçe tavanı / API hatası) kaynağın kendi
+            # açıklaması gösterilir — İngilizce ama boş karttan iyi.
+            candidate = (r["raw_text"] or "").strip()
+            # Başlığın kendisini tekrar etmenin anlamı yok.
+            if candidate and candidate.lower() != (r["title"] or "").strip().lower():
+                raw = _trim(_strip_title(candidate, r["title"]))
         by_cat.setdefault(r["category"], []).append({
             "title": r["title"],
             "url": r["url"],
             "why": r["why_tr"],
             "summary": r["summary_tr"],
-            "badges": [SOURCE_LABEL.get(s, s) for s in srcs],
+            "raw": raw,
+            "sources": [{"key": s, "label": SOURCE_LABEL.get(s, s),
+                         "mark": SOURCE_MARK.get(s, s[:2])} for s in srcs],
             "published_iso": r["published_at"],
             "published_human": _hours_ago(r["published_at"], ref),
         })
 
     # NOT: anahtar "items" OLAMAZ — Jinja `sec.items`i dict.items metoduna
     # çözümlüyor ve `|length` patlıyor. "entries" kullanılıyor.
+    # Lead kart gövdesiz olursa boş bir kutu gibi duruyor. Gövdesi olan ilk
+    # madde öne alınır; hiçbirinde yoksa lead kart kullanılmaz.
+    for entries in by_cat.values():
+        for i, e in enumerate(entries):
+            if e.get("summary") or e.get("raw"):
+                if i:
+                    entries.insert(0, entries.pop(i))
+                e["can_lead"] = True
+                break
+
     sections = [{"key": k, "label": label, "entries": by_cat[k]}
                 for k, label in SECTIONS if by_cat.get(k)]
     # Config'de olmayan bir kategori çıkarsa yine de göster.

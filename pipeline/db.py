@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS items (
   score       REAL NOT NULL,
   summary_tr  TEXT,
   why_tr      TEXT,
+  raw_text    TEXT,           -- kaynağın kendi açıklaması; özet yoksa yedek metin
   published_at TEXT NOT NULL,
   first_seen  TEXT NOT NULL,
   digest_date TEXT
@@ -51,6 +52,11 @@ def connect(path: Path | str = DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    # Mevcut veritabanları için basit göç: eksik sütunu ekle.
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(items)")}
+    if "raw_text" not in cols:
+        conn.execute("ALTER TABLE items ADD COLUMN raw_text TEXT")
+        conn.commit()
     return conn
 
 
@@ -173,17 +179,19 @@ def upsert_clusters(conn: sqlite3.Connection, clusters: list[Cluster]) -> tuple[
         if row is None:
             conn.execute(
                 "INSERT INTO items (url_hash, title, url, category, sources, score,"
-                " published_at, first_seen, digest_date) VALUES (?,?,?,?,?,?,?,?,NULL)",
+                " raw_text, published_at, first_seen, digest_date)"
+                " VALUES (?,?,?,?,?,?,?,?,?,NULL)",
                 (lead.url_hash, c.title, c.url, c.category, srcs, c.score,
-                 c.published_at.isoformat(), now))
+                 c.raw_text, c.published_at.isoformat(), now))
             new += 1
         else:
             merged = json.loads(row["sources"])
             for s_ in c.sources:
                 if s_ not in merged:
                     merged.append(s_)
-            conn.execute("UPDATE items SET sources = ?, score = ?, title = ? WHERE url_hash = ?",
-                         (json.dumps(merged), c.score, c.title, lead.url_hash))
+            conn.execute("UPDATE items SET sources = ?, score = ?, title = ?, raw_text = ? "
+                         "WHERE url_hash = ?",
+                         (json.dumps(merged), c.score, c.title, c.raw_text, lead.url_hash))
             updated += 1
         for m in c.members:
             conn.execute("INSERT OR REPLACE INTO item_aliases (alias_hash, url_hash) VALUES (?,?)",

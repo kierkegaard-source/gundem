@@ -255,17 +255,26 @@ Tek istekte batch halinde gönder, item başına ayrı çağrı YAPMA.
 - `docs/YYYY-MM-DD.html` → o günün arşiv kopyası
 - `docs/arsiv.html` → tarih listesi
 
-**Tasarım yönü:** Gazete hissi. Okunabilirlik her şeyin önünde.
+**Tasarım yönü:** Gazete hissi. Okunabilirlik ve **hızlı tarama** her şeyin önünde.
 
-- Serif başlık fontu, sans-serif gövde
-- Tek sütun, max 720px genişlik, mobilde tam genişlik
-- Kategori başlıkları belirgin ayraçlarla
-- Her madde bir kart: başlık (link) → `why` satırı → 2 cümlelik özet → kaynak
-  rozetleri + saat
+`[Faz 5 revizyonu]` İlk sürüm tek sütun 720px'di; kullanıcı "boydan boya upuzun
+liste" olarak değerlendirdi. Tarama kolaylığı için düzen değiştirildi:
+
+- Serif başlık fontu (Iowan/Charter/Sitka yığını), sans-serif gövde (system-ui)
+- **Masaüstünde iki sütunlu kart ızgarası**, max 1080px; mobilde tek sütun
+- **Kategori gezinme çubuğu** — üstte, madde sayılarıyla, çapa linkleri
+- Her bölümün ilk maddesi **manşet kartı** (iki sütunu kaplar, büyük başlık)
+- Her madde bir kart: başlık (link) → `why` satırı → 2 cümlelik özet →
+  kaynak rozetleri + saat
+- **Kaynak rozetleri**: marka renginde monogram (Y, P, GH, S, bs, X, it, R).
+  Marka logoları kopyalanmadı — harici istek yok, ticari marka sorunu yok,
+  koyu/açık temada okunuyor, sayfaya ~0 bayt ekliyor.
+- **Özet yoksa kaynağın kendi açıklaması** gösterilir (İngilizce, italik,
+  soluk). Bütçe tavanına çarpıldığında sayfa boş kartlarla dolmuyor.
 - `prefers-color-scheme` ile koyu/açık tema, JS gerektirmeden
 - Üstte tarih ve "N madde, M kaynak" satırı
 - Altta önceki/sonraki gün navigasyonu
-- Toplam sayfa < 100KB, harici font yükleme yok (system font stack)
+- Toplam sayfa < 100KB (şu an ~43KB), harici font yükleme yok
 
 ---
 

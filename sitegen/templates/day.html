@@ -1,22 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Gündem — {{ date_long }}{% endblock %}
 
-{% block dateline %}
-<div class="dateline">
-  <span><strong>{{ date_long }}</strong></span>
+{% macro card(it, lead=False) %}
+<article class="card{% if lead %} lead{% endif %}">
+  <h3><a href="{{ it.url }}" rel="noopener">{{ it.title }}</a></h3>
+  {% if it.why %}<p class="why">{{ it.why }}</p>{% endif %}
+  {% if it.summary %}
+  <p class="body">{{ it.summary }}</p>
+  {% elif it.raw %}
+  <p class="body raw">{{ it.raw }}</p>
+  {% endif %}
+  <div class="card-meta">
+    {% for s in it.sources %}
+    <span class="src src-{{ s.key }}"><span class="mark">{{ s.mark }}</span>{{ s.label }}</span>
+    {% endfor %}
+    {% if it.sources|length > 1 %}<span class="multi-flag">{{ it.sources|length }} kaynak</span>{% endif %}
+    <span class="dot">·</span>
+    <time datetime="{{ it.published_iso }}">{{ it.published_human }}</time>
+  </div>
+</article>
+{% endmacro %}
+
+{% block stats %}
+<div class="stats">
+  <span class="day">{{ date_long }}</span>
+  <span class="sep">|</span>
   <span>{{ total }} madde</span>
+  <span class="sep">|</span>
   <span>{{ source_count }} kaynak</span>
 </div>
 {% endblock %}
 
 {% block content %}
 
+{% if sections %}
+<nav class="catnav">
+  {% for sec in sections %}
+  <a href="#{{ sec.key }}"><b>{{ sec.label }}</b> <i>{{ sec.entries|length }}</i></a>
+  {% endfor %}
+</nav>
+{% endif %}
+
 {% if notices %}
 <div class="notice">
   <b>Bu sayı eksik üretildi</b>
-  <ul>
-    {% for n in notices %}<li>{{ n }}</li>{% endfor %}
-  </ul>
+  <ul>{% for n in notices %}<li>{{ n }}</li>{% endfor %}</ul>
 </div>
 {% endif %}
 
@@ -25,19 +53,16 @@
 {% endif %}
 
 {% for sec in sections %}
-<section class="section">
-  <h2>{{ sec.label }} <span class="count">{{ sec.entries|length }} madde</span></h2>
-  {% for it in sec.entries %}
-  <article class="item">
-    <h3><a href="{{ it.url }}" rel="noopener">{{ it.title }}</a></h3>
-    {% if it.why %}<p class="why">{{ it.why }}</p>{% endif %}
-    {% if it.summary %}<p class="summary">{{ it.summary }}</p>{% endif %}
-    <div class="meta">
-      {% for b in it.badges %}<span class="badge{% if it.badges|length > 1 %} multi{% endif %}">{{ b }}</span>{% endfor %}
-      <time datetime="{{ it.published_iso }}">{{ it.published_human }}</time>
-    </div>
-  </article>
-  {% endfor %}
+<section class="section" id="{{ sec.key }}">
+  <div class="section-head">
+    <h2>{{ sec.label }}</h2>
+    <span class="count">{{ sec.entries|length }} madde</span>
+  </div>
+  <div class="grid">
+    {% for it in sec.entries %}
+    {{ card(it, lead=(loop.first and it.can_lead and sec.entries|length > 2)) }}
+    {% endfor %}
+  </div>
 </section>
 {% endfor %}
 

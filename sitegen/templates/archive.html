@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Gündem — Arşiv{% endblock %}
 
-{% block dateline %}
-<div class="dateline"><span><strong>Arşiv</strong></span><span>{{ days|length }} sayı</span></div>
+{% block stats %}
+<div class="stats"><span class="day">Arşiv</span><span class="sep">|</span><span>{{ days|length }} sayı</span></div>
 {% endblock %}
 
 {% block content %}
+<div class="narrow">
 <section class="section">
-  <h2>Tüm sayılar <span class="count">{{ days|length }} gün</span></h2>
-  {% if not days %}
-  <p class="empty">Henüz arşivlenmiş sayı yok.</p>
-  {% endif %}
+  <div class="section-head">
+    <h2>Tüm sayılar</h2>
+    <span class="count">{{ days|length }} gün</span>
+  </div>
+  {% if not days %}<p class="empty">Henüz arşivlenmiş sayı yok.</p>{% endif %}
   <ul class="archive-list">
     {% for d in days %}
-    <li>
-      <a href="{{ d.date }}.html">{{ d.label }}</a>
-      <span class="count">{{ d.count }} madde</span>
-    </li>
+    <li><a href="{{ d.date }}.html">{{ d.label }}</a><span class="count">{{ d.count }} madde</span></li>
     {% endfor %}
   </ul>
 </section>
+</div>
 {% endblock %}
