@@ -19,8 +19,13 @@ import re
 import httpx
 
 ENDPOINT = "https://translate.googleapis.com/translate_a/single"
-CONCURRENCY = 5
+# CI'dan (paylaşımlı GitHub runner IP'si) hız sınırına takılıyor: yerelde 52/52
+# çevrilen açıklamalardan Actions koşusunda yalnızca 39'u geçti. Eşzamanlılık
+# düşürüldü ve geri çekilmeli yeniden deneme eklendi.
+CONCURRENCY = 3
 TIMEOUT = 12
+RETRIES = 3
+BACKOFF = 1.5          # saniye; her denemede iki katına çıkar
 
 # Platform önekleri: çeviriye girmeden ayrılır, sonra atılır.
 _PREFIX = re.compile(r"^(show hn|launch hn|ask hn|tell hn)\s*:\s*", re.I)
@@ -49,16 +54,28 @@ async def _one(client: httpx.AsyncClient, text: str, sem: asyncio.Semaphore) -> 
     text = (text or "").strip()
     if not text:
         return None
+    delay = BACKOFF
     async with sem:
-        try:
-            r = await client.get(ENDPOINT, timeout=TIMEOUT,
-                                 params={"client": "gtx", "sl": "auto", "tl": "tr",
-                                         "dt": "t", "q": text},
-                                 headers={"User-Agent": "Mozilla/5.0"})
-            r.raise_for_status()
-            out = "".join(seg[0] for seg in r.json()[0] if seg and seg[0])
-        except Exception:
-            return None                     # çeviri opsiyoneldir
+        for attempt in range(RETRIES):
+            try:
+                r = await client.get(ENDPOINT, timeout=TIMEOUT,
+                                     params={"client": "gtx", "sl": "auto", "tl": "tr",
+                                             "dt": "t", "q": text},
+                                     headers={"User-Agent": "Mozilla/5.0"})
+                if r.status_code in (429, 503) and attempt < RETRIES - 1:
+                    await asyncio.sleep(delay)
+                    delay *= 2
+                    continue
+                r.raise_for_status()
+                out = "".join(seg[0] for seg in r.json()[0] if seg and seg[0])
+                break
+            except Exception:
+                if attempt == RETRIES - 1:
+                    return None             # çeviri opsiyoneldir
+                await asyncio.sleep(delay)
+                delay *= 2
+        else:
+            return None
     out = out.strip()
     return out if out and out.lower() != text.lower() else None
 
