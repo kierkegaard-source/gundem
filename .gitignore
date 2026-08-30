@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 .DS_Store
 # data/digest.db bilerek commit ediliyor — arsiv ve dedupe gecmisi orada
+
+# yalnizca tasarim onizlemesi, yayinlanmaz
+_onizleme.html

@@ -41,6 +41,30 @@
 </nav>
 {% endif %}
 
+{% if alerts %}
+<section class="radar" id="radar">
+  <div class="radar-head">
+    <span class="radar-icon" aria-hidden="true">!</span>
+    <h2>Radar</h2>
+    <span class="radar-sub">kısa vadede potansiyelli {{ alerts|length }} madde</span>
+  </div>
+  <ol class="radar-list">
+    {% for it in alerts %}
+    <li>
+      <span class="radar-score" title="kısa vadeli potansiyel">{{ it.potential }}<i>/5</i></span>
+      <div class="radar-body">
+        <a href="{{ it.url }}" rel="noopener">{{ it.title }}</a>
+        {% if it.potential_note %}<p>{{ it.potential_note }}</p>{% endif %}
+        <div class="radar-meta">
+          {% for s in it.sources %}<span class="src src-{{ s.key }}"><span class="mark">{{ s.mark }}</span>{{ s.label }}</span>{% endfor %}
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
 {% if notices %}
 <div class="notice">
   <b>Bu sayı eksik üretildi</b>

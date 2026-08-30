@@ -22,7 +22,7 @@ from pipeline.db import (connect, mark_digest, published_hashes, record_run,
                          upsert_clusters)
 from pipeline.dedupe import Cluster, dedupe
 from pipeline.score import filter_clusters, score_clusters
-from pipeline.summarize import drop_low_signal, summarize
+from pipeline.summarize import alerts, drop_low_signal, summarize
 from sources.base import Item, Source
 from sources.bluesky import Bluesky
 from sources.github_trending import GithubTrending
@@ -182,6 +182,13 @@ def main() -> int:
               + (f", {rep['skipped_budget']} madde bütçe nedeniyle atlandı" if rep["skipped_budget"] else ""))
         if dropped:
             print(f"düşük sinyal ({cfg['filters'].get('min_signal', 2)} altı) elenen: {len(dropped)} madde")
+        hot = alerts(kept)
+        if hot:
+            print(f"\n⚠ RADAR — kısa vadede potansiyelli {len(hot)} madde:")
+            for c in hot:
+                print(f"   [{c.potential}/5] {c.title[:52]}")
+                if c.potential_note:
+                    print(f"          {c.potential_note}")
         if rep["degraded"]:
             print("UYARI: sayı eksik özetle üretildi — sayfaya uyarı bandı konacak")
         print(f"sayıya giren: {len(kept)} madde")
@@ -199,10 +206,12 @@ def main() -> int:
         new, updated = upsert_clusters(conn, clusters)
         # Özetler yalnızca sayıya giren maddeler için üretildi; onları ayrıca yaz.
         for c in kept:
-            if c.summary_tr:
-                conn.execute("UPDATE items SET summary_tr = ?, why_tr = ?, category = ? "
-                             "WHERE url_hash = ?",
-                             (c.summary_tr, c.why_tr, c.category, c.lead.url_hash))
+            if c.summary_tr or c.title_tr:
+                conn.execute(
+                    "UPDATE items SET title_tr = ?, summary_tr = ?, why_tr = ?, "
+                    "category = ?, potential = ?, potential_note = ? WHERE url_hash = ?",
+                    (c.title_tr, c.summary_tr, c.why_tr, c.category,
+                     c.potential, c.potential_note, c.lead.url_hash))
         conn.commit()
         today = datetime.now(timezone.utc).date().isoformat()
         mark_digest(conn, kept, today)

@@ -37,6 +37,10 @@ halinde yeni çıkan ürün/proje/haber verilecek. Her biri için Türkçe çık
 
 Her madde için:
 - id: girdideki id, aynen
+- title_tr: başlığın Türkçesi. ÜRÜN, ŞİRKET, PROJE VE OYUN ADLARINI ÇEVİRME — \
+"Hyperfocus", "Olostep", "godot" olduğu gibi kalır. Haber cümlelerini, \
+tanıtım cümlelerini ve açıklayıcı başlıkları çevir. "Show HN:" gibi platform \
+önekleri atılır. Başlık zaten Türkçeyse aynen bırak.
 - summary: 2 cümle. Ne olduğunu ve kime yaradığını anlat. Pazarlama dili kullanma, \
 abartma. "Devrim niteliğinde", "oyunun kurallarını değiştiren" gibi ifadeler yasak.
 - why: tek satır, en fazla 12 kelime. Bunu neden okumaya değer?
@@ -57,6 +61,26 @@ Yeni yayınlanmış bir oyun, uygulama, kütüphane ya da araç ASLA 1 değildir
 bilgi azsa 2, açıklaması varsa 3 veya üstü. 1'i yalnızca ortada bir çıkış \
 yoksa kullan.
 
+- potential: 1-5 arası KISA VADELİ POTANSİYEL.
+
+Bu, "iyi bir ürün mü" sorusu DEĞİL. Soru şu: önümüzdeki haftalarda hızla \
+yaygınlaşma, konuşulma ya da bir fırsat yaratma ihtimali var mı?
+
+5 = güçlü sinyal: yeni bir kategori açıyor, hızlı benimsenme işareti taşıyor, \
+büyük bir oyuncunun yön değiştirdiğini gösteriyor ya da erken davranana \
+somut avantaj sağlıyor
+4 = dikkat çekici: belirgin bir boşluğu dolduruyor ya da yükselen bir eğilimin \
+erken örneği
+3 = ilginç ama etkisi sınırlı kalacak gibi
+2 = niş, dar bir kitleye hitap ediyor
+1 = kısa vadede bir etkisi olmayacak
+
+Katı ol. Her gün 4-5 alan madde sayısı bir elin parmaklarını geçmemeli. \
+Sıradan bir ürün çıkışı 2-3'tür.
+
+- potential_note: potential 4 veya 5 ise, TEK CÜMLE, en fazla 15 kelime: \
+neden şimdi dikkat etmeli? potential 3 veya altıysa boş string ver.
+
 Girdi İngilizceyse özet yine Türkçe olacak. Teknik terimleri zorlama çevirme — \
 framework, endpoint, shader, repo, commit gibi kelimeler olduğu gibi kalsın."""
 
@@ -69,13 +93,17 @@ SCHEMA = {
                 "type": "object",
                 "properties": {
                     "id": {"type": "integer"},
+                    "title_tr": {"type": "string"},
                     "summary": {"type": "string"},
                     "why": {"type": "string"},
                     "category": {"type": "string", "enum": CATEGORIES},
                     # NOT: JSON şemasında minimum/maximum desteklenmiyor, enum kullanılıyor.
                     "signal": {"type": "integer", "enum": [1, 2, 3, 4, 5]},
+                    "potential": {"type": "integer", "enum": [1, 2, 3, 4, 5]},
+                    "potential_note": {"type": "string"},
                 },
-                "required": ["id", "summary", "why", "category", "signal"],
+                "required": ["id", "title_tr", "summary", "why", "category",
+                             "signal", "potential", "potential_note"],
                 "additionalProperties": False,
             },
         }
@@ -124,7 +152,8 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
                 model=MODEL, system=SYSTEM, messages=messages).input_tokens
         except Exception:
             counted = len(user) // 3 + 600          # kaba yedek tahmin
-        est_output = len(batch) * 130               # madde başına ~130 çıktı token'ı
+        # Madde başına çıktı: özet + why + Türkçe başlık + potansiyel notu.
+        est_output = len(batch) * 175
         est = Budget.estimate_llm_usd(counted, est_output)
 
         if not budget.can_afford_llm(est):
@@ -165,9 +194,13 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
         row = by_id.get(i)
         if not row:
             continue
+        c.title_tr = (row.get("title_tr") or "").strip() or None
         c.summary_tr = (row.get("summary") or "").strip() or None
         c.why_tr = (row.get("why") or "").strip() or None
         c.signal = int(row.get("signal") or 0)
+        c.potential = int(row.get("potential") or 0)
+        note = (row.get("potential_note") or "").strip()
+        c.potential_note = note if (note and c.potential >= 4) else None
         if row.get("category") in CATEGORIES:
             c.llm_category = row["category"]
         report["summarized"] += 1
@@ -182,3 +215,14 @@ def drop_low_signal(clusters: list[Cluster], cfg: dict) -> tuple[list[Cluster], 
     for c in clusters:
         (dropped if (c.signal is not None and c.signal < min_signal) else kept).append(c)
     return kept, dropped
+
+
+# Radar eşiği: bunun üstündeki maddeler sayfanın en üstünde ikaz olarak çıkar.
+POTENTIAL_ALERT = 4
+
+
+def alerts(clusters: list[Cluster], limit: int = 6) -> list[Cluster]:
+    """Kısa vadede potansiyeli yüksek maddeler — en üstte ikaz bandına girer."""
+    hot = [c for c in clusters if (c.potential or 0) >= POTENTIAL_ALERT]
+    hot.sort(key=lambda c: (-(c.potential or 0), -c.score))
+    return hot[:limit]

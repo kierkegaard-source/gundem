@@ -68,9 +68,13 @@ class Cluster:
     score: float = 0.0
     # Faz 4'te LLM tarafından doldurulur. Bütçe tavanına çarpılırsa None kalır
     # ve sayfa ham başlıkla basılır.
+    title_tr: str | None = None
     summary_tr: str | None = None
     why_tr: str | None = None
     signal: int | None = None
+    # Kısa vadeli potansiyel (1-5). 4+ olanlar sayfada ikaz bandına çıkar.
+    potential: int | None = None
+    potential_note: str | None = None
     llm_category: str | None = None
 
     @property
@@ -92,7 +96,8 @@ class Cluster:
 
     @property
     def title(self) -> str:
-        return self.lead.title
+        """Varsa Türkçe başlık. Ürün adları LLM tarafından çevrilmiyor."""
+        return self.title_tr or self.lead.title
 
     @property
     def url(self) -> str:

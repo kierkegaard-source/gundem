@@ -17,6 +17,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from pipeline.db import connect, digest_dates, digest_items, last_run
+from pipeline.summarize import POTENTIAL_ALERT
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
@@ -132,6 +133,7 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     ref = datetime.now(timezone.utc)
     by_cat: dict[str, list[dict]] = {}
     sources_seen: set[str] = set()
+    hot: list[dict] = []          # kısa vadeli potansiyeli yüksek maddeler
 
     for r in rows:
         srcs = json.loads(r["sources"])
@@ -144,7 +146,7 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
             # Başlığın kendisini tekrar etmenin anlamı yok.
             if candidate and candidate.lower() != (r["title"] or "").strip().lower():
                 raw = _trim(_strip_title(candidate, r["title"]))
-        by_cat.setdefault(r["category"], []).append({
+        entry = {
             "title": r["title"],
             "url": r["url"],
             "why": r["why_tr"],
@@ -154,7 +156,12 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
                          "mark": SOURCE_MARK.get(s, s[:2])} for s in srcs],
             "published_iso": r["published_at"],
             "published_human": _hours_ago(r["published_at"], ref),
-        })
+            "potential": r["potential"] or 0,
+            "potential_note": r["potential_note"],
+        }
+        by_cat.setdefault(r["category"], []).append(entry)
+        if (r["potential"] or 0) >= POTENTIAL_ALERT:
+            hot.append(entry)
 
     # NOT: anahtar "items" OLAMAZ — Jinja `sec.items`i dict.items metoduna
     # çözümlüyor ve `|length` patlıyor. "entries" kullanılıyor.
@@ -179,7 +186,9 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     if rows and not any(r["summary_tr"] for r in rows):
         notices.append("Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.")
 
+    hot.sort(key=lambda e: -e["potential"])
     return {
+        "alerts": hot[:6],
         "date": day,
         "date_long": tr_date(day),
         "total": len(rows),

@@ -230,8 +230,15 @@ Tek istekte batch halinde gönder, item başına ayrı çağrı YAPMA.
 > - `summary`: 2 cümle. Ne olduğunu ve kime yaradığını anlat. Pazarlama dili
 >   kullanma, abartma. "Devrim niteliğinde" gibi ifadeler yasak.
 > - `why`: tek satır, en fazla 12 kelime. Bunu neden okumaya değer?
+> - `title_tr`: başlığın Türkçesi. Ürün/şirket/oyun adları ÇEVRİLMEZ.
 > - `category`: dev | gamedev | apps | design | startup
-> - `signal`: 1–5 arası. 5 = gerçekten yeni ve önemli, 1 = gürültü.
+> - `signal`: 1–5 arası. Ünlülüğü değil, gerçekten yeni bir şey olup olmadığını ölçer.
+> - `potential`: 1–5 arası KISA VADELİ POTANSİYEL. "İyi ürün mü" değil,
+>   "önümüzdeki haftalarda hızla yaygınlaşma ya da fırsat yaratma ihtimali var mı".
+> - `potential_note`: potential ≥ 4 ise tek cümlelik gerekçe.
+
+`potential ≥ 4` olan maddeler sayfanın en üstünde **Radar** bandında ikaz olarak
+listelenir ve terminal çıktısında da gösterilir.
 >
 > Girdi İngilizceyse özet yine Türkçe olacak. Teknik terimleri zorlama çevirme
 > (framework, endpoint, shader gibi kelimeler olduğu gibi kalsın).
