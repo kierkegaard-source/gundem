@@ -6,6 +6,7 @@
 <title>Gündem — Pazar, 30 Ağustos 2026</title>
 <meta name="description" content="Her sabah developer tools, indie oyun, yeni uygulama ve tasarım dünyasından yeni çıkanlar — Türkçe özetlerle.">
 <meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://kierkegaard-source.github.io/gundem/">
 <style>/* Gündem — gazete hissi, tarama için tasarlandı.
    Harici istek yok (font, ikon, script). Tek dosya, sayfaya gömülü. */
 
@@ -144,6 +145,12 @@ body {
 }
 .stats .day { font-weight: 650; color: var(--ink); }
 .stats .sep { color: var(--rule); }
+.stats .stamp {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  cursor: help;
+}
 
 /* ================= görünüm seçici ================= */
 
@@ -585,21 +592,23 @@ footer a { color: var(--ink-faint); }
 
 <header class="masthead">
   <div class="brand">
-    <h1><a href="index.html">Gündem</a></h1>
+    <h1><a href="./">Gündem</a></h1>
     <span class="tagline">Ürün &amp; Girişim Gazetesi</span>
   </div>
 <div class="stats">
   <span class="day">Pazar, 30 Ağustos 2026</span>
   <span class="sep">|</span>
-  <span>41 madde</span>
+  <span>35 madde</span>
   <span class="sep">|</span>
-  <span>6 kaynak</span>
+  <span>8 kaynak</span>
+  <span class="sep">|</span>
+  <span class="stamp" title="Sayfa bu saatte üretildi. Daha eski görünüyorsa tarayıcı önbelleğindesiniz — Cmd+Shift+R.">30.08.2026 17:39 UTC</span>
 </div>
 </header>
 
 
 <nav class="viewnav">
-  <a href="index.html"
+  <a href="./"
      class="on">Kategoriye göre</a>
   <a href="2026-08-30-kaynak.html" class="">Kaynağa göre</a>
 </nav>
@@ -607,8 +616,8 @@ footer a { color: var(--ink-faint); }
 
 <nav class="catnav">
   <a href="#dev"><b>Geliştirici Araçları</b> <i>15</i></a>
-  <a href="#apps"><b>Yeni Uygulamalar</b> <i>8</i></a>
-  <a href="#gamedev"><b>Indie Oyun</b> <i>15</i></a>
+  <a href="#apps"><b>Yeni Uygulamalar</b> <i>6</i></a>
+  <a href="#gamedev"><b>Indie Oyun</b> <i>11</i></a>
   <a href="#design"><b>Tasarım</b> <i>2</i></a>
   <a href="#startup"><b>Girişim ve Yatırım</b> <i>1</i></a>
 </nav>
@@ -617,22 +626,30 @@ footer a { color: var(--ink-faint); }
   <div class="radar-head">
     <span class="radar-icon" aria-hidden="true">!</span>
     <h2>Fırsat Radarı</h2>
-    <span class="radar-sub">üzerine iş kurulabilecek 3 madde</span>
+    <span class="radar-sub">üzerine iş kurulabilecek 4 madde</span>
   </div>
   <ol class="radar-list">
     <li>
       <span class="radar-score" title="kısa vadeli potansiyel">4<i>/5</i></span>
       <div class="radar-body">
-        <a href="https://github.com/K-Dense-AI/scientific-agent-skills" rel="noopener">scientific-agent-skills — Herhangi bir AI ajanını AI bilimcisine dönüştürün</a>
-<span class="opp">Ekosistem</span><p>Bilim aracı SaaS&#39;ları veya uzmanlaştırılmış domain ajanları kuran şirketler için temel.</p>        <div class="radar-meta">
+        <a href="https://producthunt.com/r/ULWMLW4DJVACDF" rel="noopener">Olostep</a>
+<span class="opp">Kanıtlı talep</span><p>Agentic sistemler için veri hazırlama katmanı; SaaS olarak ücretlendirilebilir.</p>        <div class="radar-meta">
+<span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>        </div>
+      </div>
+    </li>
+    <li>
+      <span class="radar-score" title="kısa vadeli potansiyel">4<i>/5</i></span>
+      <div class="radar-body">
+        <a href="https://github.com/K-Dense-AI/scientific-agent-skills" rel="noopener">scientific-agent-skills</a>
+<span class="opp">Ekosistem</span><p>Agent üzerine spesifik bilim domain&#39;leri ve vertical SaaS&#39;ler kurulabilir.</p>        <div class="radar-meta">
 <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>        </div>
       </div>
     </li>
     <li>
       <span class="radar-score" title="kısa vadeli potansiyel">4<i>/5</i></span>
       <div class="radar-body">
-        <a href="https://github.com/tashfeenahmed/freellmapi" rel="noopener">freellmapi — 7,4 milyar jeton/ay, 34 ücretsiz LLM sağlayıcısı, 635 model endpoint&#39;i</a>
-<span class="opp">Ekosistem</span><p>Failover mekanizmasıyla stabil, maliyetsiz LLM altyapısına dayanan SaaS hizmetleri yaratılabilir.</p>        <div class="radar-meta">
+        <a href="https://github.com/tashfeenahmed/freellmapi" rel="noopener">tashfeenahmed/freellmapi — Ayda 7.4 milyar token, 34 ücretsiz model</a>
+<span class="opp">Boşluk</span><p>Agen altyapısı kuranlar için tercih problemi çözme; tasarlanmış SaaS versiyonu satılabilir.</p>        <div class="radar-meta">
 <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>        </div>
       </div>
     </li>
@@ -640,7 +657,7 @@ footer a { color: var(--ink-faint); }
       <span class="radar-score" title="kısa vadeli potansiyel">4<i>/5</i></span>
       <div class="radar-body">
         <a href="https://github.com/unclecode/crawl4ai" rel="noopener">Crawl4AI</a>
-<span class="opp">Ekosistem</span><p>LLM agenları için veri çıkarma katmanı; SaaS wrapper ya da premium features olarak parasallaştırılabilir.</p>        <div class="radar-meta">
+<span class="opp">Boşluk</span><p>Ajan sistemleri için veri işleme katmanı; Crawl4AI üzerine spesiyalize editoryal/verifikasyon SaaS&#39;ı kurs yapılabilir.</p>        <div class="radar-meta">
 <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>        </div>
       </div>
     </li>
@@ -649,6 +666,10 @@ footer a { color: var(--ink-faint); }
   dayanır — bir başlangıç noktasıdır, yatırım tavsiyesi değildir.</p>
 </section>
 
+<div class="notice">
+  <b>Bu sayı eksik üretildi</b>
+  <ul><li>rss (kısmi) kaynağı kısmen alınabildi.</li></ul>
+</div>
 
 
 <section class="section" id="dev">
@@ -658,28 +679,18 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://x.com/levelsio/status/2093984182154194989" rel="noopener">Infinite Slop başarılı başlangıç yaptı</a></h3>
-<p class="why">Viral AI video üretim projesinin ilk metrikleri ve ölçeklenme sorunları.</p>  <p class="body">AI tarafından oluşturulan sonsuz bir canlı akış projesi. 37 bin kişinin izlemesi proje kurucusunun başarıya ulaştığını gösteriyor.</p>
-  <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T08:48:28+00:00">8 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
   <h3><a href="https://producthunt.com/r/ULWMLW4DJVACDF" rel="noopener">Olostep</a></h3>
-<p class="why">Web scraping&#39;i yapay zeka merkezli bir iş akışına entegre etme.</p>  <p class="body">Web&#39;i yapısal veri formatına dönüştürerek yapay zeka uygulamalarına hazır hale getiren bir araç. Veri toplama ve hazırlama işini otomatikleştirmek isteyen AI geliştiricileri için tasarlanmıştır.</p>
+<p class="why">Veri çıkarımını basitleştiren araç; AI projeleri için gerçek ihtiyaç.</p>  <p class="body">Web verilerini AI için temiz veri formatına dönüştüren platform. Web scraping ve veri hazırlama ihtiyacı olan yapay zeka projeleri için.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
+<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
     <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://github.com/AniketWathore/bolnee-chat" rel="noopener">Bolnee-Chat – Kendi sunucunuzda çalışan chatbot entegrasyonu</a></h3>
-<p class="why">Self-hosted chatbot&#39;u, veri gizliliği ve kontrol yönetimi isteyen yerler için.</p>  <p class="body">İşletme web sitelerine yerleştirilebilen kendi sunucunuzda çalışan bir chatbot çözümü. Müşteri desteği veya siteler arası etkileşim otomatikleştirmek isteyen işletmeler için vardır.</p>
+  <h3><a href="https://github.com/AniketWathore/bolnee-chat" rel="noopener">Bolnee-Chat</a></h3>
+<p class="why">Self-hosted chatbot çözümü; kurumsal talep kanıtlanmış.</p>  <p class="body">Web sitesine kendi sunucuda barındırılan chatbot entegrasyonu. İşletmeler için müşteri destek ve katılım aracı.</p>
   <div class="card-meta">
     <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
     <span class="dot">·</span>
@@ -688,156 +699,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2094090589201392104" rel="noopener">Infinite Slop mobil video formatına geçti</a></h3>
-<p class="why">Projenin ölçeklenme ve kullanıcı davranışlarına adapte olması.</p>  <p class="body">Mobil trafiğinin ağırlığına bağlı olarak video üretim formatı 16:9&#39;dan 9:16&#39;ya değiştirildi. Proje işletmeciliğinden bahseden bir güncelleme paylaşımı.</p>
-  <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T15:51:17+00:00">1 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2093754163343593802" rel="noopener">Infinite Slop oluşturuldu</a></h3>
-<p class="why">Interaktif AI video nesli gerçek zamanlı topluluk katılımı ile.</p>  <p class="body">Chat tarafından kontrol edilen, sonsuz ve etkileşimli bir yapay zeka video akışı projesi. Her mesaja görsel yanıt üretip, önceki videoyla bağlantı kurarak bir hikaye oluşturuyor.</p>
-  <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-29T17:34:27+00:00">23 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2094004712869601555" rel="noopener">Infinite Slop aynı anda bin kişi izleyici geçti</a></h3>
-<p class="why">Viral projenin büyüme metrikleri ve ölçeklenme başarısı.</p>  <p class="body">Infinite Slop projesinin aynı anda bin kişi izleyiciyi geçmesinden bahseden bir güncelleme. Proje ölçeklenme performansını gösteren metrik.</p>
-  <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T10:10:02+00:00">7 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/tt-a1i/archify" rel="noopener">archify — Güzel ve doğrulanabilir mimari diyagramlar</a></h3>
-<p class="why">Mimar ve yükseltme planı yapanlara hızlı, taşınabilir diyagram çıktısı.</p>  <p class="body">Aracı, otomatik olarak mimaşı, iş akışı, sekans ve veri akışı diyagramlarını kendi kendine HTML&#39;ye dönüştüren agent becerisi. İndir ve hemen kullan; harici tools yok.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/K-Dense-AI/scientific-agent-skills" rel="noopener">scientific-agent-skills — Herhangi bir AI ajanını AI bilimcisine dönüştürün</a></h3>
-<p class="why">Bilim topluluğu için hızlı deney ve keşif altyapısı; 190,000+ kullanıcı.</p>  <p class="body">Bilim insanları için hazırlanmış 165 doğrulanmış beceri ve 100+ bilimsel veritabanı (biyoloji, kimya, tıp, ilaç keşfi) içeren agent becerleri kitaplığı. Cursor, Claude Code ve açık Agent Skills standardı ile uyumlu.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/THU-MAIC/OpenMAIC" rel="noopener">THU-MAIC/OpenMAIC — Açık Çok-Ajan İnteraktif Sınıf</a></h3>
-<p class="why">Eğitim alanında yapay ajan uygulamalarının yeni bir örneği.</p>  <p class="body">Öğrenciler için çoklu yapay ajan ile etkileşimli öğrenme ortamı sunan açık kaynaklı bir sistem. Eğitim teknolojisi ve dil öğrenme uygulamalarına kaynak olabilir.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/every-app/open-seo" rel="noopener">every-app/open-seo — Semrush ve Ahrefs&#39;e açık kaynaklı alternatif</a></h3>
-<p class="why">SEO profesyonelleri için maliyetli yazılımlara alternatif.</p>  <p class="body">SEO analiz ve raporlama için açık kaynaklı bir araç. Ticari SEO yazılımlarının pahalılığından rahatsız olan ajansı ve bireysel profesyonelleri hedefliyor.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://producthunt.com/r/SPXFLFPPKRFQUY" rel="noopener">Superagent — Claude Code herkes için</a></h3>
-<p class="why">Claude ekosisteminde yapı için yeni bir katman.</p>  <p class="body">Claude tabanlı kod ajanı yazılımı. Yazılımcılar ve otomasyona ilgi duyanlar için kullanıcı dostu bir arayüz sunuyor.</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/tashfeenahmed/freellmapi" rel="noopener">freellmapi — 7,4 milyar jeton/ay, 34 ücretsiz LLM sağlayıcısı, 635 model endpoint&#39;i</a></h3>
-<p class="why">LLM uygulamaları geliştiren yapı maliyetini önemli ölçüde azaltır.</p>  <p class="body">OpenAI uyumlu tek bir endpoint arkasında duran çok sayıda ücretsiz dil modeli API&#39;sine erişim sağlayan araç. LLM-tabanlı ürün geliştiren yazılımcılar için maliyet avantajı sunuyor.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/Lakr233/vphone-cli" rel="noopener">Lakr233/vphone-cli</a></h3>
-<p class="why">Ürün hakkında yetersiz bilgi.</p>  <p class="body">Açıklama sağlanmamıştır, detay bulunmamaktadır.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/mvanhorn/last30days-skill" rel="noopener">last30days-skill — Reddit, X, YouTube, HN, Polymarket&#39;te araştırma yapan ajan becerisi</a></h3>
-<p class="why">Ajan ekosisteminde reel zamanlı bilgi kaynaklarına bağlantı sağlayan niş araç.</p>  <p class="body">AI ajanlar için, son 30 gündeki popüler konuları araştırıp sentez yapan bir araç. Ajanı olan yazılımcılar bu beceriyi entegre edebiliyor.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://github.com/unclecode/crawl4ai" rel="noopener">Crawl4AI</a></h3>
-<p class="why">LLM acenteleri için hazırlanmış açık kaynak scraping aracı.</p>  <p class="body">LLM-dostu açık kaynak web crawler ve scraper. Siteleri analiz ederek yapılandırılmış veri çıkarmanıza yardımcı olur.</p>
-  <div class="card-meta">
-    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
-<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
-  </div>
-</article>
-
-  </div>
-</section>
-<section class="section" id="apps">
-  <div class="section-head">
-    <h2>Yeni Uygulamalar</h2>
-    <span class="count">8 madde</span>
-  </div>
-  <div class="grid">
-    <article class="card lead">
-  <h3><a href="https://producthunt.com/r/25TEFO4TYMRPSG" rel="noopener">Topview Motion Studio</a></h3>
-<p class="why">After Effects öğrenmeden video yapabilmek pratik.</p>  <p class="body">After Effects kullanmadan başlama videoları oluşturmak için tasarlanmış bir araç. Pazarlama, reklamcılık ve sosyal medya içeriği üreten ekipler için hızlı video editleme çözümü sunuyor.</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://producthunt.com/r/WIPDN746ZT7D27" rel="noopener">Hyperfocus</a></h3>
-<p class="why">Hedef yönetimi ve günlük takip for productivity.</p>  <p class="body">Hedefleri günlük ilerlemeye dönüştüren bir planlayıcı uygulaması. Bireysel veya takım bazında üretkenliği artırmak isteyen kullanıcılar için tasarlanmıştır.</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
   <h3><a href="https://producthunt.com/r/OTBU4BBU7KUQEY" rel="noopener">Referent</a></h3>
-<p class="why">Hukuk sektörü için yapay zeka niche çözümü sunar.</p>  <p class="body">Hukuk firmaları için yapay zeka tabanlı modern bir işletim sistemi. Hukuk alanında belgeleme, araştırma ve hukuki işlemler otomatikleştirmek isteyen profesyoneller için tasarlanmıştır.</p>
+<p class="why">Spesifik sektör yazılımı; kurumsal ürün çıkışı.</p>  <p class="body">Hukuk firmaları için yapılan AI-native işletim sistemi. Avukatlar ve hukuk ekipleri için iş akışı otomasyonu.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -847,7 +710,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/MPGY4SMRHXCRMC" rel="noopener">Murfy AI</a></h3>
-<p class="why">Akademik yayın sürecini otomatikleştirme araçı.</p>  <p class="body">arXiv&#39;e yazı yazmayı, gözden geçirmeyi ve yayınlamayı 10 kat daha hızlı hale getiren bir yapay zeka aracı. Akademik araştırmacılar ve yazarlar için tasarlanmıştır.</p>
+<p class="why">Yazı-yayın döngüsünü hızlatan, kanıtlanmış süre tasarrufu var.</p>  <p class="body">Akademik makaleler yazmak, gözden geçirmek ve arXiv&#39;e yayınlamak için yazılı metni hızlandıran bir araç. Araştırmacılar için iş akışını 10 kat daha hızlı hale getirmeyi hedefliyor.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -856,8 +719,48 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://producthunt.com/r/HDEJHZVHFWZ2YT" rel="noopener">Prequel — Mac&#39;te sinematik ekran kaydı oluşturun</a></h3>
-<p class="why">Sınırlı bir ürün; Mac ekran kaydı pazarı doymuş.</p>  <p class="body">Mac bilgisayarlarda sinematik kalitede ekran kaydı yapan uygulama. Yazılı içerik ve sosyal medya untuk hazırlamaya yönelik.</p>
+  <h3><a href="https://github.com/tt-a1i/archify" rel="noopener">archify</a></h3>
+<p class="why">Agent altyapısı için yeni araç; teknik derinlik var.</p>  <p class="body">AI ajanları için mimarisi, iş akışı, dizi, veri akışı ve yaşam döngüsü diyagramları oluşturan bir skill&#39;dir. Self-contained HTML ile hareket ve keskin export özellikleri sunar.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/K-Dense-AI/scientific-agent-skills" rel="noopener">scientific-agent-skills</a></h3>
+<p class="why">Geniş kitle ve kanıtlanmış talep; büyük ekosistem.</p>  <p class="body">AI ajanlarını bilim insanına dönüştüren bir skill kütüphanesi. 190.000+ bilim insanı tarafından kullanılan, biyoloji, kimya, tıp ve ilaç keşfine yönelik 165 doğrulanmış skill ve 100+ bilimsel veritabanı içerir.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/THU-MAIC/OpenMAIC" rel="noopener">THU-MAIC/OpenMAIC — Açık Multi-Agent İnteraktif Sınıfı</a></h3>
+<p class="why">Eğitim teknolojisinde yeni bir açık kaynak altyapısı</p>  <p class="body">Çoklu ajanlarla etkileşimli öğrenme deneyimi sunan açık kaynak platform. Eğitim kurumları ve geliştiriciler için hazır bir sınıf ortamı sağlıyor.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/every-app/open-seo" rel="noopener">every-app/open-seo — Semrush ve Ahrefs açık kaynak alternatifi</a></h3>
+<p class="why">Kapalı SEO araçlarına karşı açık kaynak seçeneği</p>  <p class="body">SEO analizi için açık kaynak bir araç. Anahtar kelime araştırması, backlink analizi ve rakip izleme gibi özellikleri sunuyor.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/SPXFLFPPKRFQUY" rel="noopener">Superagent — Claude Code herkes için</a></h3>
+<p class="why">Claude&#39;u ajan platformu olarak sunan yeni uygulama</p>  <p class="body">Claude tabanlı bir aI ajanı platformu. Geliştiriciler için Claude&#39;un kod yeteneğini daha ulaşılır hale getiriyor.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -866,32 +769,130 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2094024039081673067" rel="noopener">Sıra sistemine oy mekanizması eklendi; sıradaki oluşturulacakları topluluk oylaması yapabilir</a></h3>
-<p class="why">İçerik üretim platformında ilginç mekanik; bağlamı sınırlı.</p>  <p class="body">Kullanıcıların, sunulan öğelerin sırasında oy verebileceği kolektif bir karar mekanizması. Sıraya girenler toplu olarak hangi öğenin oluşturulacağını seçebiliyor.</p>
+  <h3><a href="https://github.com/tashfeenahmed/freellmapi" rel="noopener">tashfeenahmed/freellmapi — Ayda 7.4 milyar token, 34 ücretsiz model</a></h3>
+<p class="why">Ücretsiz LLM&#39;ler için tek endpoint, akıllı yönlendirme ve failover</p>  <p class="body">Birleştirilmiş API arkasında birden fazla ücretsiz LLM sağlayıcısını buluşturan bir proxy hizmeti. Otomatik yönlendirme ve hata toleransı sunuyor, şifreleme yapıyor.</p>
   <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T11:26:50+00:00">6 saat önce</time>
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://producthunt.com/r/YSB77QGV4KPKYR" rel="noopener">Ulpaso — Sadece toplantı notları almak için para vermeyi durdurun</a></h3>
-<p class="why">Toplantı yazılımı işinde yaygın bir şikayet noktasına dokunuyor.</p>  <p class="body">Toplantı notları almak için ayrı ücret ödenmesini kaldıran araç. Toplantıları kayıt alır, otomatik olarak not alır.</p>
+  <h3><a href="https://github.com/mvanhorn/last30days-skill" rel="noopener">mvanhorn/last30days-skill — Son 30 günün konularını araştıran AI becerisi</a></h3>
+<p class="why">Ajanlar için uzman araştırma becerisi modülü</p>  <p class="body">Reddit, X, YouTube, Hacker News ve web&#39;den belirli bir konuyu araştırıp özetleyen AI ajanı becerisi. Ajanların beceri kütüphanesine eklenebiliyor.</p>
   <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://github.com/k7cfo/remove-your-data" rel="noopener">Veri aracılarından abonelik olmadan kendinizi silin</a></h3>
-<p class="why">Gizlilik endişesi artan bir konuda pratik çözüm.</p>  <p class="body">İnsanların verileri veri aracılarından otomatik olarak kaldırmasını sağlayan bir araç. Gizlilik ile ilgilenen bireyler ve özel bilgiler yönetmek isteyen işletmeler için kullanışlı.</p>
+  <h3><a href="https://github.com/unclecode/crawl4ai" rel="noopener">Crawl4AI</a></h3>
+<p class="why">LLM tabanlı ürünlerde veri yönetimi kritik bottleneck.</p>  <p class="body">LLM&#39;ler için tasarlanmış açık kaynak web scraper ve crawler aracı. Ajan sistemleri kuran geliştiricilerin veri toplama ihtiyaçlarını karşılıyor.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+<span class="opp-mini">★ fırsat</span>    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://simonwillison.net/2026/Aug/29/hy4" rel="noopener">Hy4 Preview Tanıtılıyor</a></h3>
+<p class="why">Açık ağırlıklı LLM&#39;lerin kalitesi ve boyutu hızla artıyor.</p>  <p class="body">Tencent&#39;ten 770B parametreli açık ağırlıklı LLM; 1M token context ve yüksek akıl yürütme kapasitesi ile sunuluyor. Önceki Hy3&#39;ün 2.5 katı büyüklüğünde ve Hugging Face&#39;de ücretsiz erişilebilir.</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-29T23:53:13+00:00">17 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/mainak55512/flint" rel="noopener">Flint – C/C++ Package Manager</a></h3>
+<p class="why">C/C++ ekosisteminde paket yönetimi eksik veya kötü.</p>  <p class="body">C/C++ için yazılmış minimal bir paket yöneticisi ve build aracı. C kodlayanlar için modern paket yönetiminin sağladığı kolaylıktan yoksun oldukları bir alan.</p>
   <div class="card-meta">
     <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-29T22:31:56+00:00">18 saat önce</time>
+    <time datetime="2026-08-29T17:44:37+00:00">23 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/NationalSecurityAgency/ghidra" rel="noopener">Ghidra</a></h3>
+<p class="why">Kurumsal kaynaklı güvenlik framework; niche ama katı.</p>  <p class="body">NSA tarafından geliştirilen, yazılım tersine mühendisliği için açık kaynak bir framework. Güvenlik araştırmacıları, malware analisti ve reveres engineer&#39;lar için kapsamlı araçlar sunuyor.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="apps">
+  <div class="section-head">
+    <h2>Yeni Uygulamalar</h2>
+    <span class="count">6 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card lead">
+  <h3><a href="https://producthunt.com/r/WIPDN746ZT7D27" rel="noopener">Hyperfocus</a></h3>
+<p class="why">Yeni planlama ve hedef yönetim aracı; ürün çıkışı kanıtlanmış.</p>  <p class="body">Hedefleri günlük ilerlemeye dönüştüren planlayıcı uygulaması. Produktivite araçları için alternatif sunan yaşam yönetimi yazılımı.</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://x.com/levelsio/status/2093984182154194989" rel="noopener">Infinite Slop</a></h3>
+<p class="why">Interaktif AI video platformu; ölçeklenebilir topluluk modeli ilginç.</p>  <p class="body">Topluluk tarafından istenen AI videoları oluşturan ve canlı yayınlayan deney. Kitlesel katılımla hızlı video üretim gösterisinin başarısı.</p>
+  <div class="card-meta">
+    <span class="src src-twitter"><span class="mark">X</span>X</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T08:48:28+00:00">8 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/HDEJHZVHFWZ2YT" rel="noopener">Prequel</a></h3>
+<p class="why">Yeni ürün; ekran kaydı pazarında kalite artışı.</p>  <p class="body">Mac&#39;te sinematik kalitede ekran kaydı oluşturmak için tasarlanmış bir uygulama. Yazılım gösterimleri, öğreticiler ve pazarlama videoları için geliştiriciler ve içerik üreticileri tarafından kullanılabilir.</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/YSB77QGV4KPKYR" rel="noopener">Ulpaso</a></h3>
+<p class="why">Maliyet sorunu çözen araç; talep kanıtlanmış.</p>  <p class="body">Toplantı notları almak için ödeme yapmaktan vazgeçmenizi sağlayan bir uygulama. Toplantı yazılım pazarında maliyetsiz alternatif sunmaktadır.</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/k7cfo/remove-your-data" rel="noopener">Veri brokerlerinden kendinizi kaldırın, abonelik olmadan</a></h3>
+<p class="why">Gizlilik konusunda uygulanabilir bir çözüm sunan araç</p>  <p class="body">Veri brokerlerinden otomatik olarak kişisel bilgilerinizi silmeye yarayan bir araç. Abonelik gerektirmeden bu hizmeti sunuyor.</p>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-29T22:31:56+00:00">19 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/Lakr233/vphone-cli" rel="noopener">Lakr233/vphone-cli</a></h3>
+<p class="why">Açık kaynak sanal telefon aracı, bilgi yetersiz</p>  <p class="body">Komut satırı aracı olarak sunulan bir sanal telefon uygulaması. Detaylı bilgi eksik olsa da GitHub&#39;da popülarlik görüyor.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">2 saat önce</time>
   </div>
 </article>
 
@@ -900,62 +901,22 @@ footer a { color: var(--ink-faint); }
 <section class="section" id="gamedev">
   <div class="section-head">
     <h2>Indie Oyun</h2>
-    <span class="count">15 madde</span>
+    <span class="count">11 madde</span>
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://bsky.app/profile/gammacorrect.bsky.social/post/3mucmcffb3c2b" rel="noopener">Kurbağa züchteme dungeon crawler oyununda ilerleme</a></h3>
-<p class="why">Niş indie oyun konsepti ve teknik ilerleme.</p>  <p class="body">Indie geliştirici tarafından yapılan, kurbağa züchteme mekanikli ve dungeon crawler stilinde bir oyunun öğretici aşamasındaki gelişmesi. Pixel art tarzında bir projedir.</p>
+  <h3><a href="https://bsky.app/profile/celuloide.bsky.social/post/3mucm7epsts2n" rel="noopener">Sokak lambaları yakarak şehri koruyun</a></h3>
+<p class="why">Indie oyun mekanikleri ilginç; niş ürün.</p>  <p class="body">Yokohama Nights adlı bir indie oyunun gameplay mekanieği hakkında açıklama. Oyuncu sokak lambaları yakarak görüş ve koruma sağlar, enerjisini yeniler.</p>
   <div class="card-meta">
     <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:33:12.360000+00:00">2 saat önce</time>
+    <time datetime="2026-08-30T14:31:30.996000+00:00">3 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://bsky.app/profile/paranoodle.bsky.social/post/3muct6x7ypk2z" rel="noopener">Godot 4&#39;e dönüşüm neredeyse tamamlandı</a></h3>
-<p class="why">Büyük engine upgrade projesinin ilerleme güncellemesi.</p>  <p class="body">Bir indie oyun projesinin Godot 3&#39;ten Godot 4&#39;e taşınma işlemi önemli ölçüde ilerledi. Geliştirici motor yükseltmesinde başarı gösteriyor.</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T16:36:33.038000+00:00">az önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://bsky.app/profile/fluffbuffjams.bsky.social/post/3mucmf6l5cc24" rel="noopener">DJ Fuzz oyununda boss savaş animasyonu iyileştirildi</a></h3>
-<p class="why">Indie oyun geliştirmesi teknik ilerleme güncellemesi.</p>  <p class="body">Indie oyun projesindeki açılış sahnesi ve savaş mekaniklerine görsel iyileştirmeler yapıldı. Boss savaşlarında karakter duruş animasyonu eklendi.</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:34:45.878000+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://bsky.app/profile/crookedstonestudio.bsky.social/post/3mucmf4xwms2n" rel="noopener">Tespit oyunu: masada, rehberde, sonra da araştırma</a></h3>
-<p class="why">Nişleştirilmiş, tasarımcının duygusal bağlılığı açık.</p>  <p class="body">Pixel art tarzında, küçük nişlerdeki çöp oyunları türü tanımlama bulmacası. Oyuncu bir masayı inceleyerek ögeler bulur.</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:34:44.199000+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://bsky.app/profile/celuloide.bsky.social/post/3mucm7epsts2n" rel="noopener">Lamplighters&#39;da sokak lambalarını yakarak şehri güvende tutun</a></h3>
-<p class="why">İlginç oyun tasarım kararı; niş bir geliştirici görseli.</p>  <p class="body">Yokohama Nights adlı oyunda sokak lambalarının mekanik önemi anlatılan bir sistem görseli. Lambalar enerji ve görü sağlar.</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T14:31:30.996000+00:00">2 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://jettelly.com/blog/breaking-down-a-stylized-explosion-vfx-made-in-godot" rel="noopener">Godot&#39;ta stilize edilmiş patlama efekti yapma</a></h3>
-<p class="why">Motor spesifik, uygulanabilir teknik rehberi; tasarımcılara faydalı.</p>  <p class="body">Animated noise, vertex displacement ve katmanlı efektleri birleştiren bir oyun efekti. Godot motoru için tam bir teknik breakdown sunuluyor.</p>
+  <h3><a href="https://jettelly.com/blog/breaking-down-a-stylized-explosion-vfx-made-in-godot" rel="noopener">Godot&#39;ta stilize patlama efekti nasıl yapılır?</a></h3>
+<p class="why">Godot tutorialleri önemlidir; VFX tekniği ilgi çeker.</p>  <p class="body">Godot Engine&#39;de animated noise, vertex displacement ve layered effects kullanarak patlama efekti oluşturmaya dair teknik bir rehber. Oyun geliştiricileri için eğitsel bir ressource.</p>
   <div class="card-meta">
     <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
     <span class="dot">·</span>
@@ -964,28 +925,18 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://s.team/a/3943110" rel="noopener">Doğum günüm olduğu için Goreticulture&#39;ı wishliste ekleyin</a></h3>
-<p class="why">Bağımsız oyun geliştiricisinin günlük ilerlemesi; niş bir duyuru.</p>  <p class="body">Godot ile geliştirilen horror tarzı Goreticulture oyununa yeni ses efektleri eklendi. Rotbloom büyürken kemiklerin çatlamıştır.</p>
+  <h3><a href="https://bsky.app/profile/saredd99.bsky.social/post/3mucw4ceqkk2h" rel="noopener">Masaüstü balık tutma oyununun ekran görüntüleri</a></h3>
+<p class="why">Ekran görüntüsü paylaşımı; haber değeri düşük.</p>  <p class="body">Yeni bir masaüstü balık tutma oyununun oynanış ekran görüntüleri. Sanatsal bir gösterim ve oyun geliştirme süreci hakkında bir paylaşımdır.</p>
   <div class="card-meta">
     <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T06:20:44.601000+00:00">11 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://bsky.app/profile/lleifermann.dev/post/3mucsykclsc2e" rel="noopener">Diegetic UX tasarımı: oyuncu rehber kitapçığı</a></h3>
-<p class="why">Oyun tasarımında düşünceli UX kararı; teknik misal.</p>  <p class="body">Godot&#39;ta yapılan bir oyunda, oyuncunun oyun kurallarını öğrenmesi için diegetic (öykü içi) bir rehber kitapçığı. Mürekkep akması karakterini arttırıyor.</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T16:32:58.163000+00:00">az önce</time>
+    <time datetime="2026-08-30T17:28:45.282000+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4621920" rel="noopener">Adventure Honor</a></h3>
-<p class="why">Niş bir roguelike oyun çıkışı.</p>  <p class="body">Rogue-like RPG oyunu. Ilerledikçe beceri ve itemler toplaya­rak karakterinizi geliştirip savaşçıya dönüşüyorsunuz.</p>
+<p class="why">Rogue-like türü stabil bir oyuncu tabanı var.</p>  <p class="body">Rogue-like RPG&#39;de her ekspedisyon sırasında beceri ve eşya toplayarak karakterinizi geliştirir ve daha güçlü hale getirirsiniz. Klasik roguelike mekaniklerini sevenlere hitap ediyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -995,7 +946,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4424690" rel="noopener">Just Open The Door</a></h3>
-<p class="why">Sade ve bağımlılık yapan bir idle oyun.</p>  <p class="body">Kapı açarak para kazandığınız incremental idle oyunu. Hızlı işçiler ve upgradeler satın alarak süreci otomatize ediyorsunuz.</p>
+<p class="why">Idle oyunları kanıtlanmış bir pazara sahip.</p>  <p class="body">Kapılar açıp para kazandığınız, işçi ve otomasyonla ilerlediğiniz bir inkremental idle oyunu. Casual oyuncular için basit ve hipnotize edici bir oyunculuk deneyimi sunuyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -1005,7 +956,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4763600" rel="noopener">POSER</a></h3>
-<p class="why">Yeni mekanikli indie rhythm oyunu.</p>  <p class="body">Müzik ritmine göre hareket ederek bir yeraltı kulübünü keşfettiğiniz narrative rhythm oyunu. Dansçı savaşları kazanarak gizli sırları ortaya çıkarıyorsunuz.</p>
+<p class="why">Ritim oyunlarında özgün anlatım yaklaşımı.</p>  <p class="body">Ritim ve dans mekaniklerini hikaye anlatımıyla birleştiren, underground kulüpte gizemleri çözen bir oyun. Müzik ve kimlik temasıyla niche bir kitleyi hedefliyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -1015,7 +966,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4944450" rel="noopener">DesktopDrifter.exe</a></h3>
-<p class="why">İlginç konsept ama niş ve sınırlı kullanıcı tabanı.</p>  <p class="body">Masaüstünde küçük araçlar sürüp drift yapabilen bir oyun. Casual ve niş oyun oyuncularına yönelik, çalışırken oynanabilecek türde bir açılımcı oyun.</p>
+<p class="why">Steam&#39;de yayınlanan niş bir racing oyunu</p>  <p class="body">Masaüstünde küçük bir araba sürüp drift yapabileceğiniz bir kişi oyunu. Çalışırken, gezinirken araba sürme deneyimi sunuyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -1025,7 +976,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/5066460" rel="noopener">Star Corsairs: Fractured Frontier</a></h3>
-<p class="why">Niş uzay RPG oyunu.</p>  <p class="body">Ticaret, savaş ve keşif yaparak filo kuran 2D uzay RPG oyunu. Kaptan seviye attırıp nadir loot kazanıyorsunuz.</p>
+<p class="why">Açık hedefler açık ve tasdiklenmiş rogue-like mekanik.</p>  <p class="body">Gemi filosu kurup, kaptan geliştirip ve wormhole&#39;lar aracılığıyla nadir eşya arayan 2D uzay RPG&#39;si. Solo oyuncular için ticaret, savaş ve keşif kombinasyonu sunuyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -1035,7 +986,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/5081570" rel="noopener">Distinct Sudoku</a></h3>
-<p class="why">Kurallı varyasyonlar içeren Sudoku oyunu.</p>  <p class="body">Gömme, çevrim, döndürme ve yılan kuralları gibi altı varyant içeren Sudoku. Her puzzlenin tek çözümü var.</p>
+<p class="why">Sudoku varyasyonları niche ama canlı pazara sahip.</p>  <p class="body">Gömme, bulmaca, rotasyon, döngü ve yılan kuralları da dahil altı varyant kuralı kullanan sudoku oyunu. Her bulmaca benzersiz bir çözüme sahip ve geniş bir rastgele mantık puzzle seçeneği sunuyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -1045,11 +996,21 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/5041630" rel="noopener">2048 3D: Rebuilt</a></h3>
-<p class="why">Klasik oyun mekaniğinin 3D yorumu.</p>  <p class="body">2048&#39;in 3D uyarlaması. Fiziksel küpleri hareket ettiriyor, birleştiriyor ve ürün yetiştiriyorsunuz.</p>
+<p class="why">Özgün puzzle-fizik karışımı; klasik temelinde.</p>  <p class="body">2048 klasik oyununu 3D&#39;ye çıkaran, blokları iteratif birleştirip yetiştirdiğiniz bir oyun; üç modu, 124 bitki ve mutasyon sistemi ile genişletilmiş. Fiziksel mekanik ve açık-uçlu içerik kombinasyonu sunuyor.</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
     <time datetime="2026-08-29T00:00:00+00:00">dün</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://nothke.itch.io/shakedown" rel="noopener">Shakedown Rally</a></h3>
+<p class="why">Eksik bilgi; detay ve bağlam yok.</p>  <p class="body">Windows&#39;ta çalışan ve rally tematik bir yarış oyunu. Minimalist açıklamasıyla henüz erken aşama yayınında görünüyor.</p>
+  <div class="card-meta">
+    <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
+    <span class="dot">·</span>
+    <time datetime="2023-01-20T05:09:26+00:00">1318 gün önce</time>
   </div>
 </article>
 
@@ -1062,18 +1023,18 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card">
-  <h3><a href="https://bsky.app/profile/etheringtonbros.bsky.social/post/3mucuilq7222x" rel="noopener">Dijital çizim için aylık dergi ve öğretici</a></h3>
-<p class="why">Düzenli dijital sanat öğretimi ve topluluk katılımı.</p>  <p class="body">Etherington Bros tarafından sağlanan, dijital çizim teknikleri ve tasarım öğreticileri içeren aylık bir dergi. Dijital sanat yapanlar ve tasarımcılar için kaynaklar sunuyor.</p>
+  <h3><a href="https://producthunt.com/r/25TEFO4TYMRPSG" rel="noopener">Topview Motion Studio</a></h3>
+<p class="why">Video oluşturmayı basitleştiren yeni araç; hızlı içerik ihtiyacı var.</p>  <p class="body">After Effects bilgisi olmadan başlama videoları oluşturmayı sağlayan tasarım aracı. Pazarlama, ürün duyurusu ve sosyal medya içeriği için hızlı video üretimi yapanlar için kullanışlı.</p>
   <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T16:59:50.261000+00:00">az önce</time>
+    <time datetime="2026-08-30T07:01:00+00:00">10 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://producthunt.com/r/Q3HHDTI43UTONK" rel="noopener">Ravioli — Özel damga şekilleri oluşturun</a></h3>
-<p class="why">Niş bir tasarım aracı; çok sınırlı kitle ve benzeri ürünler var.</p>  <p class="body">Kullanıcı özel damga şekillerini tasarlayıp oluşturan basit bir tasarım aracı.</p>
+  <h3><a href="https://producthunt.com/r/Q3HHDTI43UTONK" rel="noopener">Ravioli</a></h3>
+<p class="why">Tasarım aracı; niş ürün.</p>  <p class="body">Özel damga şekilleri oluşturmak için tasarlanmış bir uygulama. Tasarımcılar ve yaratıcılar için damga tasarımı sürecini basitleştirmektedir.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -1090,8 +1051,8 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card">
-  <h3><a href="https://producthunt.com/r/PBN7NH52G6BR3Y" rel="noopener">RIP MY BUILD — Terk edilmiş yan projenize son kez ışık tutun</a></h3>
-<p class="why">Tık yok olan projelere ikinci yaşam verme fikri ilginç ama çok niş.</p>  <p class="body">Artık geliştirilmeyen projelerin Product Hunt&#39;ta lansman yapmasını sağlayan bir platform. Yazılımcılar eski eserlerinin topluluğa ulaşmasına imkan bulabiliyor.</p>
+  <h3><a href="https://producthunt.com/r/PBN7NH52G6BR3Y" rel="noopener">RIP MY BUILD — Terk edilmiş yan projenize son lansmanını yapın</a></h3>
+<p class="why">Terk edilmiş projelere niş bir dağıtım kanalı</p>  <p class="body">Yıllardır geliştirilen ama yayınlanmamış projeleri halkla tanıştırmaya yarayan bir platform. Proje sahiplerinin çalışmalarını son kez dünyaya göstermesini sağlıyor.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -1108,8 +1069,8 @@ footer a { color: var(--ink-faint); }
 
 
 <footer>
-  <a href="index.html">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
-  30.08.2026 17:29 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
+  <a href="./">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
+  30.08.2026 17:39 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
 </footer>
 
 </div>
