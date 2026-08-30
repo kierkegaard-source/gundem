@@ -19,13 +19,26 @@ from pipeline.budget import Budget
 from pipeline.config import enabled_sources, load_config
 from pipeline.db import connect, record_run, upsert_items
 from sources.base import Item, Source
+from sources.bluesky import Bluesky
 from sources.github_trending import GithubTrending
 from sources.hackernews import HackerNews
+from sources.itchio import Itchio
+from sources.producthunt import ProductHunt
+from sources.reddit import Reddit
+from sources.rss import Rss
+from sources.steam import Steam
+from sources.twitter import Twitter
 
-# Uygulanmış kaynaklar. Faz 2'de bu sözlük büyüyecek.
 REGISTRY: dict[str, type[Source]] = {
     "hackernews": HackerNews,
     "github_trending": GithubTrending,
+    "producthunt": ProductHunt,
+    "itchio": Itchio,
+    "steam": Steam,
+    "rss": Rss,
+    "bluesky": Bluesky,
+    "twitter": Twitter,
+    "reddit": Reddit,          # config'de kapalı — bkz. sources/reddit.py
 }
 
 SOURCE_TIMEOUT = 45          # saniye — bir kaynak bunu aşarsa atlanır
@@ -39,7 +52,10 @@ async def run_source(name: str, src: Source,
     try:
         items = await asyncio.wait_for(src.fetch(client), timeout=SOURCE_TIMEOUT)
         dt = time.perf_counter() - t0
-        print(f"  ✓ {name:<18} {len(items):>3} kayıt  ({dt:.1f}s)")
+        partial = ""
+        if src.failed_feeds:
+            partial = f"  [{len(src.failed_feeds)} alt-kaynak düştü]"
+        print(f"  ✓ {name:<18} {len(items):>3} kayıt  ({dt:.1f}s){partial}")
         return name, items, None
     except asyncio.TimeoutError:
         print(f"  ✗ {name:<18} zaman aşımı ({SOURCE_TIMEOUT}s)")
@@ -49,12 +65,17 @@ async def run_source(name: str, src: Source,
         return name, [], f"{type(exc).__name__}: {exc}"
 
 
-async def collect(cfg: dict) -> tuple[list[Item], list[str], list[str]]:
+async def collect(cfg: dict, budget=None, only: set[str] | None = None,
+                  skip: set[str] | None = None) -> tuple[list[Item], list[str], list[str]]:
     active = enabled_sources(cfg)
+    if only:
+        active = {k: v for k, v in active.items() if k in only}
+    if skip:
+        active = {k: v for k, v in active.items() if k not in skip}
     ready = {n: c for n, c in active.items() if n in REGISTRY}
     pending = sorted(set(active) - set(ready))
 
-    print(f"Kaynaklar: {len(ready)} hazır, {len(pending)} beklemede (Faz 2)")
+    print(f"Kaynaklar: {len(ready)} hazır" + (f", {len(pending)} beklemede" if pending else ""))
     if pending:
         print(f"  … beklemede: {', '.join(pending)}")
     print()
@@ -64,11 +85,14 @@ async def collect(cfg: dict) -> tuple[list[Item], list[str], list[str]]:
         timeout=httpx.Timeout(30.0), follow_redirects=True, limits=limits,
         headers={"User-Agent": USER_AGENT},
     ) as client:
-        tasks = [
-            run_source(name, REGISTRY[name](conf, cfg), client)
-            for name, conf in ready.items()
-        ]
-        results = await asyncio.gather(*tasks)
+        instances = {}
+        for name, conf in ready.items():
+            src = REGISTRY[name](conf, cfg)
+            src.budget = budget
+            instances[name] = src
+        results = await asyncio.gather(
+            *(run_source(n, s_, client) for n, s_ in instances.items())
+        )
 
     items: list[Item] = []
     failed: list[str] = []
@@ -76,6 +100,11 @@ async def collect(cfg: dict) -> tuple[list[Item], list[str], list[str]]:
         items.extend(got)
         if err:
             failed.append(f"{name}: {err}")
+        else:
+            sub = instances[name].failed_feeds
+            if sub:
+                failed.append(f"{name} (kısmi): {', '.join(sub[:6])}"
+                              + (f" +{len(sub)-6}" if len(sub) > 6 else ""))
     return items, failed, pending
 
 
@@ -97,13 +126,17 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Kaynakları topla ve veritabanına yaz")
     ap.add_argument("--dry-run", action="store_true", help="veritabanına yazma")
     ap.add_argument("--limit", type=int, default=25, help="tabloda gösterilecek satır")
+    ap.add_argument("--only", help="sadece bu kaynaklar (virgülle)")
+    ap.add_argument("--skip", help="bu kaynakları atla (virgülle) — ör. maliyetli twitter")
     args = ap.parse_args()
 
     cfg = load_config()
     budget = Budget.from_config(cfg)
 
     t0 = time.perf_counter()
-    items, failed, pending = asyncio.run(collect(cfg))
+    only = {x.strip() for x in args.only.split(",")} if args.only else None
+    skip = {x.strip() for x in args.skip.split(",")} if args.skip else None
+    items, failed, pending = asyncio.run(collect(cfg, budget, only, skip))
     elapsed = time.perf_counter() - t0
 
     print_table(items, args.limit)
@@ -127,8 +160,10 @@ def main() -> int:
 
     print(f"bütçe    : {budget.summary()}")
     print(f"süre     : {elapsed:.1f}s")
+    for note in budget.notes:
+        print(f"not      : {note}")
     if failed:
-        print(f"\nBAŞARISIZ KAYNAKLAR ({len(failed)}):")
+        print(f"\nBAŞARISIZ / KISMİ KAYNAKLAR ({len(failed)}):")
         for f in failed:
             print(f"  - {f}")
     # Kısmi başarı da başarıdır: hiç kayıt yoksa hata koduyla çık.

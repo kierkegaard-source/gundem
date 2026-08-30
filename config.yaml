@@ -49,8 +49,10 @@ sources:
   steam:
     enabled: true
     weight: 0.6
-    # ÖLÇÜM: hem arama JSON'u hem RSS çalışıyor. RSS daha stabil, o birincil.
-    feed: "https://store.steampowered.com/feeds/newreleases.xml"
+    # FAZ 2 DÜZELTMESİ: newreleases.xml RSS'i ÖLÜ — en yeni kaydı 49 gün önceye ait,
+    # listede 2023 tarihli oyunlar var. Store arama endpoint'i (sort_by=Released_DESC)
+    # kullanılıyor; kod içinde sabit, config'de URL tutulmuyor.
+    # Çıkış tarihi gün hassasiyetinde geldiği için pencere gün bazında değerlendirilir.
 
   reddit:
     # KAPALI — Responsible Builder Policy (2026-06 güncellemesi) Reddit verisinin
@@ -68,6 +70,9 @@ sources:
   bluesky:
     enabled: true
     weight: 0.8
+    # Feed generator'lar çok gürültülü (medyan ♥1-6). "Sinyal > hacim" ilkesi
+    # gereği beğeni eşiği. Küratörlü hesap timeline'larına uygulanmaz.
+    min_likes_feed: 5
     # ÖLÇÜM: searchPosts artık 403 (anahtarsız kapalı).
     # Çözüm: feed generator URI + getFeed — anahtarsız, test edildi.
     feeds:

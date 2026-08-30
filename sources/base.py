@@ -91,6 +91,12 @@ class Source(ABC):
     def __init__(self, cfg: dict, settings: dict) -> None:
         self.cfg = cfg or {}
         self.settings = settings or {}
+        # collect.py tarafından atanır. Maliyetli kaynaklar (Twitter) tavanı
+        # kendi döngülerinin içinde kontrol eder.
+        self.budget = None
+        # Çoklu alt-kaynağı olan kaynaklar (rss, bluesky, twitter) kısmen
+        # düşen alt-kaynakları buraya yazar; kaynak yine de başarılı sayılır.
+        self.failed_feeds: list[str] = []
         self.weight = float(self.cfg.get("weight", 0.5))
         self.lookback_hours = int(
             self.settings.get("filters", {}).get("lookback_hours", 26)
