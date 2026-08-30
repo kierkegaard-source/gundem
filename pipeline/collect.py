@@ -248,7 +248,8 @@ def main() -> int:
         mark_digest(conn, kept, today)
         record_run(conn, items_raw=len(items), items_kept=len(kept),
                    failed_sources=failed, llm_cost_usd=budget.llm_usd,
-                   api_cost_usd=budget.twitter_usd)
+                   api_cost_usd=budget.twitter_usd,
+                   llm_note=" | ".join(budget.notes) or None)
         total = conn.execute("SELECT COUNT(*) FROM items").fetchone()[0]
         conn.close()
         print(f"\nveritabanı: {new} yeni, {updated} güncellendi, toplam {total} kayıt")

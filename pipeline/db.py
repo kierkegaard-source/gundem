@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS runs (
   items_kept    INTEGER,
   failed_sources TEXT,
   llm_cost_usd  REAL,
-  api_cost_usd  REAL
+  api_cost_usd  REAL,
+  llm_note      TEXT            -- özetleme neden eksik kaldı (sayfada gösterilir)
 );
 """
 
@@ -60,6 +61,9 @@ def connect(path: Path | str = DB_PATH) -> sqlite3.Connection:
     conn.executescript(SCHEMA)
     # Mevcut veritabanları için basit göç: eksik sütunu ekle.
     cols = {r[1] for r in conn.execute("PRAGMA table_info(items)")}
+    run_cols = {r[1] for r in conn.execute("PRAGMA table_info(runs)")}
+    if "llm_note" not in run_cols:
+        conn.execute("ALTER TABLE runs ADD COLUMN llm_note TEXT")
     for name, decl in (("raw_text", "TEXT"), ("title_tr", "TEXT"),
                        ("title_mt", "TEXT"), ("body_mt", "TEXT"),
                        ("potential", "INTEGER"), ("opportunity", "TEXT"),
@@ -105,12 +109,12 @@ def upsert_items(conn: sqlite3.Connection, items: list[Item]) -> tuple[int, int]
 
 def record_run(conn: sqlite3.Connection, *, items_raw: int, items_kept: int,
                failed_sources: list[str], llm_cost_usd: float = 0.0,
-               api_cost_usd: float = 0.0) -> None:
+               api_cost_usd: float = 0.0, llm_note: str | None = None) -> None:
     conn.execute(
         "INSERT OR REPLACE INTO runs (run_at, items_raw, items_kept, failed_sources,"
-        " llm_cost_usd, api_cost_usd) VALUES (?,?,?,?,?,?)",
+        " llm_cost_usd, api_cost_usd, llm_note) VALUES (?,?,?,?,?,?,?)",
         (datetime.now(timezone.utc).isoformat(), items_raw, items_kept,
-         json.dumps(failed_sources), llm_cost_usd, api_cost_usd),
+         json.dumps(failed_sources), llm_cost_usd, api_cost_usd, llm_note),
     )
     conn.commit()
 

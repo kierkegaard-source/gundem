@@ -129,6 +129,31 @@ def build_notices(run: sqlite3.Row | None) -> list[str]:
     return notices
 
 
+def _llm_reason(run: sqlite3.Row | None) -> str:
+    """Özetlemenin neden yapılamadığını AYIRT EDEREK söyler.
+
+    İki ayrı şey vardı ve mesaj ikisini karıştırıyordu:
+      - `budget.daily_llm_usd`: bizim koyduğumuz günlük harcama tavanı
+      - Anthropic hesabındaki gerçek bakiye
+    "LLM bütçesi tükendi" demek tavanı suçluyordu, oysa tavan hiç dolmamıştı.
+    """
+    note = ""
+    try:
+        note = (run["llm_note"] or "") if run is not None else ""
+    except (IndexError, KeyError):
+        note = ""
+    low = note.lower()
+    if "credit balance" in low or "bakiye" in low:
+        return " — Anthropic hesabında kredi kalmadı"
+    if "bütçe tavanı" in low:
+        return " — günlük harcama tavanına ulaşıldı"
+    if "anthropic_api_key" in low:
+        return " — API anahtarı tanımlı değil"
+    if note:
+        return " — özetleme servisine ulaşılamadı"
+    return ""
+
+
 def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> dict:
     rows = digest_items(conn, day)
     ref = datetime.now(timezone.utc)
@@ -187,13 +212,11 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     notices = build_notices(run)
     if rows and not any(r["summary_tr"] for r in rows):
         mt = sum(1 for r in rows if r["title_mt"] or r["body_mt"])
-        if mt:
-            notices.append(
-                "Editoryal özet üretilemedi (LLM bütçesi tükendi). Başlıklar ve "
-                "açıklamalar makine çevirisiyle verildi; iki cümlelik Türkçe özet, "
-                "\u201cneden okumalı\u201d satırı ve Radar puanları eksik.")
-        else:
-            notices.append("Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.")
+        eksik = ("iki cümlelik Türkçe özet, \u201cneden okumalı\u201d satırı ve "
+                 "fırsat radarı puanları üretilemedi")
+        kaynak = ("Başlıklar ve açıklamalar makine çevirisiyle verildi; "
+                  if mt else "Maddeler ham başlıklarıyla listelendi; ")
+        notices.append(kaynak + eksik + _llm_reason(run) + ".")
 
     hot.sort(key=lambda e: -e["potential"])
     # Değerlendirme yapıldı ama fırsat çıkmadıysa bunu sayfada söyle — sessizlik
