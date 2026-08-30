@@ -161,9 +161,12 @@ def main() -> int:
 
     conn = None if args.dry_run else connect()
     already = published_hashes(conn) if conn else set()
-    oversample = float(cfg.get("filters", {}).get("summarize_oversample", 1.5))
+    fcfg = cfg.get("filters", {})
+    oversample = float(fcfg.get("summarize_oversample", 1.5))
     # Kotadan fazla aday: düşük sinyalliler elenince bölümler boş kalmasın.
-    candidates = filter_clusters(clusters, cfg, already, oversample=oversample)
+    # Sosyal kaynaklar daha çok aday alır — eleme oranları yüksek.
+    candidates = filter_clusters(clusters, cfg, already, oversample=oversample,
+                                 per_source_oversample=fcfg.get("oversample_by_source"))
 
     multi = sum(1 for c in clusters if c.multi_source)
     print(f"\ntoplanan {len(items)} kayıt → {len(clusters)} tekil madde "

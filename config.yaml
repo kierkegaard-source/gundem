@@ -17,8 +17,19 @@ filters:
   # FAZ 4: filtreleme özetlemeden önce çalıştığı için kategori kotasını düşük
   # sinyalli maddeler kapıyordu (gamedev 15 → signal filtresinden sonra 4).
   # Kotadan bu katsayı kadar fazla aday özetlenir, eleme sonrası tavan
-  # yeniden uygulanır. Maliyeti ~%50 artırır (~$0.035 → ~$0.052/gün).
-  summarize_oversample: 1.5
+  # yeniden uygulanır.
+  summarize_oversample: 2.0
+  # FAZ 6: eleme oranı kaynağa göre çok değişiyor. Ölçüm (2026-08-30):
+  #   producthunt  15 aday →  0 elendi
+  #   github        11 aday →  0 elendi
+  #   twitter       15 aday → 14 elendi   ← israf burada
+  #   bluesky       15 aday → 15 elendi   ←
+  # Genel çarpanı yükseltmek Product Hunt'a boşuna LLM harcamak olurdu.
+  # Ek aday slotu yalnızca ihtiyacı olan kaynaklara veriliyor: bu kaynaklarda
+  # LLM'e giden dilim en viral %16'ydı ve o dilim en çok yorum içeren dilim.
+  oversample_by_source:
+    twitter: 3.0        # 10 × 3.0 = 30 aday
+    bluesky: 2.5        # 10 × 2.5 = 25 aday
 
 scoring:
   multi_source_bonus: 1.4

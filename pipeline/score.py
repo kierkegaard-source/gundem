@@ -118,7 +118,8 @@ def score_clusters(clusters: list[Cluster], cfg: dict) -> list[Cluster]:
 
 def filter_clusters(clusters: list[Cluster], cfg: dict,
                     exclude_hashes: set[str] | None = None,
-                    oversample: float = 1.0) -> list[Cluster]:
+                    oversample: float = 1.0,
+                    per_source_oversample: dict | None = None) -> list[Cluster]:
     """Kategori başına tavan + toplam tavan. Zaten yayınlanmışlar dışlanır.
 
     `oversample`: tavanları bu katsayıyla genişletir. Faz 4'te gerekti —
@@ -135,7 +136,14 @@ def filter_clusters(clusters: list[Cluster], cfg: dict,
     # HACMİ ödüllendirir: 197 maddelik Bluesky'ın ~20'si %90 üstü yüzdelikte,
     # 20 maddelik Product Hunt'ın 2'si. Tavan olmadan yüksek hacimli kaynaklar
     # sayıyı ele geçiriyor — ölçümde Steam ve itch.io tamamen siliniyordu.
-    per_source = int(int(f.get("max_per_source", 10)) * oversample)
+    base_source = int(f.get("max_per_source", 10))
+    per_source = int(base_source * oversample)
+    # Kaynağa özel aday çarpanı. Ölçüm: Product Hunt'ın 15 adayının 0'ı
+    # eleniyor, Twitter'ın 15 adayının 14'ü. Genel çarpanı yükseltmek
+    # Product Hunt'a boşuna LLM harcamak olur; ek slot yalnızca eleme
+    # oranı yüksek kaynaklara verilir.
+    extra = per_source_oversample or {}
+    src_cap = {k: int(base_source * float(v)) for k, v in extra.items()}
     exclude = exclude_hashes or set()
 
     kept: list[Cluster] = []
@@ -150,7 +158,8 @@ def filter_clusters(clusters: list[Cluster], cfg: dict,
             continue
         # Çoklu kaynaklı maddede en az bir kaynağın kotası açıksa geçer —
         # birden fazla kaynakta çıkmak zaten en güçlü sinyal.
-        if all(src_counts.get(s_, 0) >= per_source for s_ in c.sources):
+        if all(src_counts.get(s_, 0) >= src_cap.get(s_, per_source)
+               for s_ in c.sources):
             continue
         kept.append(c)
         counts[cat] = counts.get(cat, 0) + 1

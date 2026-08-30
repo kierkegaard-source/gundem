@@ -212,3 +212,22 @@ def test_coklu_kaynakli_madde_tavana_takilmiyor():
     score_clusters(cs, cfg)
     kept = filter_clusters(cs, cfg)
     assert cift in kept
+
+
+def test_kaynaga_ozel_aday_carpani():
+    """Eleme oranı yüksek kaynaklar daha çok aday alır; diğerleri etkilenmez."""
+    cfg = dict(CFG, filters={"max_per_category": 100, "max_total": 100,
+                             "max_per_source": 2})
+    cs = ([Cluster(members=[item(f"Tweet {i}", f"https://t.dev/{i}",
+                                 "twitter", 900 - i)]) for i in range(10)]
+          + [Cluster(members=[item(f"Ürün {i}", f"https://p.dev/{i}",
+                                   "producthunt", 500 - i)]) for i in range(10)])
+    score_clusters(cs, cfg)
+    from collections import Counter
+    normal = Counter(c.lead.source for c in filter_clusters(cs, cfg))
+    assert normal["twitter"] == 2 and normal["producthunt"] == 2
+
+    boosted = Counter(c.lead.source for c in filter_clusters(
+        cs, cfg, per_source_oversample={"twitter": 3.0}))
+    assert boosted["twitter"] == 6          # 2 × 3.0
+    assert boosted["producthunt"] == 2      # değişmedi
