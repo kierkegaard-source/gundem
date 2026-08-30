@@ -21,7 +21,9 @@ from sources.base import Item, Source, SourceError
 
 BASE = "https://api.twitterapi.io"
 PAGE_SIZE = 20            # sabit, değiştirilemiyor (Faz 0'da doğrulandı)
-CONCURRENCY = 5
+# 67 hesapla 5 eşzamanlılıkta koşu 27 saniye sürüyordu; hesap listesi
+# büyüdükçe doğrusal artıyor. 8'e çıkarıldı.
+CONCURRENCY = 8
 
 
 def _parse_dt(raw: str) -> datetime | None:
