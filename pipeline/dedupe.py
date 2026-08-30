@@ -66,6 +66,12 @@ class Cluster:
 
     members: list[Item] = field(default_factory=list)
     score: float = 0.0
+    # Faz 4'te LLM tarafından doldurulur. Bütçe tavanına çarpılırsa None kalır
+    # ve sayfa ham başlıkla basılır.
+    summary_tr: str | None = None
+    why_tr: str | None = None
+    signal: int | None = None
+    llm_category: str | None = None
 
     @property
     def sources(self) -> list[str]:
@@ -94,6 +100,10 @@ class Cluster:
 
     @property
     def category(self) -> str:
+        # LLM bir kategori verdiyse o kazanır — başlığı okuyup karar veriyor,
+        # kaynak bazlı tahminden daha isabetli.
+        if self.llm_category:
+            return self.llm_category
         # Çoğunluk kategorisi; beraberlikte temsilcininki.
         counts: dict[str, int] = {}
         for m in self.members:

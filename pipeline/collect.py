@@ -20,6 +20,7 @@ from pipeline.config import enabled_sources, load_config
 from pipeline.db import connect, published_hashes, record_run, upsert_clusters
 from pipeline.dedupe import Cluster, dedupe
 from pipeline.score import filter_clusters, score_clusters
+from pipeline.summarize import drop_low_signal, summarize
 from sources.base import Item, Source
 from sources.bluesky import Bluesky
 from sources.github_trending import GithubTrending
@@ -114,16 +115,19 @@ def print_digest(clusters: list[Cluster], limit: int = 30) -> None:
     if not clusters:
         print("\n(hiç kayıt yok)")
         return
-    print(f"\n{'skor':>6}  {'kat':<8} {'yaş':>5}  {'kaynaklar':<26} başlık")
-    print("-" * 108)
+    print(f"\n{'skor':>6} {'':<4}{'kat':<8} {'yaş':>5}  {'kaynaklar':<20} başlık")
+    print("-" * 104)
     for c in clusters[:limit]:
         age = (c.published_at and c.lead.age_hours) or 0
         badge = "+".join(c.sources)
-        if len(badge) > 25:
-            badge = badge[:24] + "…"
-        star = " ★" if c.multi_source else "  "
-        title = c.title if len(c.title) <= 46 else c.title[:43] + "…"
-        print(f"{c.score:>6.3f}{star}{c.category:<8} {age:>4.0f}s  {badge:<26} {title}")
+        if len(badge) > 19:
+            badge = badge[:18] + "…"
+        star = "★" if c.multi_source else " "
+        sig = f"s{c.signal}" if c.signal else " ·"
+        title = c.title if len(c.title) <= 44 else c.title[:41] + "…"
+        print(f"{c.score:>6.3f} {star}{sig:<3}{c.category:<8} {age:>4.0f}s  {badge:<20} {title}")
+        if c.why_tr:
+            print(f"          ↳ {c.why_tr}")
     if len(clusters) > limit:
         print(f"… ve {len(clusters) - limit} madde daha")
 
@@ -134,6 +138,7 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=30, help="tabloda gösterilecek satır")
     ap.add_argument("--only", help="sadece bu kaynaklar (virgülle)")
     ap.add_argument("--skip", help="bu kaynakları atla (virgülle) — ör. maliyetli twitter")
+    ap.add_argument("--no-llm", action="store_true", help="özetlemeyi atla (maliyetsiz test)")
     args = ap.parse_args()
 
     cfg = load_config()
@@ -151,12 +156,33 @@ def main() -> int:
 
     conn = None if args.dry_run else connect()
     already = published_hashes(conn) if conn else set()
-    kept = filter_clusters(clusters, cfg, already)
+    oversample = float(cfg.get("filters", {}).get("summarize_oversample", 1.5))
+    # Kotadan fazla aday: düşük sinyalliler elenince bölümler boş kalmasın.
+    candidates = filter_clusters(clusters, cfg, already, oversample=oversample)
 
     multi = sum(1 for c in clusters if c.multi_source)
     print(f"\ntoplanan {len(items)} kayıt → {len(clusters)} tekil madde "
           f"({len(items) - len(clusters)} mükerrer birleşti, {multi}'i çoklu kaynak) "
-          f"→ {len(kept)} madde sayıya girdi")
+          f"→ {len(candidates)} aday özetlemeye gitti")
+
+    # ---- özetleme ----
+    if args.no_llm:
+        print("\n[--no-llm] özetleme atlandı, ham başlıklar kullanılıyor")
+        kept, dropped = filter_clusters(candidates, cfg, already), []
+    else:
+        rep = summarize(candidates, cfg, budget)
+        survivors, dropped = drop_low_signal(candidates, cfg)
+        # Eleme sonrası gerçek tavan. LLM kategoriyi düzeltmiş olabilir,
+        # bu yüzden kota ikinci geçişte yeniden hesaplanıyor.
+        kept = filter_clusters(survivors, cfg, already)
+        print(f"\nözetleme: {rep['batches']} batch, {rep['summarized']} madde özetlendi"
+              + (f", {rep['failed_batches']} batch başarısız" if rep["failed_batches"] else "")
+              + (f", {rep['skipped_budget']} madde bütçe nedeniyle atlandı" if rep["skipped_budget"] else ""))
+        if dropped:
+            print(f"düşük sinyal ({cfg['filters'].get('min_signal', 2)} altı) elenen: {len(dropped)} madde")
+        if rep["degraded"]:
+            print("UYARI: sayı eksik özetle üretildi — sayfaya uyarı bandı konacak")
+        print(f"sayıya giren: {len(kept)} madde")
 
     print_digest(kept, args.limit)
 
@@ -169,6 +195,13 @@ def main() -> int:
         print("\n[dry-run] veritabanına yazılmadı")
     else:
         new, updated = upsert_clusters(conn, clusters)
+        # Özetler yalnızca sayıya giren maddeler için üretildi; onları ayrıca yaz.
+        for c in kept:
+            if c.summary_tr:
+                conn.execute("UPDATE items SET summary_tr = ?, why_tr = ?, category = ? "
+                             "WHERE url_hash = ?",
+                             (c.summary_tr, c.why_tr, c.category, c.lead.url_hash))
+        conn.commit()
         record_run(conn, items_raw=len(items), items_kept=len(kept),
                    failed_sources=failed, llm_cost_usd=budget.llm_usd,
                    api_cost_usd=budget.twitter_usd)

@@ -10,6 +10,11 @@ filters:
   max_total: 60
   min_signal: 2
   lookback_hours: 26          # cron kaymalarına tolerans
+  # FAZ 4: filtreleme özetlemeden önce çalıştığı için kategori kotasını düşük
+  # sinyalli maddeler kapıyordu (gamedev 15 → signal filtresinden sonra 4).
+  # Kotadan bu katsayı kadar fazla aday özetlenir, eleme sonrası tavan
+  # yeniden uygulanır. Maliyeti ~%50 artırır (~$0.035 → ~$0.052/gün).
+  summarize_oversample: 1.5
 
 scoring:
   multi_source_bonus: 1.4

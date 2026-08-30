@@ -10,6 +10,7 @@ pencere kontrolü gün bazında yapılır ve `published_at` o günün 00:00 UTC'
 """
 from __future__ import annotations
 
+import asyncio
 import html
 import re
 from datetime import datetime, timedelta, timezone
@@ -23,6 +24,8 @@ SEARCH = ("https://store.steampowered.com/search/results/"
           "&category1=998&supportedlang=english&infinite=1&ndl=1")
 
 INDIE_TAG_ID = 492
+APPDETAILS = "https://store.steampowered.com/api/appdetails"
+ENRICH_CONCURRENCY = 5
 
 _ROW = re.compile(r'<a href="https://store\.steampowered\.com/app/')
 _APPID = re.compile(r'data-ds-appid="(\d+)"')
@@ -94,4 +97,45 @@ class Steam(Source):
             raise SourceError(
                 f"{len(rows)} satır ayrıştırıldı ama hiçbiri {oldest_day} sonrasına ait değil"
             )
+        if self.cfg.get("enrich", True):
+            await self._enrich(client, items)
         return items
+
+    async def _enrich(self, client: httpx.AsyncClient, items: list[Item]) -> None:
+        """Arama sonucu yalnızca oyun ADINI veriyor.
+
+        FAZ 4 BULGUSU: metinsiz maddeye LLM haklı olarak signal=1 veriyor —
+        "Banana Kingdom" tek başına özetlenecek bir şey değil. Bu yüzden
+        gamedev bölümü 15 slot yerine 4 maddeyle kalıyordu.
+
+        appdetails ucu tür + kısa açıklama veriyor. Toplu istek (`filters=basic`
+        + virgüllü appid listesi) null dönüyor, appid başına tek istek gerekiyor.
+        Ücretsiz; başarısız olan madde ham başlığıyla kalır.
+        """
+        sem = asyncio.Semaphore(ENRICH_CONCURRENCY)
+
+        async def one(it: Item) -> None:
+            async with sem:
+                try:
+                    r = await client.get(APPDETAILS,
+                                         params={"appids": it.extra["appid"], "l": "english"},
+                                         timeout=15)
+                    payload = (r.json() or {}).get(it.extra["appid"]) or {}
+                    if not payload.get("success"):
+                        return
+                    d = payload["data"]
+                except Exception:
+                    return                       # zenginleştirme opsiyoneldir
+                genres = [g["description"] for g in (d.get("genres") or [])]
+                desc = (d.get("short_description") or "").strip()
+                bits = [it.title]
+                if genres:
+                    bits.append("(" + ", ".join(genres[:3]) + ")")
+                if desc:
+                    bits.append("— " + desc)
+                it.raw_text = " ".join(bits)[:1500]
+                it.extra["genres"] = genres
+                if desc:
+                    it.extra["description"] = desc
+
+        await asyncio.gather(*(one(i) for i in items), return_exceptions=True)

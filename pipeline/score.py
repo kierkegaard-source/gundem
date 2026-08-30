@@ -85,11 +85,20 @@ def score_clusters(clusters: list[Cluster], cfg: dict) -> list[Cluster]:
 
 
 def filter_clusters(clusters: list[Cluster], cfg: dict,
-                    exclude_hashes: set[str] | None = None) -> list[Cluster]:
-    """Kategori başına tavan + toplam tavan. Zaten yayınlanmışlar dışlanır."""
+                    exclude_hashes: set[str] | None = None,
+                    oversample: float = 1.0) -> list[Cluster]:
+    """Kategori başına tavan + toplam tavan. Zaten yayınlanmışlar dışlanır.
+
+    `oversample`: tavanları bu katsayıyla genişletir. Faz 4'te gerekti —
+    filtreleme özetlemeden ÖNCE çalıştığı için kategori kotasını düşük sinyalli
+    maddeler kapıyor, sonra `signal` filtresi onları eliyor ve bölüm boş kalıyor.
+    İlk koşuda gamedev 15 slotunu Bluesky'ın sanat paylaşımlarına verdi, signal
+    filtresinden sonra 4 madde kaldı; Steam'in 52 yeni oyunu hiç şans bulamadı.
+    Çözüm: kotadan fazla aday özetlenir, eleme sonrası tavan tekrar uygulanır.
+    """
     f = cfg.get("filters", {})
-    per_cat = int(f.get("max_per_category", 15))
-    total_cap = int(f.get("max_total", 60))
+    per_cat = int(int(f.get("max_per_category", 15)) * oversample)
+    total_cap = int(int(f.get("max_total", 60)) * oversample)
     exclude = exclude_hashes or set()
 
     kept: list[Cluster] = []
