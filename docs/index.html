@@ -10,20 +10,25 @@
    Harici istek yok (font, ikon, script). Tek dosya, sayfaya gömülü. */
 
 :root {
-  --bg:        #faf8f4;
+  --bg:        #f4f5f3;
   --surface:   #ffffff;
-  --surface-2: #f3efe7;
-  --ink:       #17140f;
-  --ink-soft:  #4d4740;
-  --ink-faint: #8b8479;
-  --rule:      #ddd6c8;
-  --rule-soft: #ebe5d9;
-  --accent:    #9a2f16;
-  --accent-2:  #2f5d50;
-  --shadow:    0 1px 2px rgba(23,20,15,.05), 0 6px 16px -10px rgba(23,20,15,.18);
-  --warn-bg:   #fdf4e3;
-  --warn-ink:  #7d4c12;
-  --warn-rule: #e3c790;
+  --surface-2: #eceeeb;
+  --ink:       #0f1417;
+  --ink-soft:  #414b52;
+  --ink-faint: #79858d;
+  --rule:      #cfd5d6;
+  --rule-soft: #e3e7e6;
+  --accent:    #0a6b5c;
+  --accent-2:  #a8420f;
+  --shadow:    0 1px 2px rgba(15,20,23,.05), 0 8px 20px -12px rgba(15,20,23,.22);
+  --radar-bg:   #eef7f4;
+  --radar-rule: #b9d9d1;
+  --radar-ink:  #0a6b5c;
+  --radar-soft: #48645e;
+
+  --warn-bg:   #fdf5e6;
+  --warn-ink:  #7a4c14;
+  --warn-rule: #e0c795;
 
   /* Kaynak renkleri — marka logosu değil, marka rengiyle monogram rozet.
      Logoları kopyalamak yerine bu tercih edildi: harici istek yok, ticari
@@ -37,26 +42,35 @@
   --s-twitter:    #2b2b2b;
   --s-rss:        #c9761b;
 
-  --display: "Iowan Old Style", "Charter", "Bitstream Charter", "Sitka Text",
-             Cambria, "Palatino Linotype", Palatino, Georgia, serif;
-  --ui: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI",
-        Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Rol değişimi: başlıklar sıkı puntolu sans (modern editoryal),
+     okunan gövde metni serif. Öncekinin tersi — daha keskin bir kontrast. */
+  --display: system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI",
+             "Helvetica Neue", Inter, Roboto, Arial, sans-serif;
+  --read: "Iowan Old Style", Charter, "Bitstream Charter", "Sitka Text",
+          Cambria, "Palatino Linotype", Palatino, Georgia, serif;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:        #121110;
-    --surface:   #1a1917;
-    --surface-2: #221f1c;
-    --ink:       #eeeae2;
-    --ink-soft:  #b5aea3;
-    --ink-faint: #837c71;
-    --rule:      #322e28;
-    --rule-soft: #262320;
-    --accent:    #e58a68;
-    --accent-2:  #79b8a4;
-    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.7);
+    --bg:        #0d1114;
+    --surface:   #141a1e;
+    --surface-2: #1b2328;
+    --ink:       #e8edef;
+    --ink-soft:  #a7b3ba;
+    --ink-faint: #71808a;
+    --rule:      #26313a;
+    --rule-soft: #1d262c;
+    --accent:    #3fbfa8;
+    --accent-2:  #e08a55;
+    --shadow:    0 1px 2px rgba(0,0,0,.5), 0 10px 24px -14px rgba(0,0,0,.85);
+    --radar-bg:   #10231f;
+    --radar-rule: #235047;
+    --radar-ink:  #48d3b8;
+    --radar-soft: #94b3ac;
+
     --warn-bg:   #2b2114;
     --warn-ink:  #e3ba7d;
     --warn-rule: #574119;
@@ -105,9 +119,9 @@ body {
 
 .brand h1 {
   font-family: var(--display);
-  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.85rem, 5.5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
   margin: 0;
   line-height: 1;
 }
@@ -163,6 +177,86 @@ body {
   color: var(--ink-faint);
 }
 
+/* ================= radar (kısa vadeli potansiyel) ================= */
+
+.radar {
+  background: var(--radar-bg);
+  border: 1px solid var(--radar-rule);
+  border-left: 4px solid var(--radar-ink);
+  border-radius: 5px;
+  padding: 0.95rem 1.1rem 1rem;
+  margin: 0 0 1.8rem;
+}
+
+.radar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.radar-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--radar-ink);
+  color: var(--radar-bg);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.radar-head h2 {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--radar-ink);
+  margin: 0;
+}
+
+.radar-sub { font-size: 0.78rem; color: var(--radar-soft); }
+
+.radar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+@media (min-width: 860px) { .radar-list { grid-template-columns: 1fr 1fr; gap: 0.55rem 1.4rem; } }
+
+.radar-list li { display: flex; gap: 0.6rem; align-items: flex-start; }
+
+.radar-score {
+  flex: none;
+  min-width: 2.1rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  border-radius: 3px;
+  padding: 0.1rem 0.15rem;
+  line-height: 1.25;
+}
+.radar-score i { font-style: normal; font-size: 0.6rem; opacity: 0.65; }
+
+.radar-body { min-width: 0; }
+.radar-body a {
+  font-family: var(--display);
+  font-size: 0.97rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.28;
+  color: var(--ink);
+  text-decoration: none;
+}
+.radar-body a:hover { color: var(--radar-ink); text-decoration: underline; }
+.radar-body p { margin: 0.15rem 0 0.3rem; font-family: var(--read);
+  font-size: 0.87rem; line-height: 1.45; color: var(--radar-soft); }
+.radar-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
 /* ================= uyarı ================= */
 
 .notice {
@@ -188,16 +282,17 @@ body {
   justify-content: space-between;
   gap: 1rem;
   margin: 0 0 1.1rem;
-  padding-bottom: 0.45rem;
-  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--accent);
 }
 
 .section-head h2 {
   font-family: var(--display);
-  font-size: 1.15rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--accent);
   margin: 0;
 }
 
@@ -235,9 +330,10 @@ body {
 
 .card h3 {
   font-family: var(--display);
-  font-size: 1.1rem;
-  line-height: 1.28;
-  font-weight: 600;
+  font-size: 1.06rem;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.017em;
   margin: 0;
 }
 .card h3 a { color: var(--ink); text-decoration: none; }
@@ -248,11 +344,11 @@ body {
   border-color: var(--rule);
   padding: 1.15rem 1.25rem 1.05rem;
 }
-.card.lead h3 { font-size: 1.45rem; line-height: 1.22; }
+.card.lead h3 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.028em; }
 .card.lead .body { font-size: 1rem; }
 
 .why {
-  font-family: var(--display);
+  font-family: var(--read);
   font-style: italic;
   font-size: 0.95rem;
   line-height: 1.4;
@@ -261,8 +357,9 @@ body {
 }
 
 .body {
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-family: var(--read);
+  font-size: 0.94rem;
+  line-height: 1.55;
   color: var(--ink-soft);
   margin: 0;
 }
@@ -270,11 +367,12 @@ body {
    gösterilir. Ayrı bir etiket konmuyor — sayfa üstündeki uyarı bandı zaten
    söylüyor; kart başına tekrarlamak gürültü yapıyordu. Ayrım tipografik:
    daha soluk ve italik. */
+/* Makine çevirisi ya da kaynağın kendi açıklaması — editoryal özet değil.
+   Ayrım tipografik: soluk renk ve sol çizgi. */
 .body.raw {
-  color: var(--ink-faint);
-  font-style: italic;
-  border-left: 2px solid var(--rule-soft);
-  padding-left: 0.6rem;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule);
+  padding-left: 0.65rem;
 }
 
 .card-meta {
@@ -365,7 +463,9 @@ body {
   color: var(--ink);
   text-decoration: none;
   font-family: var(--display);
-  font-size: 1.05rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 .archive-list a:hover { color: var(--accent); }
 .archive-list .count {
@@ -389,7 +489,7 @@ footer a { color: var(--ink-faint); }
   text-align: center;
   padding: 3rem 1rem;
   color: var(--ink-faint);
-  font-family: var(--display);
+  font-family: var(--read);
   font-size: 1.1rem;
 }
 
@@ -428,9 +528,10 @@ footer a { color: var(--ink-faint); }
   <a href="#startup"><b>Girişim ve Yatırım</b> <i>15</i></a>
 </nav>
 
+
 <div class="notice">
   <b>Bu sayı eksik üretildi</b>
-  <ul><li>Özetleme yapılamadı — maddeler ham başlıklarıyla listelendi.</li></ul>
+  <ul><li>Editoryal özet üretilemedi (LLM bütçesi tükendi). Başlıklar ve açıklamalar makine çevirisiyle verildi; iki cümlelik Türkçe özet, “neden okumalı” satırı ve Radar puanları eksik.</li></ul>
 </div>
 
 
@@ -441,8 +542,8 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://producthunt.com/r/WIPDN746ZT7D27" rel="noopener">Hyperfocus</a></h3>
-  <p class="body raw">Planner that turns goals into daily progress</p>
+  <h3><a href="https://producthunt.com/r/ULWMLW4DJVACDF" rel="noopener">Olostep</a></h3>
+  <p class="body raw">Web&#39;i Yapay Zeka için Temiz Veriye Dönüştürün</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -451,37 +552,34 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://github.com/AniketWathore/bolnee-chat" rel="noopener">Show HN: Bolnee-Chat – Self Hosted Chatbot Integration in Your Business Website</a></h3>
+  <h3><a href="https://producthunt.com/r/WIPDN746ZT7D27" rel="noopener">Hyperfocus</a></h3>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/AniketWathore/bolnee-chat" rel="noopener">Bolnee-Chat – İşletme Web Sitenize Kendi Kendine Barındırılan Chatbot Entegrasyonu</a></h3>
   <div class="card-meta">
     <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T09:56:05+00:00">5 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://producthunt.com/r/ULWMLW4DJVACDF" rel="noopener">Olostep</a></h3>
-  <p class="body raw">Turn the Web into Clean Data for AI</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
+    <time datetime="2026-08-30T09:56:05+00:00">6 saat önce</time>
   </div>
 </article>
 
     <article class="card">
   <h3><a href="https://github.com/tt-a1i/archify" rel="noopener">tt-a1i/archify</a></h3>
-  <p class="body raw">Agent skill for beautiful, verifiable architecture, workflow, sequence, data-flow, and lifecycle diagrams—self-contained HTML with motion and crisp export.</p>
   <div class="card-meta">
     <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:54:53.993603+00:00">az önce</time>
+    <time datetime="2026-08-30T14:54:53.993603+00:00">1 saat önce</time>
   </div>
 </article>
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/HDEJHZVHFWZ2YT" rel="noopener">Prequel</a></h3>
-  <p class="body raw">Create cinematic screen recordings on your Mac</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -490,7 +588,7 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://x.com/theo/status/2093855759532765397" rel="noopener">Hey Anthropic. You guys have given me a lot of subsidized compute. In return, I&#39;ll give you an example of how to make announcements like this without burning all your good will with developers.</a></h3>
+  <h3><a href="https://x.com/theo/status/2093855759532765397" rel="noopener">Merhaba Antropik. Bana çok sayıda destekli bilgi işlem sağladınız. Karşılığında, geliştiricilerle olan tüm iyi niyetinizi yakmadan bu tür duyuruları nasıl yapabileceğinize dair bir örnek vereceğim.</a></h3>
   <p class="body raw">&#34;Back in May, we did a one-month promotion where we increased the weekly rate limits for Claude Code by 50%. We&#39;ve extended this promotion multiple times since, but sadly, it must come to…</p>
   <div class="card-meta">
     <span class="src src-twitter"><span class="mark">X</span>X</span>
@@ -501,7 +599,6 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/YSB77QGV4KPKYR" rel="noopener">Ulpaso</a></h3>
-  <p class="body raw">Stop paying just to take meeting notes</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -511,7 +608,6 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/SPXFLFPPKRFQUY" rel="noopener">Superagent</a></h3>
-  <p class="body raw">Claude Code for the rest of us</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -520,8 +616,17 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
+  <h3><a href="https://github.com/k7cfo/remove-your-data" rel="noopener">Abonelik olmadan kendinizi veri aracılarından silin</a></h3>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-29T22:31:56+00:00">17 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
   <h3><a href="https://producthunt.com/r/2ABHAOG4SSOU7B" rel="noopener">oMLX</a></h3>
-  <p class="body raw">Mac LLM server that cuts agent wait times from 90s to 5s</p>
+  <p class="body raw">Temsilci bekleme sürelerini 90 saniyeden 5 saniyeye düşüren Mac LLM sunucusu</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -531,7 +636,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/KPQCJLIFNTIBKR" rel="noopener">ChordWeaver</a></h3>
-  <p class="body raw">Create, learn, and explore music through theory</p>
+  <p class="body raw">Teori yoluyla müzik yaratın, öğrenin ve keşfedin</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -540,17 +645,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://github.com/k7cfo/remove-your-data" rel="noopener">Show HN: Delete yourself from data brokers without a subscription</a></h3>
-  <div class="card-meta">
-    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-29T22:31:56+00:00">17 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
   <h3><a href="https://producthunt.com/r/S7PPIRFIUY54DK" rel="noopener">Maritime</a></h3>
-  <p class="body raw">Dedicated computers for AI agents, starting at $1/month</p>
+  <p class="body raw">Denizcilik - Yapay zeka temsilcileri için özel bilgisayarlar, aylık 1 dolardan başlayan fiyatlarla</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -560,7 +656,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/WITUI4QV3ANVAI" rel="noopener">Edge Drop</a></h3>
-  <p class="body raw">Clipboard on your screen edge. Hover to open, drag to drop</p>
+  <p class="body raw">Kenar Bırakma — Ekranınızın kenarındaki pano. Açmak için üzerine gelin, bırakmak için sürükleyin</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -574,12 +670,12 @@ footer a { color: var(--ink-faint); }
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-29T23:53:13+00:00">15 saat önce</time>
+    <time datetime="2026-08-29T23:53:13+00:00">16 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://github.com/mainak55512/flint" rel="noopener">Show HN: Flint – A minimal C/C++ package manager and build tool written in C</a></h3>
+  <h3><a href="https://github.com/mainak55512/flint" rel="noopener">Flint – C ile yazılmış minimal bir C/C++ paket yöneticisi ve derleme aracı</a></h3>
   <div class="card-meta">
     <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
     <span class="dot">·</span>
@@ -596,36 +692,7 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://producthunt.com/r/OTBU4BBU7KUQEY" rel="noopener">Referent</a></h3>
-  <p class="body raw">The AI-native OS for modern law firms</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2093986080491987043" rel="noopener">If I was Indian</a></h3>
-  <div class="card-meta">
-    <span class="src src-twitter"><span class="mark">X</span>X</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T08:56:00+00:00">6 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://producthunt.com/r/MPGY4SMRHXCRMC" rel="noopener">Murfy AI</a></h3>
-  <p class="body raw">Write, review, and publish to arXiv 10x faster</p>
-  <div class="card-meta">
-    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2093754163343593802" rel="noopener">Okay I built it!</a></h3>
+  <h3><a href="https://x.com/levelsio/status/2093754163343593802" rel="noopener">Tamam, inşa ettim!</a></h3>
   <p class="body raw">🍰 Infinite Slop https://t.co/wz0a7VSBtS An infinite and interactive AI generated live stream of slop that goes on forever and ever Anything that you write in the chat is generated next and…</p>
   <div class="card-meta">
     <span class="src src-twitter"><span class="mark">X</span>X</span>
@@ -635,8 +702,34 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
+  <h3><a href="https://x.com/levelsio/status/2093986080491987043" rel="noopener">Hintli olsaydım</a></h3>
+  <div class="card-meta">
+    <span class="src src-twitter"><span class="mark">X</span>X</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T08:56:00+00:00">7 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/OTBU4BBU7KUQEY" rel="noopener">Referent</a></h3>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/MPGY4SMRHXCRMC" rel="noopener">Murfy AI</a></h3>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-30T07:01:00+00:00">8 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
   <h3><a href="https://producthunt.com/r/TNCAQ5WNJCVBP5" rel="noopener">Sayscroll</a></h3>
-  <p class="body raw">The AI Teleprompter that scrolls as you speak</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -646,7 +739,6 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/PBN7NH52G6BR3Y" rel="noopener">RIP MY BUILD</a></h3>
-  <p class="body raw">Give your abandoned side project one last launch</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -656,7 +748,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/TCOX3WVFQ7GNHX" rel="noopener">Skud</a></h3>
-  <p class="body raw">Menubar file delivery with your brand and tracking</p>
+  <p class="body raw">Markanız ve takibinizle birlikte Menubar dosya teslimatı</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -666,7 +758,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/B4IPU5VNHVZG5J" rel="noopener">Caplio</a></h3>
-  <p class="body raw">Find, organize, and reuse every image on your Mac</p>
+  <p class="body raw">Mac&#39;inizdeki her görüntüyü bulun, düzenleyin ve yeniden kullanın</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -675,7 +767,7 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://x.com/levelsio/status/2094009952197046470" rel="noopener">The lack of automation here is a bit disturbing? Shouldn&#39;t this be like 99% automated?</a></h3>
+  <h3><a href="https://x.com/levelsio/status/2094009952197046470" rel="noopener">Buradaki otomasyon eksikliği biraz rahatsız edici mi? Bunun %99&#39;unun otomatik olması gerekmez mi?</a></h3>
   <div class="card-meta">
     <span class="src src-twitter"><span class="mark">X</span>X</span>
     <span class="dot">·</span>
@@ -685,7 +777,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/H3E75LRICOKL24" rel="noopener">Softorino Online Converter</a></h3>
-  <p class="body raw">Free &amp; Safe online file converter. No ads. No bs.</p>
+  <p class="body raw">Softorino Çevrimiçi Dönüştürücü — Ücretsiz ve Güvenli çevrimiçi dosya dönüştürücü. Reklam yok. Hayır bs.</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -702,22 +794,21 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://mondoweiss.net/2026/08/destroying-agriculture-is-the-purpose-how-israel-is-drying-up-the-west-banks-most-fertile-farmlands" rel="noopener">For months, Palestinian farmers in the northern West Bank have watched their water lines cut and their wells marked for demolition in Israel’s slow strangulation of Palestinian agriculture, as farmers</a></h3>
-  <p class="body raw">tell Mondoweiss &#34;there is no tomorrow&#34; for them. mondoweiss.net/2026/08/dest...</p>
-  <div class="card-meta">
-    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
-    <span class="dot">·</span>
-    <time datetime="2026-08-29T19:28:00.620000+00:00">20 saat önce</time>
-  </div>
-</article>
-
-    <article class="card">
   <h3><a href="https://csaf.itch.io/understory" rel="noopener">UNDERSTORY</a></h3>
-  <p class="body raw">(Free, Simulation) — Spread a fungal network through a forest floor. Digest what you reach. It never wipes your board.</p>
+  <p class="body raw">(Ücretsiz, Simülasyon) — Bir mantar ağını orman zeminine yayın. Ulaştığınız şeyi sindirin. It never wipes your board.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
     <time datetime="2026-08-29T16:36:49+00:00">23 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://mondoweiss.net/2026/08/destroying-agriculture-is-the-purpose-how-israel-is-drying-up-the-west-banks-most-fertile-farmlands" rel="noopener">Aylardır Kuzey Batı Şeria&#39;daki Filistinli çiftçiler, çiftçiler olarak İsrail&#39;in Filistin tarımını yavaş yavaş boğması sırasında su hatlarının kesilmesini ve kuyularının yıkılmak üzere işaretlenmesini izlediler.</a></h3>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-08-29T19:28:00.620000+00:00">20 saat önce</time>
   </div>
 </article>
 
@@ -732,7 +823,6 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4621920" rel="noopener">Adventure Honor</a></h3>
-  <p class="body raw">(Adventure, Indie, RPG) — Adventure Honor is a Rogue-like RPG. On the road, you collect skills and items to build your character. With the right buffs and upgrades, you grow through every…</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -741,8 +831,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://store.steampowered.com/app/4424690" rel="noopener">Just Open The Door</a></h3>
-  <p class="body raw">(Casual, Indie, Strategy) — Just Open The Door is an incremental idle game where you open doors to earn money. Buy faster workers, unlock powerful upgrades and automate the entire process…</p>
+  <h3><a href="https://store.steampowered.com/app/4424690" rel="noopener">Sadece Kapıyı Aç</a></h3>
+  <p class="body raw">Just Open The Door (Casual, Indie, Strategy) — Just Open The Door is an incremental idle game where you open doors to earn money. Buy faster workers, unlock powerful upgrades and automate…</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -752,7 +842,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://store.steampowered.com/app/4763600" rel="noopener">POSER</a></h3>
-  <p class="body raw">(Indie, Free To Play) — POSER is a narrative-driven rhythm game where you move to the beat to explore an underground club, and dance battle your way through it to uncover its darkest…</p>
+  <p class="body raw">(Bağımsız, Oynaması Ücretsiz) — POSER, bir yeraltı kulübünü keşfetmek için ritme göre hareket ettiğiniz ve en karanlık sırlarını ortaya çıkarmak için dansla savaşarak ilerlediğiniz…</p>
   <div class="card-meta">
     <span class="src src-steam"><span class="mark">S</span>Steam</span>
     <span class="dot">·</span>
@@ -761,92 +851,92 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://ko-tetz.itch.io/just-until-the-rain-stops" rel="noopener">Just Until the Rain Stops</a></h3>
-  <p class="body raw">(Free, Visual Novel, Windows) — A short fantasy romance about being trapped in the rain with a mercenary who&#39;s trying to court you.</p>
+  <h3><a href="https://cozy-games-from-the-hell.itch.io/paper-eraser-prototype" rel="noopener">Paper eraser (Prototype)</a></h3>
+  <p class="body raw">Kağıt silgisi (Prototip) (Ücretsiz, Simülasyon) — Sil. Güncelleme. Kral ol.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:23:48+00:00">1 saat önce</time>
+    <time datetime="2026-08-30T15:48:44+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://slowkiln.itch.io/mutant-survivor" rel="noopener">Mutant Survivor</a></h3>
-  <p class="body raw">(Free, Action) — A top-down horde survival roguelike: you only move, your weapons fire themselves, and every wave ends in a shop.</p>
+  <h3><a href="https://prince2005kumar.itch.io/descendant-of-hanuman" rel="noopener">Descendant of Hanuman</a></h3>
+  <p class="body raw">(Ücretsiz, Aksiyon, Windows) — Vadideki tüm düşmanları yenmek amacıyla Hanuman&#39;ın soyundan biri olarak oynadığınız bir dövüş oyunu</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:17:32+00:00">az önce</time>
+    <time datetime="2026-08-30T15:45:33+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://otakuri.itch.io/governmentwebsitesimulatorgovmy" rel="noopener">GovernmentWebsiteSimulator.gov.my</a></h3>
-  <p class="body raw">(Free, Puzzle) — This is a Goverment Website.</p>
+  <h3><a href="https://python-maniac.itch.io/jumperos" rel="noopener">JumperOS</a></h3>
+  <p class="body raw">(Ücretsiz, Bulmaca, Windows) — Oldukça havalı bir bulmaca platform oyunu.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:19:17+00:00">1 saat önce</time>
+    <time datetime="2026-08-30T15:43:52+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://eva-stark.itch.io/what-we-leave-behind" rel="noopener">What We Leave Behind</a></h3>
-  <p class="body raw">(Free, Visual Novel)</p>
+  <h3><a href="https://tobinekodou.itch.io/bounce-intelligence-micro-demo" rel="noopener">Bounce Intelligence: Mikro Demo</a></h3>
+  <p class="body raw">(Ücretsiz) — Bir arena, beş sonsuz tehdit ve sıçrama. Yürümek için tıklayın, koşmak için basılı tutun, CATO&#39;dan Mega Bounce&#39;a sürükleyin.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:48:12+00:00">az önce</time>
+    <time datetime="2026-08-30T15:27:22+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://raiskolnikov.itch.io/fili-pow" rel="noopener">FILI-POW!</a></h3>
-  <p class="body raw">(Free, Survival, Windows) — bomberman inspired terminal game</p>
+  <h3><a href="https://noidcorp.itch.io/maskd" rel="noopener">Mask&#39;d</a></h3>
+  <p class="body raw">(Ücretsiz, Bulmaca) — BİRÇOK EŞYA KIRIK!</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:28:11+00:00">az önce</time>
+    <time datetime="2026-08-30T15:15:18+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://litansh.itch.io/sudoku-always-solvable-by-logic" rel="noopener">Sudoku — always solvable by logic</a></h3>
-  <p class="body raw">(Free, Puzzle) — One to nine, once each. Three difficulties, every puzzle solvable without guessing.</p>
+  <h3><a href="https://easy-games-1.itch.io/neon-rhythm" rel="noopener">Neon Rhythm</a></h3>
+  <p class="body raw">(Ücretsiz, Ritim, Android) — Telefonlar için gündelik oyun</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:23:22+00:00">az önce</time>
+    <time datetime="2026-08-30T15:20:19+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://aiminigames.itch.io/ai-game-night" rel="noopener">AI Game Night</a></h3>
-  <p class="body raw">(Free, Simulation, Windows) — Chat, talk, and play classic games with animated AI personalities running privately on your own Windows PC.</p>
+  <h3><a href="https://the-chancellor.itch.io/night-tech" rel="noopener">Night Tech</a></h3>
+  <p class="body raw">(Ücretsiz) — Bir gece geç saatlerde bazı jeneratörleri tamir etmeye geliyorsunuz.</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:00:59+00:00">az önce</time>
+    <time datetime="2026-08-30T13:41:12+00:00">2 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://sbobbolo.itch.io/ship-happens" rel="noopener">Ship Happens</a></h3>
-  <p class="body raw">Ship Happens (Free, Racing)</p>
+  <h3><a href="https://thechainsawboy.itch.io/dungen-monsters" rel="noopener">Dungen Monsters</a></h3>
+  <p class="body raw">(Ücretsiz, Kart Oyunu, Windows) — Kart ve masa oyununun karışımı</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:30:01+00:00">az önce</time>
+    <time datetime="2026-08-30T15:43:29+00:00">az önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://tinyhat.itch.io/desert-frog" rel="noopener">Desert Frog</a></h3>
-  <p class="body raw">(Free, Platformer, Windows, macOS, Linux)</p>
+  <h3><a href="https://anirnir.itch.io/ukai" rel="noopener">Ukai</a></h3>
+  <p class="body raw">Ukai (Ücretsiz, Windows)</p>
   <div class="card-meta">
     <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T15:24:31+00:00">az önce</time>
+    <time datetime="2026-08-30T15:47:57+00:00">az önce</time>
   </div>
 </article>
 
@@ -860,7 +950,7 @@ footer a { color: var(--ink-faint); }
   <div class="grid">
     <article class="card lead">
   <h3><a href="https://producthunt.com/r/25TEFO4TYMRPSG" rel="noopener">Topview Motion Studio</a></h3>
-  <p class="body raw">Create launch videos without touching After Effects</p>
+  <p class="body raw">After Effects&#39;e dokunmadan lansman videoları oluşturun</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -870,7 +960,6 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/Q3HHDTI43UTONK" rel="noopener">Ravioli</a></h3>
-  <p class="body raw">Create custom stamp shapes</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -889,7 +978,7 @@ footer a { color: var(--ink-faint); }
 
     <article class="card">
   <h3><a href="https://producthunt.com/r/75BZYHVWCCPC6L" rel="noopener">Retro Y2K Theme</a></h3>
-  <p class="body raw">Customize any website with a vintage 90s &amp; Y2K retro theme</p>
+  <p class="body raw">Retro Y2K Teması — Herhangi bir web sitesini vintage 90&#39;lar ve Y2K retro temasıyla özelleştirin</p>
   <div class="card-meta">
     <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
     <span class="dot">·</span>
@@ -898,12 +987,12 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://bsky.app/profile/seconddeath.bsky.social/post/3muak26uty22b" rel="noopener">Eyy my finances are still super rough rn due to my ankle injury so I’m open for custom work!!</a></h3>
-  <p class="body raw">contact info below, but I’m open to designing a bunch of stuff!! I can help ya with illustrations, posters, merch, &amp; more!! Would LOVE some music related projects!! #art #graphicdesign…</p>
+  <h3><a href="https://bsky.app/profile/seconddeath.bsky.social/post/3muak26uty22b" rel="noopener">Eyy, ayak bileğimdeki sakatlık nedeniyle mali durumum hala çok zor, bu yüzden özel çalışmalara açığım!!</a></h3>
+  <p class="body raw">İletişim bilgileri aşağıda, ancak bir sürü şey tasarlamaya açığım!! Size illüstrasyonlar, posterler, ürünler ve daha fazlası konusunda yardımcı olabilirim!! Müzikle ilgili bazı projeleri…</p>
   <div class="card-meta">
     <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-29T18:47:30.119000+00:00">20 saat önce</time>
+    <time datetime="2026-08-29T18:47:30.119000+00:00">21 saat önce</time>
   </div>
 </article>
 
@@ -916,18 +1005,17 @@ footer a { color: var(--ink-faint); }
   </div>
   <div class="grid">
     <article class="card lead">
-  <h3><a href="https://techmeme.com/260830/p7" rel="noopener">A look at the management changes John Ternus could make as many key Apple execs prepare to leave in the next few years; Apple tested a Pencil for folding iPhone (Mark Gurman/Bloomberg)</a></h3>
-  <p class="body raw">Mark Gurman / Bloomberg : A look at the management changes John Ternus could make as many key Apple execs prepare to leave in the next few years; Apple tested a Pencil for folding iPhone…</p>
+  <h3><a href="https://techmeme.com/260830/p7" rel="noopener">John Ternus&#39;un yönetim değişikliklerine bir bakış, önümüzdeki birkaç yıl içinde pek çok önemli Apple yöneticisinin ayrılmaya hazırlanmasını sağlayabilir; Apple, iPhone&#39;u katlamak için kalemi test etti (Mark Gurman/Bloomberg)</a></h3>
+  <p class="body raw">John Ternus&#39;un yönetim değişikliklerine bir bakış, önümüzdeki birkaç yıl içinde pek çok önemli Apple yöneticisinin ayrılmaya hazırlanmasını sağlayabilir; Apple tested a Pencil for folding…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T14:50:00+00:00">az önce</time>
+    <time datetime="2026-08-30T14:50:00+00:00">1 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p6" rel="noopener">A look at the race to build quantum computers, as the tech becomes a geopolitical battleground with potential to transform cybersecurity, finance, and more (Mark Bergen/Bloomberg)</a></h3>
-  <p class="body raw">Mark Bergen / Bloomberg : A look at the race to build quantum computers, as the tech becomes a geopolitical battleground with potential to transform cybersecurity, finance, and more…</p>
+  <h3><a href="https://techmeme.com/260830/p6" rel="noopener">Teknoloji siber güvenliği, finansı ve daha fazlasını dönüştürme potansiyeline sahip jeopolitik bir savaş alanına dönüşürken kuantum bilgisayarları üretme yarışına bir bakış (Mark Bergen/Bloomberg)</a></h3>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -936,8 +1024,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p5" rel="noopener">The OpenAI/Hugging Face incident feels like we are halfway to losing control of AI entirely, and as AI advances rapidly we may not get another warning shot (Ajeya Cotra/Planned Obsolescence)</a></h3>
-  <p class="body raw">Ajeya Cotra / Planned Obsolescence : The OpenAI/Hugging Face incident feels like we are halfway to losing control of AI entirely, and as AI advances rapidly we may not get another warning…</p>
+  <h3><a href="https://techmeme.com/260830/p5" rel="noopener">OpenAI/Hugging Face olayı, yapay zekanın kontrolünü tamamen kaybetmenin yarısına geldiğimizi hissettiriyor ve yapay zeka hızla ilerledikçe başka bir uyarı atışı alamayabiliriz (Ajeya Cotra/Planned Obsolescence)</a></h3>
+  <p class="body raw">OpenAI/Hugging Face olayı, yapay zekanın kontrolünü tamamen kaybetmenin yarısına geldiğimizi hissettiriyor ve yapay zeka hızla ilerledikçe başka bir uyarı atışı alamayabiliriz (Ajeya…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -946,8 +1034,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p4" rel="noopener">A look at the Hugging Face hack, including AI agents sacrificing themselves for the good of the &#34;collective&#34;, and later gaining access to OpenAI&#39;s own systems (Dwarkesh Patel/Dwarkesh Podcast)</a></h3>
-  <p class="body raw">Dwarkesh Patel / Dwarkesh Podcast : A look at the Hugging Face hack, including AI agents sacrificing themselves for the good of the “collective”, and later gaining access to OpenAI&#39;s own…</p>
+  <h3><a href="https://techmeme.com/260830/p4" rel="noopener">&#34;Kolektifin&#34; iyiliği için kendilerini feda eden ve daha sonra OpenAI&#39;nin kendi sistemlerine erişim sağlayan AI ajanlarının da dahil olduğu Hugging Face hack&#39;ine bir bakış (Dwarkesh Patel/Dwarkesh Podcast)</a></h3>
+  <p class="body raw">&#34;Kolektifin&#34; iyiliği için kendilerini feda eden ve daha sonra OpenAI&#39;nin kendi sistemlerine erişim sağlayan AI ajanlarını içeren Hugging Face hack&#39;ine bir bakış (Dwarkesh Patel/Dwarkesh…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -956,18 +1044,18 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p3" rel="noopener">Faro, which develops data models and AI tools to speed up clinical trials, raised a $37.3M Series B co-led by Merck Global Health Innovation Fund and S32 (Dealroom.co)</a></h3>
-  <p class="body raw">Dealroom.co : Faro, which develops data models and AI tools to speed up clinical trials, raised a $37.3M Series B co-led by Merck Global Health Innovation Fund and S32 — What&#39;s the deal?…</p>
+  <h3><a href="https://techmeme.com/260830/p3" rel="noopener">Klinik deneyleri hızlandırmak için veri modelleri ve yapay zeka araçları geliştiren Faro, Merck Global Sağlık İnovasyon Fonu ve S32 (Dealroom.co) liderliğinde 37,3 milyon dolarlık B Serisi topladı.</a></h3>
+  <p class="body raw">Faro, which develops data models and AI tools to speed up clinical trials, raised a $37.3M Series B co-led by Merck Global Health Innovation Fund and S32 (Dealroom.co) — Dealroom.co : Faro…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
-    <time datetime="2026-08-30T05:55:02+00:00">9 saat önce</time>
+    <time datetime="2026-08-30T05:55:02+00:00">10 saat önce</time>
   </div>
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p2" rel="noopener">Industry insiders say Chinese robot makers currently rely on Nvidia silicon and software; Nvidia&#39;s physical AI business generates ~$10B in annual revenue (Raffaele Huang/Wall Street Journal)</a></h3>
-  <p class="body raw">Raffaele Huang / Wall Street Journal : Industry insiders say Chinese robot makers currently rely on Nvidia silicon and software; Nvidia&#39;s physical AI business generates ~$10B in annual…</p>
+  <h3><a href="https://techmeme.com/260830/p2" rel="noopener">Sektördeki kişiler, Çinli robot üreticilerinin şu anda Nvidia silikon ve yazılımına güvendiğini söylüyor; Nvidia&#39;nın fiziksel yapay zeka işi yıllık ~10 milyar dolar gelir elde ediyor (Raffaele Huang/Wall Street Journal)</a></h3>
+  <p class="body raw">Sektördeki kişiler, Çinli robot üreticilerinin şu anda Nvidia silikon ve yazılımına güvendiğini söylüyor; Nvidia&#39;s physical AI business generates ~$10B in annual revenue (Raffaele…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -976,8 +1064,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260830/p1" rel="noopener">Grindr CEO George Arison plans premium services push, including a product costing up to $350 per month; Grindr averaged 1.4M paying users among 15M MAUs in Q2 (Kieran Smith/Financial Times)</a></h3>
-  <p class="body raw">Kieran Smith / Financial Times : Grindr CEO George Arison plans premium services push, including a product costing up to $350 per month; Grindr averaged 1.4M paying users among 15M MAUs in…</p>
+  <h3><a href="https://techmeme.com/260830/p1" rel="noopener">Grindr CEO&#39;su George Arison, ayda 350 dolara varan bir ürün maliyeti de dahil olmak üzere premium hizmetler geliştirmeyi planlıyor; Grindr, ikinci çeyrekte 15 milyon MAU arasında ortalama 1,4 milyon ödeme yapan kullanıcıya ulaştı (Kieran Smith/Financial Times)</a></h3>
+  <p class="body raw">Grindr CEO&#39;su George Arison, ayda 350 dolara varan bir ürün maliyeti de dahil olmak üzere premium hizmetler geliştirmeyi planlıyor; Grindr averaged 1.4M paying users among 15M MAUs in Q2…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -986,8 +1074,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techcrunch.com/2026/08/30/caterpillar-is-bringing-to-ai-deployment-what-it-learned-from-automating-mining" rel="noopener">Caterpillar is bringing to AI deployment what it learned from automating mining</a></h3>
-  <p class="body raw">Caterpillar has spent decades putting autonomous machines to work at remote mining sites. It&#39;s now bringing that experience to AI deployment.</p>
+  <h3><a href="https://techcrunch.com/2026/08/30/caterpillar-is-bringing-to-ai-deployment-what-it-learned-from-automating-mining" rel="noopener">Caterpillar, madenciliği otomatikleştirmekten öğrendiklerini yapay zeka dağıtımına taşıyor</a></h3>
+  <p class="body raw">Caterpillar is bringing to AI deployment what it learned from automating mining — Caterpillar has spent decades putting autonomous machines to work at remote mining sites. Şimdi bu deneyimi…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -996,8 +1084,7 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p18" rel="noopener">Glassdoor analysis finds 47% of Gen X workers write positively about their companies&#39; AI use, compared with 40% of millennials and 33% of Gen Z workers (Taylor Nicole Rogers/Bloomberg)</a></h3>
-  <p class="body raw">Taylor Nicole Rogers / Bloomberg : Glassdoor analysis finds 47% of Gen X workers write positively about their companies&#39; AI use, compared with 40% of millennials and 33% of Gen Z workers…</p>
+  <h3><a href="https://techmeme.com/260829/p18" rel="noopener">Glassdoor analizi, X kuşağı çalışanlarının %47&#39;sinin, Y kuşağının %40&#39;ı ve Z kuşağı çalışanların %33&#39;üne kıyasla şirketlerinin yapay zeka kullanımı hakkında olumlu yazdığını ortaya koyuyor (Taylor Nicole Rogers/Bloomberg)</a></h3>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1006,8 +1093,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p17" rel="noopener">Music producers are calling out tracks suspected of using AI tools like Suno, as the internet becomes increasingly filled with AI-generated music (Charles Pulliam-Moore/The Verge)</a></h3>
-  <p class="body raw">Charles Pulliam-Moore / The Verge : Music producers are calling out tracks suspected of using AI tools like Suno, as the internet becomes increasingly filled with AI-generated music — As AI…</p>
+  <h3><a href="https://techmeme.com/260829/p17" rel="noopener">İnternet giderek yapay zeka tarafından oluşturulan müzikle dolduğundan, müzik yapımcıları Suno gibi yapay zeka araçlarını kullandığından şüphelenilen parçaları seslendiriyor (Charles Pulliam-Moore/The Verge)</a></h3>
+  <p class="body raw">Charles Pulliam-Moore / The Verge : İnternet giderek yapay zeka tarafından oluşturulan müzikle dolduğundan, müzik yapımcıları Suno gibi yapay zeka araçlarını kullandığından şüphelenilen…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1016,8 +1103,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p16" rel="noopener">California&#39;s legislature passes a bill exempting open-source OSes like Linux from a 2025 age-verification law; Windows, macOS, iOS, and Android remain in scope (Luke James/Tom&#39;s Hardware)</a></h3>
-  <p class="body raw">Luke James / Tom&#39;s Hardware : California&#39;s legislature passes a bill exempting open-source OSes like Linux from a 2025 age-verification law; Windows, macOS, iOS, and Android remain in scope…</p>
+  <h3><a href="https://techmeme.com/260829/p16" rel="noopener">Kaliforniya yasama organı, Linux gibi açık kaynaklı işletim sistemlerini 2025 yaş doğrulama yasasından muaf tutan bir yasa tasarısını kabul etti; Windows, macOS, iOS ve Android kapsam dahilinde kalır (Luke James/Tom&#39;s Hardware)</a></h3>
+  <p class="body raw">Kaliforniya yasama organı, Linux gibi açık kaynaklı işletim sistemlerini 2025 yaş doğrulama yasasından muaf tutan bir yasa tasarısını kabul etti; Windows, macOS, iOS ve Android kapsam…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1026,8 +1113,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p15" rel="noopener">Data center development is driving demand for acoustic consultants, as developers and neighboring communities hire acousticians to assess noise emissions (Sheena Meng/Bloomberg)</a></h3>
-  <p class="body raw">Sheena Meng / Bloomberg : Data center development is driving demand for acoustic consultants, as developers and neighboring communities hire acousticians to assess noise emissions — The…</p>
+  <h3><a href="https://techmeme.com/260829/p15" rel="noopener">Geliştiriciler ve komşu topluluklar gürültü emisyonlarını değerlendirmek için akustik uzmanlarını işe aldığından, veri merkezi gelişimi akustik danışmanlarına olan talebi artırıyor (Sheena Meng/Bloomberg)</a></h3>
+  <p class="body raw">Geliştiriciler ve komşu topluluklar gürültü emisyonlarını değerlendirmek için akustik uzmanlarını işe alırken, veri merkezi gelişimi akustik danışmanlarına olan talebi artırıyor (Sheena…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1036,8 +1123,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p14" rel="noopener">Elon Musk says SpaceX is &#34;doing in-house casting&#34; for blades and vanes, which can accelerate natural gas turbines &#34;coming online by up to 18 months&#34; (Ann Davis Vaughan/The Information)</a></h3>
-  <p class="body raw">Ann Davis Vaughan / The Information : Elon Musk says SpaceX is “doing in-house casting” for blades and vanes, which can accelerate natural gas turbines “coming online by up to 18 months”…</p>
+  <h3><a href="https://techmeme.com/260829/p14" rel="noopener">Elon Musk, SpaceX&#39;in doğal gaz türbinlerinin &#34;18 aya kadar devreye girmesini&#34; hızlandırabilecek kanatlar ve kanatlar için &#34;şirket içi döküm yaptığını&#34; söyledi (Ann Davis Vaughan/The Information)</a></h3>
+  <p class="body raw">Elon Musk, SpaceX&#39;in doğal gaz türbinlerinin &#34;18 aya kadar devreye girmesini&#34; hızlandırabilen kanatlar ve kanatlar için &#34;şirket içi döküm yaptığını&#34; söylüyor (Ann Davis Vaughan/The…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1046,8 +1133,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p13" rel="noopener">Anthropic will &#34;permanently&#34; raise weekly Claude Code limits by 25% on Sept. 14 for most plans, which will work out a 17% reduction, given the current 50% boost (@claudedevs)</a></h3>
-  <p class="body raw">@claudedevs : Anthropic will “permanently” raise weekly Claude Code limits by 25% on Sept. 14 for most plans, which will work out a 17% reduction, given the current 50% boost — Starting…</p>
+  <h3><a href="https://techmeme.com/260829/p13" rel="noopener">Anthropic, çoğu plan için 14 Eylül&#39;de haftalık Claude Kodu limitlerini &#34;kalıcı olarak&#34; %25 artıracak ve mevcut %50&#39;lik artış göz önüne alındığında bu, %17&#39;lik bir düşüşe yol açacak (@claudedevs)</a></h3>
+  <p class="body raw">Anthropic, çoğu plan için 14 Eylül&#39;de haftalık Claude Kodu limitlerini &#34;kalıcı olarak&#34; %25 artıracak ve bu, mevcut %50 artış göz önüne alındığında %17&#39;lik bir azalma sağlayacak…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1056,8 +1143,8 @@ footer a { color: var(--ink-faint); }
 </article>
 
     <article class="card">
-  <h3><a href="https://techmeme.com/260829/p12" rel="noopener">Sources detail how Meta&#39;s $17.1B settlement with state AGs came together as Meta wanted to avoid going to trial following losses in cases in LA and New Mexico (New York Times)</a></h3>
-  <p class="body raw">New York Times : Sources detail how Meta&#39;s $17.1B settlement with state AGs came together as Meta wanted to avoid going to trial following losses in cases in LA and New Mexico — State…</p>
+  <h3><a href="https://techmeme.com/260829/p12" rel="noopener">Kaynaklar, Meta&#39;nın eyalet AG&#39;leriyle yaptığı 17,1 milyar dolarlık anlaşmanın, Meta&#39;nın Los Angeles ve New Mexico&#39;daki davalardaki kayıpların ardından mahkemeye gitmekten kaçınmak istemesiyle nasıl bir araya geldiğini ayrıntılarıyla anlatıyor (New York Times)</a></h3>
+  <p class="body raw">Kaynaklar, Meta&#39;nın eyalet AG&#39;leriyle yaptığı 17,1 milyar dolarlık anlaşmanın, Meta&#39;nın Los Angeles ve New Mexico&#39;daki davalardan sonra mahkemeye gitmekten kaçınmak istemesiyle nasıl bir…</p>
   <div class="card-meta">
     <span class="src src-rss"><span class="mark">R</span>RSS</span>
     <span class="dot">·</span>
@@ -1075,7 +1162,7 @@ footer a { color: var(--ink-faint); }
 
 <footer>
   <a href="index.html">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
-  30.08.2026 15:46 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
+  30.08.2026 15:59 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
 </footer>
 
 </div>
