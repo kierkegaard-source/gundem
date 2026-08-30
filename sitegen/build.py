@@ -114,11 +114,21 @@ def _hours_ago(published_at: str, ref: datetime) -> str:
     return "dün" if d == 1 else f"{d} gün önce"
 
 
-def build_notices(run: sqlite3.Row | None) -> list[str]:
-    """Sayfanın üstündeki uyarı bandı. PROJECT.md §2.2: eksik kaynak görünsün."""
+def build_notices(run: sqlite3.Row | None) -> tuple[list[str], list[str]]:
+    """Uyarıları ÖNEMİNE göre ikiye ayırır: (ciddi, önemsiz).
+
+    PROJECT.md §2.2 eksik kaynağın sayfada görünmesini istiyor ama hepsi aynı
+    ağırlıkta değil. 25 RSS feed'inin 2'si zaman aşımına uğradığında
+    "Bu sayı eksik üretildi" başlığı fazla alarmcı — bu neredeyse her gün olur
+    ve bant kalıcı hâle gelip anlamını yitirir.
+
+    ciddi   : bir kaynağın TAMAMI düştü, ya da özetleme hiç yapılamadı
+    önemsiz : çoklu kaynağın bir kısmı düştü (RSS feed'leri, Bluesky beslemeleri)
+    """
     if not run:
-        return []
-    notices: list[str] = []
+        return [], []
+    major: list[str] = []
+    minor: list[str] = []
     try:
         failed = json.loads(run["failed_sources"] or "[]")
     except (TypeError, json.JSONDecodeError):
@@ -127,10 +137,11 @@ def build_notices(run: sqlite3.Row | None) -> list[str]:
         name = f.split(":")[0].strip()
         label = SOURCE_LABEL.get(name, name)
         if "(kısmi)" in f:
-            notices.append(f"{label} kaynağı kısmen alınabildi.")
+            detay = f.split(":", 1)[1].strip() if ":" in f else ""
+            minor.append(f"{label}: {detay}" if detay else f"{label} kısmen alınabildi")
         else:
-            notices.append(f"{label} kaynağı bugün alınamadı.")
-    return notices
+            major.append(f"{label} kaynağı bugün alınamadı.")
+    return major, minor
 
 
 def _llm_reason(run: sqlite3.Row | None) -> str:
@@ -213,7 +224,7 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
         if k not in {s["key"] for s in sections}:
             sections.append({"key": k, "label": k.title(), "entries": items})
 
-    notices = build_notices(run)
+    notices, minor_notices = build_notices(run)
     if rows and not any(r["summary_tr"] for r in rows):
         mt = sum(1 for r in rows if r["title_mt"] or r["body_mt"])
         eksik = ("iki cümlelik Türkçe özet, \u201cneden okumalı\u201d satırı ve "
@@ -229,6 +240,7 @@ def collect_day(conn: sqlite3.Connection, day: str, run: sqlite3.Row | None) -> 
     return {
         "alerts": hot[:6],
         "radar_evaluated": evaluated,
+        "minor_notices": minor_notices,
         "date": day,
         "date_long": tr_date(day),
         "total": len(rows),

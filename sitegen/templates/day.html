@@ -81,6 +81,13 @@
 </section>
 {% endfor %}
 
+{% if minor_notices %}
+<p class="minor-notice">
+  Küçük aksaklık: {{ minor_notices|join('; ') }} — bu kaynakların bir kısmı
+  bugün alınamadı, sayının geri kalanı etkilenmedi.
+</p>
+{% endif %}
+
 <nav class="pager">
   {% if prev_date %}<a href="{{ prev_date }}.html">← {{ prev_label }}</a>{% else %}<span>← önceki sayı yok</span>{% endif %}
   <a href="arsiv.html">Arşiv</a>
