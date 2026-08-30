@@ -207,3 +207,80 @@ def test_firsat_yoksa_radar_bos_doner(fake):
     cs = [cluster(f"Madde {i}", i) for i in range(3)]
     summarize(cs, CFG, Budget.from_config(CFG))
     assert alerts(cs) == []          # zorlama yok: fırsat yoksa liste boş
+
+
+# ---------- modelin yanıtta atladığı maddeler ----------
+
+def test_yanitta_atlanan_madde_tekrar_soruluyor(fake, monkeypatch):
+    """Model batch'teki bazı id'leri yanıtta atlıyor (gerçek koşuda 82'nin 14'ü).
+    İlk turda eksik kalanlar ikinci bir istekle tekrar sorulur."""
+    calls = {"n": 0}
+
+    def factory(api_key=None):
+        class M:
+            def count_tokens(self, **kw): return SimpleNamespace(input_tokens=500)
+            def create(self, **kw):
+                calls["n"] += 1
+                rows = ([{"id": 0, "title_tr": "Var", "summary": "a. b.", "why": "c",
+                          "category": "dev", "signal": 3, "potential": 2,
+                          "opportunity": "yok", "potential_note": ""}]
+                        if calls["n"] == 1 else
+                        [{"id": 1, "title_tr": "Sonradan", "summary": "a. b.", "why": "c",
+                          "category": "dev", "signal": 3, "potential": 2,
+                          "opportunity": "yok", "potential_note": ""}])
+                return SimpleNamespace(
+                    content=[SimpleNamespace(type="text",
+                                             text=json.dumps({"items": rows}))],
+                    stop_reason="end_turn",
+                    usage=SimpleNamespace(input_tokens=500, output_tokens=200,
+                                          cache_read_input_tokens=0))
+        return SimpleNamespace(messages=M())
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr("pipeline.summarize.Anthropic", factory)
+    cs = [cluster("Var", 0), cluster("Atlanan", 1)]
+    rep = summarize(cs, CFG, Budget.from_config(CFG))
+    assert rep["missing_first_pass"] == 1
+    assert rep["missing_after_retry"] == 0
+    assert cs[1].title_tr == "Sonradan"      # ikinci turda geldi
+    assert calls["n"] == 2
+
+
+def test_tekrar_denemede_de_gelmeyen_madde_sayiya_girmiyor(fake, monkeypatch):
+    """Kalite kontrolü yapılamamış madde sayfaya alınmaz — aksi hâlde
+    'Hintli olsaydım' gibi tweet'ler sinyal filtresini atlayıp tepeye çıkıyor."""
+    def factory(api_key=None):
+        class M:
+            def count_tokens(self, **kw): return SimpleNamespace(input_tokens=500)
+            def create(self, **kw):
+                rows = [{"id": 0, "title_tr": "Var", "summary": "a. b.", "why": "c",
+                         "category": "dev", "signal": 3, "potential": 2,
+                         "opportunity": "yok", "potential_note": ""}]
+                return SimpleNamespace(
+                    content=[SimpleNamespace(type="text",
+                                             text=json.dumps({"items": rows}))],
+                    stop_reason="end_turn",
+                    usage=SimpleNamespace(input_tokens=500, output_tokens=200,
+                                          cache_read_input_tokens=0))
+        return SimpleNamespace(messages=M())
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr("pipeline.summarize.Anthropic", factory)
+    cs = [cluster("Var", 0), cluster("Hic gelmeyen", 1)]
+    summarize(cs, CFG, Budget.from_config(CFG))
+    assert cs[1].summary_missing is True
+    kept, dropped = drop_low_signal(cs, CFG)
+    assert [c.lead.title for c in kept] == ["Var"]
+    assert [c.lead.title for c in dropped] == ["Hic gelmeyen"]
+
+
+def test_hic_denenmemis_madde_sayida_kaliyor(monkeypatch):
+    """Bütçe tavanı ya da API hatası yüzünden HİÇ denenmemiş madde elenmez —
+    onu elemek için gerekçemiz yok, ham başlıkla sayıda kalır."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    cs = [cluster("Hic denenmedi", 0)]
+    rep = summarize(cs, CFG, Budget.from_config(CFG))
+    assert rep["degraded"] is True
+    assert cs[0].summary_missing is False
+    kept, dropped = drop_low_signal(cs, CFG)
+    assert len(kept) == 1 and not dropped

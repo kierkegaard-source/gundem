@@ -136,6 +136,13 @@ SCHEMA = {
 }
 
 
+def _payload_ids(batch: list[Cluster], ids: list[int]) -> str:
+    """Belirli id'ler için gövde — eksik kalanları tekrar sorarken kullanılır."""
+    return json.dumps([{"id": i, "title": c.title[:200],
+                        "source": "+".join(c.sources), "text": c.raw_text[:600]}
+                       for i, c in zip(ids, batch)], ensure_ascii=False)
+
+
 def _payload(batch: list[Cluster], offset: int) -> str:
     rows = []
     for i, c in enumerate(batch):
@@ -151,7 +158,8 @@ def _payload(batch: list[Cluster], offset: int) -> str:
 def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
     """Kümeleri yerinde özetler. Döner: çalışma raporu."""
     report = {"batches": 0, "summarized": 0, "skipped_budget": 0,
-              "failed_batches": 0, "degraded": False}
+              "failed_batches": 0, "degraded": False,
+              "missing_first_pass": 0, "missing_after_retry": 0}
     if not clusters:
         return report
 
@@ -162,7 +170,9 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
         return report
 
     client = Anthropic(api_key=key)
-    by_id = {}
+    by_id: dict[int, dict] = {}
+    # Batch'i başarıyla dönen ama modelin yanıtta atladığı maddeler.
+    answered_batches: list[range] = []
 
     for start in range(0, len(clusters), BATCH_SIZE):
         batch = clusters[start:start + BATCH_SIZE]
@@ -204,6 +214,7 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
             text = next(b.text for b in resp.content if b.type == "text")
             for row in json.loads(text)["items"]:
                 by_id[int(row["id"])] = row
+            answered_batches.append(range(start, start + len(batch)))
         except Exception as exc:
             # Savunma yedeği: bu batch ham başlıkla kalır, pipeline durmaz.
             report["failed_batches"] += 1
@@ -213,9 +224,40 @@ def summarize(clusters: list[Cluster], cfg: dict, budget: Budget) -> dict:
                         f"({type(exc).__name__}: {detail}), "
                         f"{len(batch)} madde ham başlıkla kaldı")
 
+    # Model bazı id'leri yanıtta atlıyor (bu koşuda 82 adayın 14'ü). Bir kez
+    # daha, yalnızca eksikler için sorulur.
+    missing = [i for r in answered_batches for i in r if i not in by_id]
+    if missing:
+        report["missing_first_pass"] = len(missing)
+        batch = [clusters[i] for i in missing]
+        est = Budget.estimate_llm_usd(len(batch) * 90, len(batch) * 175)
+        if budget.can_afford_llm(est):
+            try:
+                resp = client.messages.create(
+                    model=MODEL, max_tokens=MAX_TOKENS, system=SYSTEM,
+                    messages=[{"role": "user", "content": _payload_ids(batch, missing)}],
+                    output_config={"format": {"type": "json_schema", "schema": SCHEMA}},
+                )
+                u = resp.usage
+                budget.charge_llm(u.input_tokens, u.output_tokens,
+                                  getattr(u, "cache_read_input_tokens", 0) or 0)
+                report["batches"] += 1
+                text = next(b.text for b in resp.content if b.type == "text")
+                for row in json.loads(text)["items"]:
+                    by_id[int(row["id"])] = row
+            except Exception as exc:
+                budget.note(f"eksik madde tekrar denemesi başarısız ({type(exc).__name__})")
+        report["missing_after_retry"] = sum(1 for i in missing if i not in by_id)
+
+    still_missing = {i for r in answered_batches for i in r if i not in by_id}
     for i, c in enumerate(clusters):
         row = by_id.get(i)
         if not row:
+            # Batch başarılıydı ama model bu maddeyi atladı → kalite kontrolü
+            # yapılmadı, sayıya alınmaz. Bütçe/hata yüzünden hiç denenmemiş
+            # maddeler bu kümede DEĞİL, onlar ham başlıkla kalır.
+            if i in still_missing:
+                c.summary_missing = True
             continue
         c.title_tr = (row.get("title_tr") or "").strip() or None
         c.summary_tr = (row.get("summary") or "").strip() or None
@@ -238,7 +280,11 @@ def drop_low_signal(clusters: list[Cluster], cfg: dict) -> tuple[list[Cluster], 
     min_signal = int(cfg.get("filters", {}).get("min_signal", 2))
     kept, dropped = [], []
     for c in clusters:
-        (dropped if (c.signal is not None and c.signal < min_signal) else kept).append(c)
+        low = c.signal is not None and c.signal < min_signal
+        # Model yanıtta atladıysa kalite kontrolü yapılmamıştır — elenir.
+        # (Bütçe/hata yüzünden HİÇ denenmemiş maddeler summary_missing
+        # taşımaz ve ham başlıkla sayıda kalır.)
+        (dropped if (low or c.summary_missing) else kept).append(c)
     return kept, dropped
 
 

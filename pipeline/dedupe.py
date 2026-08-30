@@ -76,6 +76,10 @@ class Cluster:
     signal: int | None = None
     # Kısa vadeli potansiyel (1-5). 4+ olanlar sayfada ikaz bandına çıkar.
     potential: int | None = None
+    # Batch başarılı döndü ama model bu maddeyi yanıtta atladı. Bütçe/hata
+    # yüzünden özetlenmemiş maddeden farklıdır: burada kalite kontrolü
+    # yapılamamıştır, madde sayıya alınmaz.
+    summary_missing: bool = False
     opportunity: str | None = None       # ekosistem | bosluk | talep | kanal
     potential_note: str | None = None
     llm_category: str | None = None
