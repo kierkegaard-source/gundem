@@ -3,7 +3,7 @@
 
 budget:
   daily_llm_usd: 0.20
-  daily_twitter_reads: 1400  # 64 hesap × 20 tweet (sayfa boyutu sabit) = 1280/gün
+  daily_twitter_reads: 700   # 30 hesap × 20 tweet (sayfa boyutu sabit) = 600/gün
 
 filters:
   max_per_category: 15
@@ -18,7 +18,7 @@ filters:
   # sinyalli maddeler kapıyordu (gamedev 15 → signal filtresinden sonra 4).
   # Kotadan bu katsayı kadar fazla aday özetlenir, eleme sonrası tavan
   # yeniden uygulanır.
-  summarize_oversample: 2.0
+  summarize_oversample: 1.5
   # FAZ 6: eleme oranı kaynağa göre çok değişiyor. Ölçüm (2026-08-30):
   #   producthunt  15 aday →  0 elendi
   #   github        11 aday →  0 elendi
@@ -28,8 +28,8 @@ filters:
   # Ek aday slotu yalnızca ihtiyacı olan kaynaklara veriliyor: bu kaynaklarda
   # LLM'e giden dilim en viral %16'ydı ve o dilim en çok yorum içeren dilim.
   oversample_by_source:
-    twitter: 3.0        # 10 × 3.0 = 30 aday
-    bluesky: 2.5        # 10 × 2.5 = 25 aday
+    twitter: 2.0        # 10 × 2.0 = 20 aday
+    bluesky: 2.0        # 10 × 2.0 = 20 aday
 
 scoring:
   multi_source_bonus: 1.4
@@ -166,8 +166,12 @@ sources:
     #   45 OK / 8 SESSİZ / 0 ÖLÜ. 3'ünün handle'ı değişmişti, düzeltildi.
     #   5'i yorum satırına alındı — ikisinin içeriği Bluesky'dan zaten geliyor.
     #   Kalan aktif hesap: 48.
-    # 2026-08-30 GENİŞLETME: kullanıcı isteğiyle 36 hesap eklendi → 64 aktif.
-    #   1280 okuma/gün = 19.200 kredi/gün ≈ $5.76/ay.
+    # 2026-08-30 GENİŞLETME: 39 hesap eklendi → 67 aktif.
+    # 2026-08-31 MALİYET KESİMİ: 67 → 30 hesap. Aylık $6.03 → $2.70.
+    #   Ölçüt: lansman/fırsat verimi, 30 günlük aktiflik, başka kaynakta
+    #   bulunmama. Product Hunt ve Smashing Magazine hesapları kendi
+    #   API/RSS kaynaklarımızla mükerrerdi. Yorum ağırlıklı hesaplar
+    #   (sama, rauchg, theo, levie…) lansman ön filtresini zaten geçmiyordu.
     # BUTCE KARARI 2026-08-30: last_tweets sayfa boyutu 20'de SABIT
     #   (count/limit/pageSize parametreleri yok sayiliyor) → 48 hesap = 960 okuma/gun
     #   = ~$4.32/ay, PROJECT.md'nin ~$0.90 tahmininin 4.8 kati.
@@ -180,26 +184,20 @@ sources:
       - { handle: marclou,     weight: 0.9, cat: apps }   # handle degismis (marc_louvion olu) — 378K takipci, bugun aktif
       - { handle: tdinh_me,        weight: 0.9, cat: apps }
       - { handle: dannypostma, weight: 0.8, cat: apps }   # handle degismis (dannypostmaa olu) — 181K takipci, dun aktif
-      - { handle: yongfook,        weight: 0.8, cat: apps }
+      # - { handle: yongfook,        weight: 0.8, cat: apps }   # 2026-08-31 MALİYET KESİMİ — düşük lansman verimi
       - { handle: arvidkahl,       weight: 0.9, cat: apps }
-      - { handle: tibo_maker,      weight: 0.8, cat: apps }
-      - { handle: dagorenouf,      weight: 0.7, cat: apps }
-      - { handle: thisiskp_,       weight: 0.7, cat: apps }
-      - { handle: agazdecki,       weight: 0.7, cat: apps }
-      # - { handle: csallen,         weight: 0.8, cat: apps }   # DOGRULANDI SESSIZ — son tweet 132 gun once
+      # - { handle: tibo_maker,      weight: 0.8, cat: apps }   # 2026-08-31 MALİYET KESİMİ — düşük lansman verimi
       # - { handle: IndieHackers,    weight: 0.8, cat: apps }   # DOGRULANDI SESSIZ — son tweet 66 gun once
       # ── Launch platformları ──
-      - { handle: ProductHunt,     weight: 1.0, cat: apps }
-      - { handle: rrhoover,        weight: 0.8, cat: apps }
-      # - { handle: chrismessina,    weight: 0.7, cat: apps }   # DOGRULANDI SESSIZ (tweet yok) — Bluesky @chrismessina.me aktif, oradan geliyor
+      # - { handle: ProductHunt,     weight: 1.0, cat: apps }   # 2026-08-31 MALİYET KESİMİ — Product Hunt API kaynağı zaten var, mükerrer
+      # - { handle: rrhoover,        weight: 0.8, cat: apps }   # 2026-08-31 MALİYET KESİMİ — düşük lansman verimi
       # - { handle: ycombinator,     weight: 1.0, cat: startup }   # RSS KOPYASI — RSS: ycombinator.com/blog/rss
       # - { handle: TechCrunch,      weight: 0.8, cat: startup }   # RSS KOPYASI — RSS: techcrunch.com/feed
       # - { handle: Techmeme,        weight: 0.9, cat: startup }   # RSS KOPYASI — RSS: techmeme.com/feed.xml
       - { handle: garrytan,        weight: 0.8, cat: startup }
       # - { handle: paulg,           weight: 0.7, cat: startup }   # RSS KOPYASI — RSS: pgessays.rss
       - { handle: a16z,            weight: 0.7, cat: startup }
-      - { handle: sama,            weight: 0.7, cat: startup }
-      # ── Dev tools / AI ──
+      # - { handle: sama,            weight: 0.7, cat: startup }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
       # - { handle: vercel,          weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: vercel.com/atom + Bluesky @vercel.com
       # - { handle: supabase,        weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: supabase.com/rss.xml
       # - { handle: github,        weight: 0.7, cat: dev }   # RSS KOPYASI — github.blog/feed + Bluesky @github.com
@@ -209,14 +207,13 @@ sources:
       # - { handle: GoogleDeepMind,  weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: deepmind.google/blog/rss.xml
       - { handle: cursor_ai,       weight: 0.8, cat: dev }
       # - { handle: replit,          weight: 0.7, cat: dev }   # RSS KOPYASI — RSS: blog.replit.com/feed.xml
-      - { handle: railway,         weight: 0.6, cat: dev }
-      - { handle: rauchg,          weight: 0.8, cat: dev }
+      # - { handle: railway,         weight: 0.6, cat: dev }   # 2026-08-31 MALİYET KESİMİ — düşük hacim
+      # - { handle: rauchg,          weight: 0.8, cat: dev }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
       - { handle: shadcn,          weight: 0.8, cat: dev }
       # - { handle: simonw,          weight: 0.9, cat: dev }   # RSS KOPYASI — RSS: simonwillison.net/atom + Bluesky
       # - { handle: swyx,            weight: 0.8, cat: dev }   # RSS KOPYASI — RSS: latent.space/feed
-      - { handle: theo,        weight: 0.7, cat: dev }   # handle degismis (t3dotgg 2017'den beri sessiz) — 379K takipci, bugun aktif
-      - { handle: nutlope,         weight: 0.7, cat: dev }
-      # ── Oyun ──
+      # - { handle: theo,        weight: 0.7, cat: dev }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
+      # - { handle: nutlope,         weight: 0.7, cat: dev }   # 2026-08-31 MALİYET KESİMİ — düşük hacim
       # - { handle: godotengine,     weight: 0.9, cat: gamedev }   # RSS KOPYASI — RSS: godotengine.org/rss.xml + Bluesky
       # - { handle: UnrealEngine,    weight: 0.7, cat: gamedev }   # RSS KOPYASI — RSS: unrealengine.com/en-US/rss
       # - { handle: unity,           weight: 0.6, cat: gamedev }   # RSS KOPYASI — RSS: blog.unity.com/feed + Bluesky @unity.com
@@ -227,15 +224,12 @@ sources:
       - { handle: figma,           weight: 0.8, cat: design }
       # - { handle: sidebario,       weight: 0.9, cat: design }   # RSS KOPYASI — RSS: sidebar.io/feed.xml
       # - { handle: awwwards,      weight: 0.7, cat: design }   # RSS KOPYASI — awwwards.com/blog/feed
-      - { handle: steveschoger,    weight: 0.7, cat: design }
-      - { handle: adamwathan,      weight: 0.7, cat: design }
-      # ── Türkiye ──
+      # - { handle: steveschoger,    weight: 0.7, cat: design }   # 2026-08-31 MALİYET KESİMİ — 30 günde 1 tweet
+      # - { handle: adamwathan,      weight: 0.7, cat: design }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
       # - { handle: webrazzi,        weight: 1.0, cat: tr }   # RSS KOPYASI — RSS: webrazzi.com/feed + Bluesky @webrazzi.com
-      - { handle: tansuyegen,      weight: 0.6, cat: tr }
-      - { handle: alphanmanas,     weight: 0.6, cat: tr }
-      - { handle: sinaafra,        weight: 0.5, cat: tr }
-
-      # ══════════════════════════════════════════════════════════════════
+      # - { handle: tansuyegen,      weight: 0.6, cat: tr }   # 2026-08-31 MALİYET KESİMİ — genel içerik, lansman değil
+      # - { handle: alphanmanas,     weight: 0.6, cat: tr }   # 2026-08-31 MALİYET KESİMİ — düşük lansman verimi
+      # - { handle: sinaafra,        weight: 0.5, cat: tr }   # 2026-08-31 MALİYET KESİMİ — 30 günde 1 tweet
       # 2026-08-30 GENİŞLETME — 83 aday validate_accounts.py ile tarandı,
       # 52'si canlı çıktı, 36'sı eklendi. Yorumdaki sayılar: takipçi | son
       # 30 günde tweet. Elenenler: ölü hesaplar (LangChainAI, xai, modal_labs,
@@ -251,27 +245,27 @@ sources:
       - { handle: shl,            weight: 0.8, cat: apps }     # 391K | 20 — Gumroad kurucusu
       - { handle: hnshah,         weight: 0.8, cat: apps }     # 364K | 20
       - { handle: marckohlbrugge, weight: 0.8, cat: apps }     # 87K  | 20 — BetaList kurucusu
-      - { handle: jasonlk,        weight: 0.7, cat: startup }  # 248K | 20 — SaaStr
-      - { handle: jakobgreenfeld, weight: 0.7, cat: apps }     # 22K  | 8
-      - { handle: tylertringas,   weight: 0.7, cat: apps }     # 30K  | 5
-      - { handle: dvassallo,      weight: 0.7, cat: apps }     # 203K | 6
-      - { handle: buildinpublic,  weight: 0.7, cat: apps }     # 71K  | 5
-      - { handle: MicroConf,      weight: 0.6, cat: apps }     # 12K  | 11
+      # - { handle: jasonlk,        weight: 0.7, cat: startup }   # 2026-08-31 MALİYET KESİMİ — SaaStr içerik pazarlaması
+      # - { handle: jakobgreenfeld, weight: 0.7, cat: apps }   # 2026-08-31 MALİYET KESİMİ — 8 tweet/30g
+      # - { handle: tylertringas,   weight: 0.7, cat: apps }   # 2026-08-31 MALİYET KESİMİ — 5 tweet/30g
+      # - { handle: dvassallo,      weight: 0.7, cat: apps }   # 2026-08-31 MALİYET KESİMİ — 6 tweet/30g, yorum ağırlıklı
+      # - { handle: buildinpublic,  weight: 0.7, cat: apps }   # 2026-08-31 MALİYET KESİMİ — 5 tweet/30g
+      # - { handle: MicroConf,      weight: 0.6, cat: apps }   # 2026-08-31 MALİYET KESİMİ — 11 tweet/30g, çoğu etkinlik duyurusu
 
       # ── AI / dev tools — ürün ve sürüm duyuruları ──
       - { handle: OpenAIDevs,     weight: 0.9, cat: dev }      # 400K | 20
       - { handle: amasad,         weight: 0.8, cat: dev }      # 486K | 20 — Replit CEO
-      - { handle: OfficialLoganK, weight: 0.8, cat: dev }      # 358K | 16 — Google AI
+      # - { handle: OfficialLoganK, weight: 0.8, cat: dev }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
       - { handle: ollama,         weight: 0.8, cat: dev }      # 181K | 20
       - { handle: boltdotnew,     weight: 0.8, cat: dev }      # 121K | 15
       - { handle: v0,             weight: 0.8, cat: dev }      # 116K | 7
-      - { handle: deepseek_ai,    weight: 0.8, cat: dev }      # 1.1M | 4
-      - { handle: MistralAI,      weight: 0.8, cat: dev }      # 204K | 3
+      # - { handle: deepseek_ai,    weight: 0.8, cat: dev }   # 2026-08-31 MALİYET KESİMİ — 4 tweet/30g
+      # - { handle: MistralAI,      weight: 0.8, cat: dev }   # 2026-08-31 MALİYET KESİMİ — 3 tweet/30g
       - { handle: _akhaliq,       weight: 0.7, cat: dev }      # 520K | 20 — yeni model/paper
-      - { handle: omarsar0,       weight: 0.7, cat: dev }      # 315K | 20
-      - { handle: perplexity_ai,  weight: 0.7, cat: dev }      # 502K | 11
-      - { handle: llama_index,    weight: 0.7, cat: dev }      # 119K | 20
-      - { handle: levie,          weight: 0.6, cat: startup }  # 3.3M | 20 — Box CEO
+      # - { handle: omarsar0,       weight: 0.7, cat: dev }   # 2026-08-31 MALİYET KESİMİ — paper paylaşımı, lansman değil
+      # - { handle: perplexity_ai,  weight: 0.7, cat: dev }   # 2026-08-31 MALİYET KESİMİ — 11 tweet/30g, pazarlama ağırlıklı
+      # - { handle: llama_index,    weight: 0.7, cat: dev }   # 2026-08-31 MALİYET KESİMİ — sürüm notu yoğun, HN/GitHub'dan da geliyor
+      # - { handle: levie,          weight: 0.6, cat: startup }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
 
       # ── Oyun ──
       - { handle: gamedevdotcom,  weight: 0.8, cat: gamedev }  # 433K | 20
@@ -282,15 +276,15 @@ sources:
       # ── Tasarım ──
       - { handle: dribbble,       weight: 0.7, cat: design }   # 293K | 20
       - { handle: jh3yy,          weight: 0.7, cat: design }   # 146K | 20
-      - { handle: raunofreiberg,  weight: 0.7, cat: design }   # 93K  | 8
-      - { handle: smashingmag,    weight: 0.7, cat: design }   # 812K | 11
-      - { handle: MengTo,         weight: 0.6, cat: design }   # 183K | 20
-      - { handle: sarah_edo,      weight: 0.6, cat: design }   # 302K | 15
-      - { handle: csswizardry,    weight: 0.6, cat: design }   # 65K  | 9
+      # - { handle: raunofreiberg,  weight: 0.7, cat: design }   # 2026-08-31 MALİYET KESİMİ — 8 tweet/30g
+      # - { handle: smashingmag,    weight: 0.7, cat: design }   # 2026-08-31 MALİYET KESİMİ — smashingmagazine.com RSS kaynağı zaten var
+      # - { handle: MengTo,         weight: 0.6, cat: design }   # 2026-08-31 MALİYET KESİMİ — eğitim içeriği
+      # - { handle: sarah_edo,      weight: 0.6, cat: design }   # 2026-08-31 MALİYET KESİMİ — yorum ağırlıklı
+      # - { handle: csswizardry,    weight: 0.6, cat: design }   # 2026-08-31 MALİYET KESİMİ — 9 tweet/30g
 
       # ── Türkiye ──
       - { handle: ardakutsal,     weight: 0.8, cat: tr }       # 194K | 3 — Webrazzi kurucusu
       - { handle: teknoblog,      weight: 0.6, cat: tr }       # 18K  | 20
-      - { handle: shiftdeletenet, weight: 0.5, cat: tr }       # 833K | 20 — tüketici teknolojisi, gürültülü
-      - { handle: webtekno,       weight: 0.5, cat: tr }       # 511K | 20 — tüketici teknolojisi, gürültülü
+      # - { handle: shiftdeletenet, weight: 0.5, cat: tr }   # 2026-08-31 MALİYET KESİMİ — tüketici teknolojisi, gürültülü
+      # - { handle: webtekno,       weight: 0.5, cat: tr }   # 2026-08-31 MALİYET KESİMİ — tüketici teknolojisi, gürültülü
 

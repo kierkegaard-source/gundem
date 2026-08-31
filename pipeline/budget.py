@@ -29,12 +29,39 @@ class Budget:
     _events: list[str] = field(default_factory=list)
 
     @classmethod
-    def from_config(cls, cfg: dict) -> "Budget":
+    def from_config(cls, cfg: dict, conn=None) -> "Budget":
+        """Bütçe tavanı GÜN başınadır, koşu başına değil.
+
+        Eski hâli her koşuda sıfırdan başlıyordu: aynı gün 20 kez çalıştırınca
+        20 kat harcama çıkıyor ve hiçbir tavan devreye girmiyordu. 30 Ağustos'ta
+        tam bu oldu — TwitterAPI kredisinin $5'i test koşularına gitti.
+
+        `conn` verilirse bugün yapılmış harcama `runs` tablosundan okunup
+        başlangıç değeri sayılır; tavan gerçekten günlüktür.
+        """
         b = cfg.get("budget", {})
-        return cls(
+        obj = cls(
             daily_llm_usd=float(b.get("daily_llm_usd", 0.20)),
             daily_twitter_reads=int(b.get("daily_twitter_reads", 600)),
         )
+        if conn is not None:
+            obj.load_today(conn)
+        return obj
+
+    def load_today(self, conn) -> None:
+        """Bugün önceki koşularda yapılan harcamayı başlangıç sayar."""
+        from datetime import datetime, timezone
+        today = datetime.now(timezone.utc).date().isoformat()
+        row = conn.execute(
+            "SELECT COALESCE(SUM(llm_cost_usd), 0), COALESCE(SUM(api_cost_usd), 0) "
+            "FROM runs WHERE run_at >= ?", (today,)).fetchone()
+        if not row:
+            return
+        self.llm_usd += float(row[0] or 0)
+        self.tweet_reads += int(round(float(row[1] or 0) / TWEET_COST_USD))
+        if self.llm_usd or self.tweet_reads:
+            self.note(f"bugün önceki koşularda harcanan: LLM ${self.llm_usd:.4f}, "
+                      f"{self.tweet_reads} tweet okuma")
 
     # ---- LLM ----
     @staticmethod

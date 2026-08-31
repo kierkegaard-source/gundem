@@ -144,10 +144,32 @@ def main() -> int:
     ap.add_argument("--skip", help="bu kaynakları atla (virgülle) — ör. maliyetli twitter")
     ap.add_argument("--no-llm", action="store_true", help="özetlemeyi atla (maliyetsiz test)")
     ap.add_argument("--no-translate", action="store_true", help="makine çevirisini atla")
+    ap.add_argument("--skip-if-done", action="store_true",
+                    help="bugünün sayısı özetleriyle birlikte hazırsa hiçbir şey yapma")
     args = ap.parse_args()
 
     cfg = load_config()
-    budget = Budget.from_config(cfg)
+    # Bütçe bugünkü önceki koşuları da sayar — tavan gün başına.
+    _conn = connect()
+    budget = Budget.from_config(cfg, _conn)
+    _conn.close()
+
+    # GitHub Actions cron'u güvenilir değil: 31 Ağustos 05:00 UTC tetikleyicisi
+    # hiç çalışmadı (yüksek yükte gecikiyor ya da atlanıyor, GitHub garanti
+    # vermiyor). Çözüm birden fazla tetikleme saati; bu bayrak da sayı zaten
+    # üretilmişse ikinci/üçüncü tetiklemenin boşuna maliyet çıkarmasını önler.
+    if args.skip_if_done:
+        conn = connect()
+        today = datetime.now(timezone.utc).date().isoformat()
+        row = conn.execute(
+            "SELECT COUNT(*) c, SUM(summary_tr IS NOT NULL) s FROM items "
+            "WHERE digest_date = ?", (today,)).fetchone()
+        conn.close()
+        if row and row["c"] and (row["s"] or 0) > 0:
+            print(f"{today} sayısı zaten hazır ({row['c']} madde, "
+                  f"{row['s']} özetli) — atlanıyor.")
+            return 0
+        print(f"{today} sayısı yok ya da özetsiz, üretiliyor.")
 
     t0 = time.perf_counter()
     only = {x.strip() for x in args.only.split(",")} if args.only else None

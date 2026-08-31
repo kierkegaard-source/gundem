@@ -284,3 +284,30 @@ def test_hic_denenmemis_madde_sayida_kaliyor(monkeypatch):
     assert cs[0].summary_missing is False
     kept, dropped = drop_low_signal(cs, CFG)
     assert len(kept) == 1 and not dropped
+
+
+# ---------- günlük kümülatif bütçe ----------
+
+def test_butce_gun_basina_bugunku_kosular_sayiliyor(tmp_path):
+    """Tavan koşu başına değil GÜN başına. Aynı gün ikinci koşu, birincinin
+    harcamasını devralır; yoksa 20 koşu 20 kat harcama demek olur."""
+    from pipeline.budget import TWEET_COST_USD, Budget
+    from pipeline.db import connect, record_run
+
+    conn = connect(tmp_path / "t.db")
+    record_run(conn, items_raw=10, items_kept=5, failed_sources=[],
+               llm_cost_usd=0.15, api_cost_usd=400 * TWEET_COST_USD)
+    b = Budget.from_config({"budget": {"daily_llm_usd": 0.20,
+                                       "daily_twitter_reads": 600}}, conn)
+    assert b.llm_usd == pytest.approx(0.15)
+    assert b.tweet_reads == 400
+    # Kalan pay: LLM $0.05, 200 okuma
+    assert b.can_afford_llm(0.04) and not b.can_afford_llm(0.06)
+    assert b.can_read_tweets(200) and not b.can_read_tweets(201)
+    conn.close()
+
+
+def test_butce_baglantisiz_eski_davranisi_koruyor():
+    from pipeline.budget import Budget
+    b = Budget.from_config({"budget": {"daily_llm_usd": 0.20}})
+    assert b.llm_usd == 0 and b.tweet_reads == 0

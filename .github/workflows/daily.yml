@@ -2,9 +2,15 @@ name: Günlük sayı
 
 on:
   schedule:
-    # 05:00 UTC = 08:00 TR. GitHub cron'u yoğunlukta 5-20 dk gecikebilir;
-    # config'deki lookback_hours: 26 bu kaymayı tolere ediyor.
+    # 05:00 UTC = 08:00 TR. Asıl tetikleyici.
     - cron: "0 5 * * *"
+    # YEDEKLER. GitHub Actions cron'u garanti değil: 31 Ağustos 2026'da
+    # 05:00 tetikleyicisi hiç çalışmadı (workflow active, dosya main'de,
+    # yine de tetiklenmedi). Yoğunlukta gecikiyor ya da atlanıyor.
+    # Bu koşular --skip-if-done ile başlar; sayı zaten hazırsa saniyeler
+    # içinde hiçbir maliyet çıkarmadan biter.
+    - cron: "30 6 * * *"
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 permissions:
@@ -52,7 +58,14 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
           TWITTERAPI_KEY: ${{ secrets.TWITTERAPI_KEY }}
-        run: uv run python -m pipeline.collect
+        # Zamanlanmış koşular sayı zaten hazırsa hemen çıkar; elle
+        # tetiklenen koşular her zaman yeniden üretir.
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            uv run python -m pipeline.collect --skip-if-done
+          else
+            uv run python -m pipeline.collect
+          fi
 
       - name: Sayfaları üret
         id: build
