@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gündem — Cumartesi, 14 Kasım 2026 · kaynağa göre</title>
+<meta name="description" content="Her sabah developer tools, indie oyun, yeni uygulama ve tasarım dünyasından yeni çıkanlar — Türkçe özetlerle.">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://kierkegaard-source.github.io/gundem/">
+<style>/* Gündem — gazete hissi, tarama için tasarlandı.
+   Harici istek yok (font, ikon, script). Tek dosya, sayfaya gömülü. */
+
+:root {
+  --bg:        #f4f5f3;
+  --surface:   #ffffff;
+  --surface-2: #eceeeb;
+  --ink:       #0f1417;
+  --ink-soft:  #414b52;
+  --ink-faint: #79858d;
+  --rule:      #cfd5d6;
+  --rule-soft: #e3e7e6;
+  --accent:    #0a6b5c;
+  --accent-2:  #a8420f;
+  --shadow:    0 1px 2px rgba(15,20,23,.05), 0 8px 20px -12px rgba(15,20,23,.22);
+  --radar-bg:   #eef7f4;
+  --radar-rule: #b9d9d1;
+  --radar-ink:  #0a6b5c;
+  --radar-soft: #48645e;
+
+  --warn-bg:   #fdf5e6;
+  --warn-ink:  #7a4c14;
+  --warn-rule: #e0c795;
+
+  /* Kaynak renkleri — marka logosu değil, marka rengiyle monogram rozet.
+     Logoları kopyalamak yerine bu tercih edildi: harici istek yok, ticari
+     marka sorunu yok, koyu/açık temada okunur, toplam maliyeti ~0 bayt. */
+  --s-hackernews: #e8590c;
+  --s-producthunt:#d64426;
+  --s-github:     #3d4450;
+  --s-itchio:     #e04b4b;
+  --s-steam:      #2a6f97;
+  --s-bluesky:    #1573d8;
+  --s-twitter:    #2b2b2b;
+  --s-rss:        #c9761b;
+
+  /* Rol değişimi: başlıklar sıkı puntolu sans (modern editoryal),
+     okunan gövde metni serif. Öncekinin tersi — daha keskin bir kontrast. */
+  --display: system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI",
+             "Helvetica Neue", Inter, Roboto, Arial, sans-serif;
+  --read: "Iowan Old Style", Charter, "Bitstream Charter", "Sitka Text",
+          Cambria, "Palatino Linotype", Palatino, Georgia, serif;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #0d1114;
+    --surface:   #141a1e;
+    --surface-2: #1b2328;
+    --ink:       #e8edef;
+    --ink-soft:  #a7b3ba;
+    --ink-faint: #71808a;
+    --rule:      #26313a;
+    --rule-soft: #1d262c;
+    --accent:    #3fbfa8;
+    --accent-2:  #e08a55;
+    --shadow:    0 1px 2px rgba(0,0,0,.5), 0 10px 24px -14px rgba(0,0,0,.85);
+    --radar-bg:   #10231f;
+    --radar-rule: #235047;
+    --radar-ink:  #48d3b8;
+    --radar-soft: #94b3ac;
+
+    --warn-bg:   #2b2114;
+    --warn-ink:  #e3ba7d;
+    --warn-rule: #574119;
+
+    --s-hackernews: #ff8b3d;
+    --s-producthunt:#f2765a;
+    --s-github:     #9aa4b2;
+    --s-itchio:     #ff7b7b;
+    --s-steam:      #5fa8d3;
+    --s-bluesky:    #4da3ff;
+    --s-twitter:    #c8c4bd;
+    --s-rss:        #e0a45c;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  padding: 0 1.15rem 4rem;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 16.5px;
+  line-height: 1.55;
+  overflow-wrap: break-word;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; }
+.narrow { max-width: 760px; margin: 0 auto; }
+
+/* ================= başlık ================= */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 2rem 0 0.9rem;
+  border-bottom: 3px double var(--rule);
+}
+
+.brand { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+
+.brand h1 {
+  font-family: var(--display);
+  font-size: clamp(1.85rem, 5.5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  margin: 0;
+  line-height: 1;
+}
+.brand h1 a { color: inherit; text-decoration: none; }
+
+.brand .tagline {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.stats {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-size: 0.83rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.stats .day { font-weight: 650; color: var(--ink); }
+.stats .sep { color: var(--rule); }
+.stats .stamp {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  cursor: help;
+}
+
+/* ================= görünüm seçici ================= */
+
+.viewnav {
+  display: inline-flex;
+  gap: 1px;
+  margin: 0.95rem 0 0;
+  padding: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.viewnav a {
+  padding: 0.28rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.79rem;
+  font-weight: 550;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.viewnav a:hover { color: var(--accent); }
+.viewnav a.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+
+/* ================= kategori gezinme ================= */
+
+.catnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.75rem 0 0;
+  margin-bottom: 1.6rem;
+}
+
+.catnav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.catnav a:hover { border-color: var(--accent); color: var(--accent); }
+.catnav a b { font-weight: 650; color: var(--ink); }
+.catnav a i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+}
+
+/* ================= radar (kısa vadeli potansiyel) ================= */
+
+.radar {
+  background: var(--radar-bg);
+  border: 1px solid var(--radar-rule);
+  border-left: 4px solid var(--radar-ink);
+  border-radius: 5px;
+  padding: 0.95rem 1.1rem 1rem;
+  margin: 0 0 1.8rem;
+}
+
+.radar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.radar-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--radar-ink);
+  color: var(--radar-bg);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.radar-head h2 {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--radar-ink);
+  margin: 0;
+}
+
+.radar-sub { font-size: 0.78rem; color: var(--radar-soft); }
+
+.radar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+@media (min-width: 860px) { .radar-list { grid-template-columns: 1fr 1fr; gap: 0.55rem 1.4rem; } }
+
+.radar-list li { display: flex; gap: 0.6rem; align-items: flex-start; }
+
+.radar-score {
+  flex: none;
+  min-width: 2.1rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  border-radius: 3px;
+  padding: 0.1rem 0.15rem;
+  line-height: 1.25;
+}
+.radar-score i { font-style: normal; font-size: 0.6rem; opacity: 0.65; }
+
+.radar-body { min-width: 0; }
+.radar-body a {
+  font-family: var(--display);
+  font-size: 0.97rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.28;
+  color: var(--ink);
+  text-decoration: none;
+}
+.radar-body a:hover { color: var(--radar-ink); text-decoration: underline; }
+.radar-body p { margin: 0.15rem 0 0.3rem; font-family: var(--read);
+  font-size: 0.87rem; line-height: 1.45; color: var(--radar-soft); }
+.radar-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.opp {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  border-radius: 2px;
+  padding: 0.05rem 0.3rem;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+
+.radar-foot {
+  margin: 0.8rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--radar-rule);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--radar-soft);
+}
+
+/* Önemsiz aksaklıklar sayfanın ALTINDA, tek satır, sessiz. Üstteki bant
+   yalnızca ciddi durumlar için: özetleme hiç yapılamadı ya da bir kaynağın
+   tamamı düştü. */
+.minor-notice {
+  margin: 2rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+}
+
+.radar-empty {
+  margin: 0 0 1.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed var(--rule);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+/* ================= uyarı ================= */
+
+.notice {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-rule);
+  border-left-width: 4px;
+  border-radius: 3px;
+  color: var(--warn-ink);
+  padding: 0.75rem 1rem;
+  margin: 0 0 1.8rem;
+  font-size: 0.85rem;
+}
+.notice b { display: block; margin-bottom: 0.2rem; }
+.notice ul { margin: 0.35rem 0 0; padding-left: 1.05rem; }
+
+/* ================= bölüm ================= */
+
+.section { margin: 0 0 2.8rem; scroll-margin-top: 1rem; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--accent);
+}
+
+.section-head h2 .src { vertical-align: -0.15em; margin-right: 0.15rem; }
+.section-head h2 .mark { width: 1.15rem; height: 1.15rem; font-size: 0.6rem; }
+.catnav .src { margin-right: -0.1rem; }
+.catnav .mark { width: 0.95rem; height: 0.95rem; font-size: 0.52rem; }
+
+.section-head h2 {
+  font-family: var(--display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.section-head .count {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/* ================= kart ızgarası ================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+@media (min-width: 860px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: 1rem 1.4rem; }
+  .card.lead { grid-column: 1 / -1; }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule-soft);
+  border-radius: 5px;
+  padding: 0.9rem 1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.card:hover { box-shadow: var(--shadow); border-color: var(--rule); }
+
+.card h3 {
+  font-family: var(--display);
+  font-size: 1.06rem;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.017em;
+  margin: 0;
+}
+.card h3 a { color: var(--ink); text-decoration: none; }
+.card h3 a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+.card.lead {
+  background: var(--surface-2);
+  border-color: var(--rule);
+  padding: 1.15rem 1.25rem 1.05rem;
+}
+.card.lead h3 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.028em; }
+.card.lead .body { font-size: 1rem; }
+
+.why {
+  font-family: var(--read);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--accent);
+  margin: 0;
+}
+
+.body {
+  font-family: var(--read);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0;
+}
+/* Özet üretilememişse kaynağın kendi (çoğunlukla İngilizce) açıklaması
+   gösterilir. Ayrı bir etiket konmuyor — sayfa üstündeki uyarı bandı zaten
+   söylüyor; kart başına tekrarlamak gürültü yapıyordu. Ayrım tipografik:
+   daha soluk ve italik. */
+/* Makine çevirisi ya da kaynağın kendi açıklaması — editoryal özet değil.
+   Ayrım tipografik: soluk renk ve sol çizgi. */
+.body.raw {
+  color: var(--ink-soft);
+  border-left: 2px solid var(--rule);
+  padding-left: 0.65rem;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.15rem;
+  font-size: 0.74rem;
+  color: var(--ink-faint);
+}
+.card-meta time { font-variant-numeric: tabular-nums; }
+.card-meta .dot { color: var(--rule); }
+
+/* ---- kaynak rozeti ---- */
+
+.src {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.src .mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 3px;
+  background: var(--c, var(--ink-faint));
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@media (prefers-color-scheme: dark) { .src .mark { color: #14120f; } }
+
+.src-hackernews  { --c: var(--s-hackernews); }
+.src-producthunt { --c: var(--s-producthunt); }
+.src-github_trending { --c: var(--s-github); }
+.src-itchio      { --c: var(--s-itchio); }
+.src-steam       { --c: var(--s-steam); }
+.src-bluesky     { --c: var(--s-bluesky); }
+.src-twitter     { --c: var(--s-twitter); }
+.src-rss         { --c: var(--s-rss); }
+
+.opp-mini {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.04em;
+  color: var(--radar-ink);
+  border: 1px solid var(--radar-rule);
+  background: var(--radar-bg);
+  border-radius: 2px;
+  padding: 0 0.28rem;
+  white-space: nowrap;
+}
+
+.multi-flag {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  border: 1px solid var(--accent-2);
+  border-radius: 2px;
+  padding: 0 0.25rem;
+}
+
+/* ================= gezinme, arşiv, alt bilgi ================= */
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.1rem;
+  border-top: 3px double var(--rule);
+  font-size: 0.88rem;
+}
+.pager a { color: var(--accent); text-decoration: none; }
+.pager a:hover { text-decoration: underline; }
+.pager span { color: var(--ink-faint); }
+
+.archive-list { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+.archive-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.archive-list a {
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.archive-list a:hover { color: var(--accent); }
+.archive-list .count {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+footer {
+  margin-top: 2.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  text-align: center;
+  line-height: 1.8;
+}
+footer a { color: var(--ink-faint); }
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ink-faint);
+  font-family: var(--read);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 520px) {
+  body { font-size: 16px; padding: 0 0.85rem 3rem; }
+  .masthead { padding-top: 1.4rem; }
+  .card { padding: 0.8rem 0.85rem; }
+  .card.lead { padding: 0.95rem 0.9rem; }
+  .card.lead h3 { font-size: 1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="brand">
+    <h1><a href="./">Gündem</a></h1>
+    <span class="tagline">Ürün &amp; Girişim Gazetesi</span>
+  </div>
+<div class="stats">
+  <span class="day">Cumartesi, 14 Kasım 2026</span>
+  <span class="sep">|</span>
+  <span>39 madde</span>
+  <span class="sep">|</span>
+  <span>7 kaynak</span>
+</div>
+</header>
+
+<nav class="viewnav">
+  <a href="./"
+     class="">Kategoriye göre</a>
+  <a href="2026-11-14-kaynak.html" class="on">Kaynağa göre</a>
+</nav>
+
+
+<nav class="catnav">
+  <a href="#producthunt">
+    <span class="src src-producthunt"><span class="mark">P</span></span>
+    <b>Product Hunt</b> <i>10</i>
+  </a>
+  <a href="#hackernews">
+    <span class="src src-hackernews"><span class="mark">Y</span></span>
+    <b>Hacker News</b> <i>4</i>
+  </a>
+  <a href="#github_trending">
+    <span class="src src-github_trending"><span class="mark">GH</span></span>
+    <b>GitHub</b> <i>2</i>
+  </a>
+  <a href="#bluesky">
+    <span class="src src-bluesky"><span class="mark">bs</span></span>
+    <b>Bluesky</b> <i>10</i>
+  </a>
+  <a href="#steam">
+    <span class="src src-steam"><span class="mark">S</span></span>
+    <b>Steam</b> <i>1</i>
+  </a>
+  <a href="#itchio">
+    <span class="src src-itchio"><span class="mark">it</span></span>
+    <b>itch.io</b> <i>2</i>
+  </a>
+  <a href="#rss">
+    <span class="src src-rss"><span class="mark">R</span></span>
+    <b>RSS</b> <i>10</i>
+  </a>
+</nav>
+
+
+<section class="section" id="producthunt">
+  <div class="section-head">
+    <h2><span class="src src-producthunt"><span class="mark">P</span></span> Product Hunt</h2>
+    <span class="count">10 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card lead">
+  <h3><a href="https://producthunt.com/r/RZIMECXI6OYCNP" rel="noopener">Dex Semantics</a></h3>
+  <p class="body raw">Temsilcinizin %25 daha az hatayla analiz oluşturmasına izin verin</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/7TJIY2TFO3PDX3" rel="noopener">Gemini Robotics 2.5</a></h3>
+  <p class="body raw">Gemini Robotics 2.5: Google&#39;ın en yetenekli robot modeli</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/ZSOONCTWBQPHUV" rel="noopener">Antelog</a></h3>
+  <p class="body raw">Yapay zeka kodlama aracılarının verilerinizi sızdırmasını veya verilerinizi yok etmesini engeller</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/WBXQ3VO2K7G57E" rel="noopener">Kokonut UI</a></h3>
+  <p class="body raw">Yapay zeka aracınız için açık kaynaklı kullanıcı arayüzü bileşenleri</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/WSO7S2YHKPGAXY" rel="noopener">HiringNow</a></h3>
+  <p class="body raw">İşleri herkesten önce bulan ve başvuran yapay zeka iş temsilcisi.</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/4GOWHK6UYKH5KX" rel="noopener">Businesses in ChatGPT</a></h3>
+  <p class="body raw">ChatGPT&#39;deki İşletmeler — Müşterilerin işletmenizi ChatGPT aracılığıyla keşfetmelerine yardımcı olun</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/UDCD6MOMOZEVIL" rel="noopener">MAP &amp; GO!</a></h3>
+  <p class="body raw">HARİTA VE GİT! — Gününüzü haritada görün</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/IQ4NPALBQ2LXXJ" rel="noopener">Valutorio</a></h3>
+  <p class="body raw">Markdown notlarınız Mac ve iPhone&#39;da yereldir</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/XVCCQCYSG5JOED" rel="noopener">Replay</a></h3>
+  <p class="body raw">Tekrar Oynat — Botsuz Mac toplantı kaydedici. Bir kez ödeyin, abonelik yok</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://producthunt.com/r/AXLLXTVWQ7BDDM" rel="noopener">Blender 5.3</a></h3>
+  <p class="body raw">3D Gauss uyarıları artık Blender&#39;a özgü</p>
+  <div class="card-meta">
+    <span class="src src-producthunt"><span class="mark">P</span>Product Hunt</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:01:00+00:00">3 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="hackernews">
+  <div class="section-head">
+    <h2><span class="src src-hackernews"><span class="mark">Y</span></span> Hacker News</h2>
+    <span class="count">4 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+  <h3><a href="https://isometricsf.com/" rel="noopener">İzometrik SF - SF Körfez Bölgesi&#39;nin piksel sanatlı haritası</a></h3>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T17:58:37+00:00">18 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://grounds.top/" rel="noopener">Bu geceki FAA ülke çapındaki yer durağı sırasında ABD uçuşlarının canlı haritası</a></h3>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T23:17:39+00:00">12 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://hexalexagons.com/" rel="noopener">Hexalexagons, altıgen bir ızgara üzerinde günlük bir kelime oyunu</a></h3>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T15:03:13+00:00">20 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/Getterbetter/ember/releases/tag/v1.0.1" rel="noopener">MacBook şarj cihazı durum ışığı için ışık kontrolü (açık kaynak)</a></h3>
+  <div class="card-meta">
+    <span class="src src-hackernews"><span class="mark">Y</span>Hacker News</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T00:44:58+00:00">11 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="github_trending">
+  <div class="section-head">
+    <h2><span class="src src-github_trending"><span class="mark">GH</span></span> GitHub</h2>
+    <span class="count">2 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+  <h3><a href="https://github.com/tradermonty/claude-trading-skills" rel="noopener">tradermonty/claude-trading-skills</a></h3>
+  <p class="body raw">Hisse senedi yatırımcıları ve tüccarlar için Claude Kodu becerileri — piyasa analizi, teknik çizelgeler, ekonomik takvimler, taramalar ve ticaret stratejisi geliştirme.</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T12:56:48.399645+00:00">23 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://github.com/louislam/uptime-kuma" rel="noopener">louislam/uptime-kuma</a></h3>
+  <p class="body raw">Kendi kendine barındırılan şık bir izleme aracı</p>
+  <div class="card-meta">
+    <span class="src src-github_trending"><span class="mark">GH</span>GitHub</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T12:56:48.399645+00:00">23 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="bluesky">
+  <div class="section-head">
+    <h2><span class="src src-bluesky"><span class="mark">bs</span></span> Bluesky</h2>
+    <span class="count">10 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card lead">
+  <h3><a href="https://kickstarter.com/projects/cupdragongames/dream-hollow" rel="noopener">Bu kötü karakter tasarımı ❌ #indiedev #indiegame #gamedev</a></h3>
+  <p class="body raw">Bizi Kickstarter&#39;da takip edin! www.kickstarter.com/projects/cup...</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-09-26T03:39:50.373000+00:00">49 gün önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://store.steampowered.com/app/4928420/Endless_Estate" rel="noopener">#EndlessEstate&#39;in yaklaşan yılbaşı güncellemesinde kar ve #krampus&#39;u ekledik</a></h3>
+  <p class="body raw">#EndlessEstate İstek Listesi grafiğine bakıyorum ve varlıkları nasıl oluşturduğumu gösteren bir video yayınladığımda burada bir artış görüyorum. Bunlardan daha fazlasını yapmalıyım.…</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-10-17T10:06:13.120000+00:00">28 gün önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://bsky.app/profile/lootlist.bsky.social/post/3n2bfh6b5lk24" rel="noopener">Referansı aldın mı? İstek Listesi Yağma Listesi.</a></h3>
+  <p class="body raw">#screenshotsaturday #indiegame #indigames #indiedev #gamedev #gaming #videogames</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T11:29:06.495000+00:00">az önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://store.steampowered.com/app/5331230/Terramiasma" rel="noopener">Şu anda Antik Şehir biyomunu uyguluyorum!</a></h3>
+  <p class="body raw">Hangi sırları saklıyor? #ScreenshotSaturday Oynatma testi ve istek listesi şimdi: Store.steampowered.com/app/5331230/... #terramiasma #gamedev #indiedev #videogames</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-09-30T10:08:54.259000+00:00">45 gün önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://store.steampowered.com/app/3738090/Deiity_Under_Ice" rel="noopener">ÇOK İYİ DEIITY HABERLERİ #deiity #gaming #indiegames #gamedev #indiedev #godot #games #blender</a></h3>
+  <p class="body raw">Çıktığında bilgilendirilecek oyunu istek listesine ekleyin: Store.steampowered.com/app/3738090/... deiity diiscord&#39;a bugün katılın: discord.gg/u7esRnfExu</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-10-05T15:47:28.756000+00:00">39 gün önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://craftpix.net/product/50-rpg-dagger-icons" rel="noopener">50 RPG Hançer Simgesi</a></h3>
+  <p class="body raw">Farklı hançer tasarımlarına sahip bu paket, ortaçağ ve fantezi temalı rol yapma oyunları için mükemmel bir seçimdir. İndir 👉 craftpix.net/product/50-r... #craftpix #gamedev #indiegame…</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T09:36:24.646000+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://store.steampowered.com/app/4980930" rel="noopener">Arazinizi büyütebileceğiniz, kart oynayabileceğiniz ve rakiplerinizden ücret toplayabileceğiniz bir masa oyunu yapıyoruz.</a></h3>
+  <p class="body raw">Doğru desteyle: Arazinizi güçlendirin, ardından Giga Graviton üç rakibi de kendine çekiyor. #ScreenshotSaturday #indiegame #indiedev #gamedev #boardgame…</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-03T13:05:01.787000+00:00">10 gün önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://s.team/a/5458350" rel="noopener">Erken oyun testi geri bildirimlerinin ilk turunun ardından küçük kullanıcı arayüzü iyileştirmesi!</a></h3>
+  <p class="body raw">İkincil silahlar değiştirildiğinde artık oyuncunun üzerinde küçük bir seçim çarkı ortaya çıkıyor. Gelişmeyi takip etmek isterseniz steam sayfasını aşağıda bulabilirsiniz: s.team/a/5458350…</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T09:27:47.554000+00:00">2 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://bsky.app/profile/maypolegames.bsky.social/post/3n2beepmuvs2r" rel="noopener">Bu hafta oynanabilir demomuzu elden geçirmekle meşguldük!</a></h3>
+  <p class="body raw">Oyunun tanıtımına yeni eklenen daemon çağırma dizisinden bu alıntıya göz atın! #ScreenshotSaturday #indiegame #indiedev #gaming #pixelart #rpg #ドット絵</p>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T11:09:50.298000+00:00">az önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://designreviewed.com/artefacts/idea-130-1975-5" rel="noopener">U-Mart / Süpermarket / Takenobu Igarashi tarafından tasarlanan Süper Grafik, Idea 130, 1975&#39;ten taranmıştır designreviewed.com/artefacts/id... #TakenobuIgarashi #supergraphic #elephant #logodesign #graphicdesign</a></h3>
+  <div class="card-meta">
+    <span class="src src-bluesky"><span class="mark">bs</span>Bluesky</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T09:05:19.311000+00:00">2 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="steam">
+  <div class="section-head">
+    <h2><span class="src src-steam"><span class="mark">S</span></span> Steam</h2>
+    <span class="count">1 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+  <h3><a href="https://store.steampowered.com/app/5421960" rel="noopener">The Friendly Monster</a></h3>
+  <p class="body raw">(Macera, Bağımsız Yapımcı, Oynaması Ücretsiz) — Gizemli bir korku macerasında kayıp babanızı arayın. Bir portal inşa edin, bilinmeyene adım atın ve ötesinde ne olduğunu keşfedin. Ama…</p>
+  <div class="card-meta">
+    <span class="src src-steam"><span class="mark">S</span>Steam</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T00:00:00+00:00">12 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="itchio">
+  <div class="section-head">
+    <h2><span class="src src-itchio"><span class="mark">it</span></span> itch.io</h2>
+    <span class="count">2 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+  <h3><a href="https://lidoli.itch.io/shadow-kanji-simulator" rel="noopener">Shadow Kanji Simulator</a></h3>
+  <p class="body raw">Gölge Kanji Simülatörü (Ücretsiz, Bulmaca) — Yalnızca gölgeleri çizin — ve kanjinin ortaya çıkmasını izleyin.</p>
+  <div class="card-meta">
+    <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T17:49:35+00:00">18 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://gemesplayyt.itch.io/shmurgendurgenburgendurgen" rel="noopener">Shmurgendurgenburgendurgen</a></h3>
+  <p class="body raw">Shmurgendurgenburgendurgen (Ücretsiz, Android)</p>
+  <div class="card-meta">
+    <span class="src src-itchio"><span class="mark">it</span>itch.io</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-13T19:07:01+00:00">16 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+<section class="section" id="rss">
+  <div class="section-head">
+    <h2><span class="src src-rss"><span class="mark">R</span></span> RSS</h2>
+    <span class="count">10 madde</span>
+  </div>
+  <div class="grid">
+    <article class="card lead">
+  <h3><a href="https://techmeme.com/261114/p8" rel="noopener">Microsoft, tüm Microsoft 365 ürünlerinin çalışır durumda olduğunu ve dünya çapında hükümetleri, tüccarları, hastaneleri ve işletmeleri aksatan bir kesintiye son verdiğini söylüyor (Bloomberg)</a></h3>
+  <p class="body raw">Microsoft, tüm Microsoft 365 ürünlerinin çalışır durumda olduğunu ve dünya genelindeki hükümetleri, tüccarları, hastaneleri ve işletmeleri aksatan bir kesintiye son verdiğini söylüyor…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T08:03:46+00:00">3 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p7" rel="noopener">Kaynaklar: Nvidia&#39;nın Çin&#39;deki 20 yılı aşkın faaliyetine rağmen Jensen Huang, Pekin&#39;in çipte kendi kendine yeterlilik kampanyasını yürüten politika yapıcılara erişim sağlamakta zorlandı (Eleanor Olcott/Financial Times)</a></h3>
+  <p class="body raw">Kaynaklar: Nvidia&#39;nın Çin&#39;de 20 yıldan fazla faaliyet göstermesine rağmen, Jensen Huang, Pekin&#39;in çipte kendi kendine yeterlilik kampanyasını yürüten politika yapıcılara erişim sağlamakta…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T07:30:08+00:00">4 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p6" rel="noopener">PE firmaları için yapay zeka destekli durum tespiti araçları sunan Operand, bir tohum ve Khosla Ventures liderliğindeki A Serisi için 220 milyon dolarlık bir değerlemeyle 31 milyon dolar topladı (Lucinda Shen/Axios)</a></h3>
+  <p class="body raw">PE firmaları için yapay zeka destekli durum tespiti araçları sunan Operand, bir tohumdan ve Khosla Ventures liderliğindeki A Serisinden 220 milyon dolarlık bir değerlemeyle 31 milyon dolar…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T07:02:17+00:00">4 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p5" rel="noopener">Dosya erişimini, yazılım kullanımını, karar verme sürecini ve mevcut yapay zeka aracılarının eylemlerini denetlemek için &#34;koruyucu&#34; yapay zeka aracıları oluşturan WhiteMatter, 20 milyon dolarlık A Serisi topladı (Alice Tecotzky/Business Insider)</a></h3>
+  <p class="body raw">Mevcut yapay zeka aracılarının dosya erişimini, yazılım kullanımını, karar verme sürecini ve eylemlerini denetlemek için &#34;koruyucu&#34; yapay zeka aracıları oluşturan WhiteMatter, 20 milyon…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T06:55:00+00:00">5 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p4" rel="noopener">Tıbbi tablo inceleme, faturalandırma ve kodlama iş akışlarını otomatikleştirmek için yapay zeka destekli araçlar sunan Charta Health, Insight Partners (Jessica Hagen/MobiHealthNews) liderliğinde 55 milyon dolarlık B Serisi topladı</a></h3>
+  <p class="body raw">Jessica Hagen / MobiHealthNews : Tıbbi tablo incelemesi, faturalandırma ve kodlama iş akışlarını otomatikleştirmek için yapay zeka destekli araçlar sunan Charta Health, Insight Partners…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T06:35:00+00:00">5 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p3" rel="noopener">Çıkarım bulutu sağlayan ve farklı yongalarda çalışan yapay zeka modellerini test etmek için çıkarım derleyici yazılımı geliştiren Luminal, 25 milyon dolarlık A Serisi yatırım aldı (Chris Metinko/Axios)</a></h3>
+  <p class="body raw">Bir çıkarım bulutu sağlayan ve yapay zeka modellerini farklı yongalarda çalıştırmayı test etmek için çıkarım derleyici yazılımı geliştiren Luminal, 25 milyon ABD doları Seri A topladı…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T06:30:09+00:00">5 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p2" rel="noopener">Binlerce çekirdeğin paralel çalıştığı bir CPU mimarisi tasarlayan Cambridge, İngiltere merkezli Tendrils, Benchmark liderliğinde 30 milyon dolar topladı (John Reynolds/Tech.eu)</a></h3>
+  <p class="body raw">Binlerce çekirdeğin paralel çalıştığı bir CPU mimarisi tasarlayan Cambridge, Birleşik Krallık merkezli Tendrils, Benchmark liderliğinde 30 milyon dolar topladı (John Reynolds/Tech.eu)…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T05:55:01+00:00">6 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261114/p1" rel="noopener">JD.com, AB&#39;nin anlaşmayı onaylamasının ardından ~1,5 milyar dolar karşılığında ~%60 hisse satın aldıktan sonra Alman elektronik perakendecisi Ceconomy&#39;yi devralmasını tamamladı (Tomoko Wakasugi/Nikkei Asia)</a></h3>
+  <p class="body raw">JD.com, AB&#39;nin anlaşmayı onaylamasının ardından ~1,5 milyar $ karşılığında ~%60 hisse satın aldıktan sonra Alman elektronik perakendecisi Ceconomy&#39;yi devralmasını tamamladı (Tomoko…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T05:02:28+00:00">6 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261113/p42" rel="noopener">Analiz: Sam Bankman-Fried&#39;ın 2021&#39;deki 500 milyon dolarlık Anthropic yatırımı, Anthropic&#39;in ~1,5 trilyon dolar olarak listelenmesi durumunda ~37 milyar dolar değerinde olacaktır; 2024&#39;teki hissesinden ~1,3 milyar dolar karşılığında vazgeçti (George Hammond/Financial Times)</a></h3>
+  <p class="body raw">Analiz: Sam Bankman-Fried&#39;ın 2021&#39;deki 500 milyon dolarlık Anthropic yatırımı, Anthropic&#39;in ~1,5 trilyon dolar olarak listelenmesi durumunda ~37 milyar dolar değerinde olacaktır; 2024&#39;teki…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T04:25:01+00:00">7 saat önce</time>
+  </div>
+</article>
+
+    <article class="card">
+  <h3><a href="https://techmeme.com/261113/p41" rel="noopener">Özgür konuşma grubu FIRE, DOJ ve DHS&#39;nin, ICE faaliyetleri hakkında rapor veren &#34;ICE Sightings - Chicagoland&#34; Facebook grubu ve Eyes Up iOS uygulamasını engelleme çabalarına son vereceğini söyledi (Kanishka Singh/Reuters)</a></h3>
+  <p class="body raw">Özgür konuşma grubu FIRE, DOJ ve DHS&#39;nin, ICE faaliyetleri hakkında rapor veren &#34;ICE Sightings - Chicagoland&#34; Facebook grubunu ve Eyes Up iOS uygulamasını engelleme çabalarına son…</p>
+  <div class="card-meta">
+    <span class="src src-rss"><span class="mark">R</span>RSS</span>
+    <span class="dot">·</span>
+    <time datetime="2026-11-14T03:45:01+00:00">8 saat önce</time>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<nav class="pager">
+<a href="2026-11-13-kaynak.html">← 13 Kasım</a>  <a href="arsiv.html">Arşiv</a>
+<span>sonraki sayı yok →</span></nav>
+
+<footer>
+  <a href="./">Bugünkü sayı</a> · <a href="arsiv.html">Arşiv</a><br>
+  14.11.2026 12:00 UTC · Hacker News, GitHub, Product Hunt, itch.io, Steam, Bluesky, X, RSS
+</footer>
+
+</div>
+</body>
+</html>
